@@ -192,8 +192,8 @@ function renderScatter() {
   const all = clubs.clubs;
   const lit = new Set(leagueFilter === "all" ? clubs.featured : all.filter(inFilter).map((c) => c.id));
   // Drawn at the container's width so text stays legible on phones.
-  const W = Math.round(Math.min(640, Math.max(300, $("c-scatter").clientWidth || 640)));
-  const H = Math.round(Math.max(300, W * 0.66)), pad = { l: 40, r: 12, t: 16, b: 40 };
+  const W = Math.round(Math.max(300, $("c-scatter").clientWidth || 640));
+  const H = Math.round(Math.min(520, Math.max(300, W * 0.66))), pad = { l: 40, r: 12, t: 16, b: 40 };
   const xs = all.map((c) => c.attack), ys = all.map((c) => c.defense);
   const lo = Math.floor(Math.min(...xs, ...ys) / 10) * 10, hi = Math.ceil(Math.max(...xs, ...ys) / 10) * 10;
   const x = (v) => pad.l + ((v - lo) / (hi - lo)) * (W - pad.l - pad.r);
@@ -388,7 +388,7 @@ function renderGoals(league, label, clubName) {
     <thead><tr><th class="l">Per game</th><th>Goals</th><th>xG</th><th>Model, next ${left}</th></tr></thead>
     <tbody>${line("Scored at home", true, 0)}${line("Scored away", false, 0)}${line("Conceded at home", true, 1)}${line("Conceded away", false, 1)}</tbody></table></div>
     <p class="note">${label}. xG is ${league.some((m) => m.xg_source === "espn") ? "ESPN's" : "Understat's"} chance quality; the last column is the model's expected goals over the games left.</p>
-    ${rollingXg({ name: clubName }, league)}`;
+    ${rollingXg({ name: clubName }, league, $("p-goals").clientWidth)}`;
 }
 
 /* ---------- how they play ---------- */
@@ -547,7 +547,7 @@ function renderResults(club, league, europe) {
     const avg = r.n ? pct1(r.given) : "–";
     const chips = groups.length > 1 ? `<div class="chips" role="group" aria-label="Results by competition">
       ${groups.map((g) => `<button type="button" class="chip" data-pcomp="${g.slug}" aria-pressed="${g.slug === selected}">${esc(g.label)}</button>`).join("")}</div>` : "";
-    $("p-results").innerHTML = `${chips}${pointsComparison(club, group.matches, group.leaguePhaseOnly)}${played.length ? `
+    $("p-results").innerHTML = `${chips}${pointsComparison(club, group.matches, group.leaguePhaseOnly, $("p-results").clientWidth)}${played.length ? `
       <p class="lead">Called <b>${r.hits} of ${r.n}</b> results · <b>${r.exact}</b> exact score${r.exact === 1 ? "" : "s"} · gave the actual result <b>${avg}</b> on average.</p>
       ${callStrip([...played].reverse())}
       <div class="clist">${played.map(clubRow).join("")}</div>
@@ -591,8 +591,8 @@ export function renderRatingComparisonChart(history, rated, metric, width = 640,
   const field = history?.fields?.indexOf(metric) ?? -1;
   if (!weeks.length || field < 0) return `<p class="note">Weekly rating history is not available.</p>`;
 
-  const W = Math.round(Math.min(760, Math.max(300, width || 640)));
-  const phone = W < 480, H = phone ? 220 : 250;
+  const W = Math.round(Math.max(300, width || 640));
+  const phone = W < 480, H = phone ? 220 : 270;
   const pad = { l: 36, r: phone ? 104 : 150, t: 14, b: 30 };
   const times = weeks.map((week) => dateMs(week.date));
   let liveTime = dateMs(liveDate || weeks.at(-1).date);
@@ -768,3 +768,15 @@ const panelFor = (row) => {
   const others = new Map(clubs.clubs.filter((c) => c.id !== (m.isHome ? m.home_id : m.away_id)).map((c) => [c.id, c.slug]));
   return matchPanel(m, others, m.comp);
 };
+
+// Charts are drawn at their frame's width; redraw them when that width changes.
+let resizing, drawnWidth = innerWidth;
+window.addEventListener("resize", () => {
+  clearTimeout(resizing);
+  resizing = setTimeout(() => {
+    if (innerWidth === drawnWidth || !clubs || $("view-clubs").hidden) return;
+    drawnWidth = innerWidth;
+    if (!$("clubs-index").hidden) renderScatter();
+    else drawRatingHistory();
+  }, 150);
+});

@@ -39,11 +39,12 @@ export function pointsByClub(matches, leaguePhaseOnly = false) {
 const signed = (n) => `${n < 0 ? "−" : "+"}${Math.abs(n).toFixed(1)}`;
 const result = (points) => points === 3 ? "Win" : points === 1 ? "Draw" : "Loss";
 
-export function pointsComparison(club, matches, leaguePhaseOnly = false) {
+export function pointsComparison(club, matches, leaguePhaseOnly = false, frameWidth = 720) {
   const stats = pointsForClub(matches, club.id, leaguePhaseOnly);
   if (!stats.n) return `<p class="note">No finished games with forecasts yet. <b>0</b> published forecasts.</p>`;
 
-  const width = 720, height = 220, pad = { l: 48, r: 14, t: 12, b: 30 };
+  // drawn at the frame's width so ticks keep their size on phones and wide screens
+  const width = Math.round(Math.max(300, frameWidth || 720)), height = width < 480 ? 200 : 240, pad = { l: 36, r: 14, t: 12, b: 30 };
   const max = Math.max(1, Math.ceil(Math.max(...stats.games.map((g) => Math.max(g.actualTotal, g.expectedTotal)))));
   const x = (game) => pad.l + (game / stats.n) * (width - pad.l - pad.r);
   const y = (points) => height - pad.b - (points / max) * (height - pad.t - pad.b);
@@ -85,7 +86,7 @@ function xgWindow(games) {
   return { n: covered.length, total: games.length, for: xgFor, against: xgAgainst, difference: xgFor - xgAgainst };
 }
 
-export function rollingXg(club, matches) {
+export function rollingXg(club, matches, frameWidth = 600) {
   const played = matches.filter((m) => m.status === "FINISHED" && Array.isArray(m.score))
     .sort((a, b) => a.kickoff.localeCompare(b.kickoff));
   const windows = [5, 10].map((size) => ({ size, ...xgWindow(played.slice(-size)) }));
@@ -97,7 +98,7 @@ export function rollingXg(club, matches) {
     return stats.difference == null ? null : { game: i + 1, ...stats };
   });
   const available = rolling.filter(Boolean);
-  const chart = available.length ? sparkline(club, rolling) : `<p class="note">No xG was reported for the completed games shown; coverage is listed above.</p>`;
+  const chart = available.length ? sparkline(club, rolling, frameWidth) : `<p class="note">No xG was reported for the completed games shown; coverage is listed above.</p>`;
   const detail = available.length ? `<details class="pm-list"><summary>Five-game rolling xG values</summary><div class="scroll"><table class="board">
     <thead><tr><th>After game</th><th>Difference / game</th><th>Coverage</th></tr></thead>
     <tbody>${available.map((v) => `<tr><td>${v.game}</td><td>${signed(v.difference)}</td><td>${v.n} of ${v.total} games</td></tr>`).join("")}</tbody>
@@ -108,8 +109,8 @@ export function rollingXg(club, matches) {
     <figure class="pm-spark">${chart}<figcaption class="note">Five-game rolling xG difference per covered game; windows without xG are left blank.</figcaption></figure>${detail}`;
 }
 
-function sparkline(club, rolling) {
-  const width = 600, height = 112, pad = { l: 8, r: 8, t: 8, b: 22 };
+function sparkline(club, rolling, frameWidth) {
+  const width = Math.round(Math.max(300, frameWidth || 600)), height = 112, pad = { l: 8, r: 8, t: 8, b: 22 };
   const values = rolling.filter(Boolean);
   const range = Math.max(0.1, ...values.map((v) => Math.abs(v.difference))) * 1.1;
   const x = (game) => pad.l + ((game - 1) / Math.max(1, rolling.length - 1)) * (width - pad.l - pad.r);

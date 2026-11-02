@@ -634,8 +634,8 @@ function drawXg() {
   const { m } = page, { shots } = page.shots;
   const sides = xgLines(shots, m);
   const lines = sides.map((l) => l.steps), totals = sides.map((l) => l.total);
-  const W = Math.round(Math.min(760, Math.max(300, box.clientWidth || 760)));
-  const H = W < 480 ? 210 : 250, pad = { l: 34, r: 40, t: 16, b: 24 };
+  const W = Math.round(Math.max(300, box.clientWidth || 760));
+  const H = W < 480 ? 210 : 270, pad = { l: 34, r: 40, t: 16, b: 24 };
   const events = page.detail?.events;
   const last = Math.max(90, ...shots.map((s) => s[0] + 1), ...(events || []).map((e) => e.minute));
   const top = Math.max(1, Math.ceil(Math.max(...totals) * 2) / 2);

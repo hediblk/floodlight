@@ -127,9 +127,9 @@ function misses(row) {
     <p class="note">xG-scored log loss scores the same forecasts against the on-chances chances (two independent Poissons with each side's observed xG as means) instead of the result, on each forecast's games with xG. It measures a different target and is shown only as a diagnostic: it never chooses or tunes the model, and log loss against the result stays the yardstick.</p>` : "";
   return `<h3>How we miss</h3>
     <p class="sc-line"><b>${called}</b> of ${n} calls came true (${share(called, n)}). Of the <b>${missed}</b> misses: ${KINDS.filter(([k]) => k !== "missed_draw_call" || kindN(x, k)).map(([k, label]) => `<b>${kindN(x, k)}</b> ${label.toLowerCase()}`).join(", ").replace(/, ([^,]*)$/, " and $1")}.</p>
-    <div class="sc-pair"><div><h4>Called against result</h4>${board}</div><div><h4>The misses, by chances</h4>${split}</div></div>
-    <div class="sc-pair"><div><h4>Expected against actual</h4>${counts}<p class="note">Expected counts add up each game's forecast chance of that outcome. A call needs the single likeliest outcome, so an outcome can be expected often and seldom called.</p></div>
-    <div><h4>Goals</h4>${goals}</div></div>${diagnostic}`;
+    <div class="sc-pair"><div><h4>Called against result</h4>${board}
+    <h4>Expected against actual</h4>${counts}<p class="note">Expected counts add up each game's forecast chance of that outcome. A call needs the single likeliest outcome, so an outcome can be expected often and seldom called.</p></div>
+    <div><h4>The misses, by chances</h4>${split}<h4>Goals</h4>${goals}</div></div>${diagnostic}`;
 }
 
 function renderTrackRecord() {

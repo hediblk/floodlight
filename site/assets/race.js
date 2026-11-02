@@ -132,9 +132,9 @@ function draw() {
   if (!rows.length) { $("race-chart").innerHTML = `<p class="note">Nobody has been in this race yet.</p>`; return; }
 
   const tone = key === "releg" ? "var(--red)" : "var(--amber)";
-  const W = Math.round(Math.min(760, Math.max(300, $("race-chart").clientWidth || 760)));
+  const W = Math.round(Math.max(300, $("race-chart").clientWidth || 760));
   const phone = W < 480;
-  const H = Math.round(Math.max(240, W * 0.5)), pad = { l: 36, r: phone ? 12 : 130, t: 12, b: 26 };
+  const H = Math.round(Math.min(360, Math.max(240, W * 0.5))), pad = { l: 36, r: phone ? 12 : 130, t: 12, b: 26 };
   const times = hist.dates.map(dayOf), t0 = times[0], t1 = times[times.length - 1];
   const x = (ms) => pad.l + ((ms - t0) / (t1 - t0)) * (W - pad.l - pad.r);
   const y = (v) => H - pad.b - (v / 100) * (H - pad.t - pad.b);
