@@ -12,7 +12,7 @@ self.onmessage = ({ data: { files, strategy, comparisons = [] } }) => {
     const compared = comparisons.map(({ name, strategy: input }, index) => {
       self.postMessage({ progress: `Comparing saved strategy ${index + 1} of ${comparisons.length}…` });
       const normalized = normalizeStrategy(input);
-      return { name, strategy: normalized, result: runBacktest(files, normalized) };
+      return { name, strategy: normalized, result: runBacktest(files, normalized, { breakdowns: false }) };
     });
     self.postMessage({ result, reference, comparisons: compared });
   } catch (error) {

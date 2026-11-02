@@ -78,7 +78,7 @@ function shell() {
           <label>Strategy B<select id="bt-compare-b"></select></label>
           <button id="bt-compare" class="chip" type="button">Compare strategies</button>
         </div>
-        <p class="note">Save two configurations, then compare them on the same season-reset bankroll chart with their own intervals and coverage.</p>
+        <p class="note">Save two configurations, then compare them on the same season-reset bankroll chart with their own intervals and coverage. Editing the strategy clears the comparison.</p>
       </section>
       <p id="bt-session-count" class="note" aria-live="polite">Distinct strategies evaluated this session: 0.</p>
       <p id="bt-status" class="note" role="status" aria-live="polite" data-state="loading">Loading available seasons…</p>
@@ -154,9 +154,9 @@ function refreshSavedControls(selectedName = null) {
   $("bt-load-saved").disabled = !savedStrategies.length;
   $("bt-delete-saved").disabled = !savedStrategies.length;
   $("bt-compare").disabled = savedStrategies.length < 2;
-  if (savedStorageIssue) $("bt-saved-status").textContent = savedStorageIssue;
-  else if (!$("bt-saved-status").textContent) $("bt-saved-status").textContent = `${savedStrategies.length} saved ${savedStrategies.length === 1 ? "strategy" : "strategies"}.`;
+  $("bt-saved-status").textContent = savedStorageIssue || savedCount();
 }
+function savedCount() { return `${savedStrategies.length} saved ${savedStrategies.length === 1 ? "strategy" : "strategies"}.`; }
 
 function persistSavedStrategies() {
   try {
@@ -180,7 +180,7 @@ function saveCurrentStrategy() {
     else savedStrategies[index] = { name, strategy };
     if (persistSavedStrategies()) {
       refreshSavedControls(name);
-      $("bt-saved-status").textContent = name + " saved.";
+      $("bt-saved-status").textContent = `${name} saved. ${savedCount()}`;
     }
   } catch (error) { $("bt-saved-status").textContent = error.message; }
 }
@@ -207,7 +207,7 @@ function deleteSavedStrategy() {
   savedStrategies = savedStrategies.filter((item) => item !== entry);
   if (persistSavedStrategies()) {
     refreshSavedControls();
-    $("bt-saved-status").textContent = entry.name + " deleted.";
+    $("bt-saved-status").textContent = `${entry.name} deleted. ${savedCount()}`;
   }
 }
 
