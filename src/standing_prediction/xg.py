@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import dataclass, replace
 from typing import Dict
 
@@ -31,7 +32,7 @@ def fetch_understat_matches(*, competition, season, timeout=30, cache_dir=".cach
     session = requests.Session()
     session.headers.update({"User-Agent": "Mozilla/5.0", "X-Requested-With": "XMLHttpRequest"})
     content = cached_get(f"{UNDERSTAT_BASE}/getLeagueData/{league}/{season}", session=session, timeout=timeout,
-                         cache_dir=cache_dir if use_cache else None, max_age=cache_max_age(season))
+                         cache_dir=cache_dir if use_cache else None, max_age=cache_max_age(season), stale_if_error=True)
     rows = []
     for match in json.loads(content).get("dates", []):
         if not match.get("isResult"):
@@ -95,6 +96,8 @@ def load_season_xg(matches, *, competition, season, cache=True):
     try:
         xg = fetch_understat_matches(competition=competition, season=season, use_cache=cache)
     except (ValueError, OSError, RuntimeError, KeyError) as exc:
+        logging.getLogger(__name__).warning("Understat xG unavailable for %s %s (%s).",
+                                            competition, season, type(exc).__name__)
         out = attach_xg(matches, None)
         out.attrs["xg_coverage"]["error"] = type(exc).__name__
         return out

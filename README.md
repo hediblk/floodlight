@@ -262,6 +262,7 @@ python3 -m http.server -d site 8000
 
 ## Data quirks
 
+- **Unavailable xG:** if an Understat download fails, reuse its saved response and warn with the original retrieval time, without renewing the cache. Site exports also retain previously published xG for unchanged finished fixtures when fresh xG is missing; new games stay without xG until the source recovers.
 - **Cancelled** fixtures are simulated as if they will be replayed; `--strict-fixtures` makes them an error.
 - **Awarded** results count as played. Official decisions without a score go in `fixture_overrides.csv`.
 - **Lagging** results, where the table already counts a match still listed as unplayed, take their score from Understat.

@@ -4,6 +4,7 @@ import re
 import unicodedata
 import hashlib
 import json
+import logging
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,8 +18,10 @@ def cache_max_age(season):
     return None if season is not None and int(season) < current_season else 3600
 
 
-def cached_get(url, *, params=None, session=None, timeout=30, cache_dir=None, max_age=3600, on_response_headers=None):
+def cached_get(url, *, params=None, session=None, timeout=30, cache_dir=None, max_age=3600, on_response_headers=None,
+               stale_if_error=False):
     cache_path = None
+    stale = None
     if cache_dir is not None:
         public_params = {k: v for k, v in (params or {}).items() if k.lower() not in {"apikey", "api_key", "token"}}
         key = hashlib.sha256(json.dumps([url, public_params], sort_keys=True).encode()).hexdigest()
@@ -27,6 +30,8 @@ def cached_get(url, *, params=None, session=None, timeout=30, cache_dir=None, ma
             cached = json.loads(cache_path.read_text(encoding="utf-8"))
             if max_age is None or time.time() - cached["fetched_at"] < max_age:
                 return cached["content"]
+            if stale_if_error and isinstance(cached["content"], str):
+                stale = cached
         except (OSError, ValueError, KeyError, TypeError):
             pass
 
@@ -36,7 +41,8 @@ def cached_get(url, *, params=None, session=None, timeout=30, cache_dir=None, ma
             response = getter(url, params=params, timeout=timeout)
         except requests.RequestException:
             if attempt == 2:
-                raise RuntimeError("Data request failed after 3 attempts.") from None
+                failure = "Data request failed after 3 attempts."
+                break
             time.sleep(attempt + 1)
             continue
         if response.status_code in {429, 500, 502, 503, 504} and attempt < 2:
@@ -47,7 +53,8 @@ def cached_get(url, *, params=None, session=None, timeout=30, cache_dir=None, ma
             time.sleep(delay)
             continue
         if not 200 <= response.status_code < 300:
-            raise RuntimeError(f"Data request failed (HTTP {response.status_code}).") from None
+            failure = f"Data request failed (HTTP {response.status_code})."
+            break
         if on_response_headers is not None:
             quota_headers = {name: response.headers.get(name) for name in (
                 "x-requests-last", "x-requests-used", "x-requests-remaining",
@@ -58,6 +65,11 @@ def cached_get(url, *, params=None, session=None, timeout=30, cache_dir=None, ma
             cache_path.parent.mkdir(parents=True, exist_ok=True)
             cache_path.write_text(json.dumps({"fetched_at": time.time(), "content": content}), encoding="utf-8")
         return content
+    if stale is not None:
+        observed = datetime.fromtimestamp(stale["fetched_at"], timezone.utc).isoformat()
+        logging.getLogger(__name__).warning("%s Using stale cached response from %s (%s).", failure, observed, cache_path)
+        return stale["content"]
+    raise RuntimeError(failure) from None
 
 
 def normalize_team(name):
