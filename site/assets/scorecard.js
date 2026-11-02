@@ -28,7 +28,7 @@ export async function renderScorecardTable(lens = "score") {
     if (!card.all.n) { frame.hidden = true; return; }
     frame.hidden = false;
     const xg = lens === "xg" && card.all.misses;
-    $("m-called-note").textContent = xg ? "Called on xG = share of games with a clear xG winner (by more than 0.5) where that side was the favourite; level games and games without xG are left out." : "Called = hit rate.";
+    $("m-called-note").textContent = xg ? "Called on xG: the favourite out-xG'd its opponent by more than 0.5; level games and games without xG are left out." : "Called = hit rate.";
     const line = (name, row, total = false) => `<tr${total ? ' class="total"' : ""}><td class="club l">${esc(name)}</td><td>${row.n}</td>
       <td class="lit">${dec(row.model.log_loss, 3)}</td><td>${delta(row)}</td><td>${dec(row.model.brier, 3)}</td>
       <td>${xg ? xgCalled(row) : share(row.called, row.n)}</td><td>${share(row.n_published, row.n)}</td></tr>`;
@@ -39,13 +39,15 @@ export async function renderScorecardTable(lens = "score") {
   } catch { frame.hidden = true; }
 }
 
-const axes = (y, ticks, label) => ticks.map(t => `<line class="sc-grid" x1="55" x2="565" y1="${y(t)}" y2="${y(t)}"/><text x="46" y="${y(t) + 4}" text-anchor="end">${label(t)}</text>`).join("");
-const chart = (label, body) => `<svg viewBox="0 0 600 280" role="img" aria-label="${esc(label)}">${body}</svg>`;
+// charts are drawn at their column's width (CW) so their text keeps its size
+let CW = 600;
+const axes = (y, ticks, label) => ticks.map(t => `<line class="sc-grid" x1="55" x2="${CW - 35}" y1="${y(t)}" y2="${y(t)}"/><text x="46" y="${y(t) + 4}" text-anchor="end">${label(t)}</text>`).join("");
+const chart = (label, body) => `<svg viewBox="0 0 ${CW} 280" role="img" aria-label="${esc(label)}">${body}</svg>`;
 const table = (headers, rows) => `<div class="scroll"><table class="board"><thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
 const cells = values => `<tr>${values.map(v => `<td>${v}</td>`).join("")}</tr>`;
 
 function reliability(row) {
-  const x = p => 55 + p * 510, y = p => 235 - p * 210;
+  const x = p => 55 + p * (CW - 90), y = p => 235 - p * 210;
   const ticks = [0, .2, .4, .6, .8, 1];
   const bins = row.calibration.filter(b => b.n);
   const max = Math.max(1, ...bins.map(b => b.n));
@@ -54,7 +56,7 @@ function reliability(row) {
     + `<path class="sc-diagonal" d="M${x(0)},${y(0)} L${x(1)},${y(1)}"/>`
     + bins.map(b => `<circle class="sc-dot" cx="${x(b.probability)}" cy="${y(b.observed)}" r="${3 + 9 * Math.sqrt(b.n / max)}"><title>Forecast ${dec(100 * b.probability, 1)}%; observed ${dec(100 * b.observed, 1)}%; ${b.n} outcome probabilities</title></circle>`).join("");
   return `<h3>Calibration</h3>${chart("Reliability: forecast probability horizontally, observed frequency vertically", body)}
-    <p class="note">Ten bins pool all three outcomes (${3 * row.n} probabilities). Dot size reflects count; the diagonal is perfect calibration. Forecast chance →; observed frequency ↑.</p>
+    <p class="note">Forecast chance against how often it happened; dots on the diagonal are well calibrated. Dot size = count.</p>
     <details><summary>Calibration counts</summary>${table(["Bin", "Count", "Forecast", "Observed"], row.calibration.map(b => cells([`${Math.round(b.lo * 100)}–${Math.round(b.hi * 100)}%`, b.n, b.n ? `${dec(100 * b.probability, 1)}%` : "–", b.n ? `${dec(100 * b.observed, 1)}%` : "–"])))}</details>`;
 }
 
@@ -63,15 +65,14 @@ function rolling(row) {
   const keys = ["model", "frequency", "elo"].filter(k => series.some(p => p[k].n));
   const values = series.flatMap(p => keys.map(k => p[k].log_loss).filter(v => v != null));
   const low = Math.floor(Math.min(...values) * 10) / 10 - .1, high = Math.ceil(Math.max(...values) * 10) / 10 + .1;
-  const x = i => 55 + i / Math.max(1, series.length - 1) * 510;
+  const x = i => 55 + i / Math.max(1, series.length - 1) * (CW - 90);
   const y = v => 235 - (v - low) / (high - low) * 210;
   const ticks = Array.from({ length: 5 }, (_, i) => low + (high - low) * i / 4);
   const body = axes(y, ticks, v => dec(v, 2))
     + keys.map(k => `<path class="sc-line sc-${k}" d="${series.map((p, i) => p[k].n ? `${series.slice(0, i).some(v => v[k].n) ? "L" : "M"}${x(i)},${y(p[k].log_loss)}` : "").join(" ")}"/>`).join("")
     + series.filter((_, i) => i === 0 || i === series.length - 1 || i % Math.ceil(series.length / 4) === 0).map(p => `<text x="${x(series.indexOf(p))}" y="265" text-anchor="middle">${esc(p.week.slice(5))}</text>`).join("");
-  const last = series.at(-1);
   return `<h3>Cumulative log loss</h3>${chart("Cumulative mean log loss by Monday week: model solid, prior frequency dashed, Elo dotted", body)}
-    <p class="note">From the season's first scored match through each Monday week (UTC). Model solid, prior frequency dashed, Elo dotted. Latest: ${keys.map(k => `${k === "frequency" ? "prior frequency" : k} ${dec(last[k].log_loss, 3)} (n=${last[k].n})`).join("; ")}. Lower is better; baseline coverage can differ.</p>
+    <p class="note">Model solid, prior frequency dashed, Elo dotted. Lower is better.</p>
     <details><summary>Weekly scores and counts</summary>${table(["Monday week", ...keys.map(k => `${k === "frequency" ? "Prior frequency" : k} · n`)], series.map(p => cells([p.week, ...keys.map(k => `${dec(p[k].log_loss, 3)} · ${p[k].n}`)])))}</details>`;
 }
 
@@ -98,11 +99,11 @@ function misses(row) {
   const unknown = sum(Object.values(x.kinds).map(k => k.xg.unknown));
   const coverage = unknown === n
     ? "None of these games has xG, so misses can't be split by chances."
-    : `Observed xG covers ${n - unknown} of ${n} games${unknown ? `; the other ${unknown} show as no xG` : ""}.`;
+    : `xG covers ${n - unknown} of ${n} games.`;
   const calls = x.confusion.map(sum);
   const board = `<div class="scroll"><table class="board sc-confusion"><thead><tr><th class="l">Called ↓</th>${OUTCOMES.map(o => `<th>${o}</th>`).join("")}<th>Calls</th></tr></thead>
     <tbody>${x.confusion.map((r, i) => `<tr><td class="l">${OUTCOMES[i]}</td>${r.map((v, j) => `<td class="${i === j && v ? "lit" : ""}">${calls[i] ? `${v} <small>${share(v, calls[i])}</small>` : "–"}</td>`).join("")}<td class="b">${calls[i]}</td></tr>`).join("")}</tbody></table></div>
-    <p class="note">Rows are the call, the single likeliest outcome; columns what happened. Small figures are shares of each row, and the lit diagonal is a call that came true.</p>`;
+    <p class="note">Rows: the call. Columns: what happened. Lit: calls that came true.</p>`;
   const meter = ([key, label, gloss]) => {
     const k = x.kinds[key].xg, total = kindN(x, key);
     const shown = SPLIT.filter(([s]) => k[s]);
@@ -113,7 +114,7 @@ function misses(row) {
   };
   const split = `<div class="key"><span><i class="sc-k won"></i>Favourite won on chances</span><span><i class="sc-k level"></i>Level, within 0.5 xG</span><span><i class="sc-k lost"></i>Favourite lost on chances</span><span><i class="sc-k unknown"></i>No xG</span></div>
     ${KINDS.filter(([k]) => k !== "missed_draw_call" || kindN(x, k)).map(meter).join("")}
-    <p class="note">Bars share one scale, all ${missed} misses. The favourite is the likelier winner of the two sides; chances compare whole-game observed xG, Understat's for the leagues and ESPN's for the Champions League. ${esc(coverage)}</p>`;
+    <p class="note">One scale for all ${missed} misses; chances compare whole-game xG. ${esc(coverage)}</p>`;
   const counts = named(["Outcome", "Called", "Expected", "Actual", "Actual − expected"], OUTCOMES.map((o, i) =>
     [o, calls[i], dec(x.outcomes.expected[i], 1), x.outcomes.actual[i], oneDec(x.outcomes.actual[i] - x.outcomes.expected[i])]));
   const g = x.goals;
@@ -124,11 +125,11 @@ function misses(row) {
   const names = { model: "Floodlight", elo: "Elo", frequency: "Prior frequency" };
   const diagnostic = scored.length ? `<h4>Diagnostic · xG-scored log loss</h4>
     ${named(["Forecast", "Games", "Log loss · result", "xG-scored"], scored.map(([k, s]) => [names[k], s.n, dec(s.real_log_loss, 3), dec(s.log_loss, 3)]))}
-    <p class="note">xG-scored log loss scores the same forecasts against the on-chances chances (two independent Poissons with each side's observed xG as means) instead of the result, on each forecast's games with xG. It measures a different target and is shown only as a diagnostic: it never chooses or tunes the model, and log loss against the result stays the yardstick.</p>` : "";
+    <p class="note">Scores the same forecasts against the xG-based chances instead of the result. A diagnostic only: it never tunes the model.</p>` : "";
   return `<h3>How we miss</h3>
     <p class="sc-line"><b>${called}</b> of ${n} calls came true (${share(called, n)}). Of the <b>${missed}</b> misses: ${KINDS.filter(([k]) => k !== "missed_draw_call" || kindN(x, k)).map(([k, label]) => `<b>${kindN(x, k)}</b> ${label.toLowerCase()}`).join(", ").replace(/, ([^,]*)$/, " and $1")}.</p>
     <div class="sc-pair"><div><h4>Called against result</h4>${board}
-    <h4>Expected against actual</h4>${counts}<p class="note">Expected counts add up each game's forecast chance of that outcome. A call needs the single likeliest outcome, so an outcome can be expected often and seldom called.</p></div>
+    <h4>Expected against actual</h4>${counts}<p class="note">Expected = sum of each game's chance. Draws are often expected but rarely the single likeliest outcome, so rarely called.</p></div>
     <div><h4>The misses, by chances</h4>${split}<h4>Goals</h4>${goals}</div></div>${diagnostic}`;
 }
 
@@ -140,6 +141,8 @@ function renderTrackRecord() {
     const r = k === "combined" ? entry : entry[k];
     return cells([k, r.n, dec(r.model.log_loss, 3), dec(r.model.brier, 3), dec(r.model.rps, 3), share(r.called, r.n), share(r.exact, r.n), r.n ? `${dec(r.avg_chance_given * 100, 1)}%` : "–"]);
   }));
+  const [first] = getComputedStyle($("sc-charts")).gridTemplateColumns.split(" ");
+  CW = Math.round(Math.max(300, parseFloat(first) || 600));
   $("sc-charts").innerHTML = row.n ? `<div>${reliability(row)}</div><div>${rolling(row)}</div>` : `<p class="note">No ${cohort} forecasts have finished yet.</p>`;
   $("misses").innerHTML = misses(row);
   const sources = competition === "all" ? Object.entries(data.competitions) : [[competition, entry]];
@@ -147,7 +150,7 @@ function renderTrackRecord() {
     const b = r.frequency_baseline, selected = cohort === "combined" ? r : r[cohort];
     return cells([esc(COMPS.find(c => c.slug === slug).label), b ? b.seasons.map(y => `${y}/${String(y + 1).slice(-2)}`).join(", ") : "Awaiting forecast export", b?.n ?? 0, selected.baselines.frequency.n, dec(selected.baselines.frequency.log_loss, 3), delta(selected), selected.baselines.elo.n, dec(selected.baselines.elo.log_loss, 3), delta(selected, "elo")]);
   }));
-  $("sc-counts").textContent = `${row.n} ${cohort} finished forecasts; ${row.n_published} published before kickoff. Small samples are noisy. Scores cover 90 minutes; log loss uses natural logs, Brier sums three squared errors, and RPS averages the two cumulative errors in home/draw/away order.`;
+  $("sc-counts").textContent = `Lower is better for log loss, Brier and RPS. Small samples are noisy.`;
 }
 
 export async function showTrackRecord() {
@@ -166,4 +169,15 @@ $("sc-competition").addEventListener("change", e => { competition = e.target.val
 $("sc-cohorts").addEventListener("click", e => {
   const button = e.target.closest("[data-cohort]");
   if (button) { cohort = button.dataset.cohort; renderTrackRecord(); }
+});
+
+// redraw at the new column width when the window's width changes
+let resizing, drawnWidth = innerWidth;
+window.addEventListener("resize", () => {
+  clearTimeout(resizing);
+  resizing = setTimeout(() => {
+    if (innerWidth === drawnWidth || !data || $("scorecard").hidden || !$("scorecard").offsetParent) return;
+    drawnWidth = innerWidth;
+    renderTrackRecord();
+  }, 150);
 });

@@ -219,11 +219,12 @@ function renderDay() {
     offerCard("round", () => roundCard(played.map((x) => x.m), { day: { key: day, label: title }, scope }));
   }
   let html = `<div class="day-head"><h1>${esc(title)}</h1><p>${summary}</p>${list.length ? "" : nearby()}${played.length ? cardChips("round", "how we did") : ""}</div>`;
-  for (const c of COMPS) {
-    const rows = list.filter((x) => x.comp === c.slug);
-    if (!rows.length) continue;
-    html += `<fieldset class="frame comp-day"><legend>${esc(stageLabel(c, rows))}</legend>
-      <div class="mlist">${rows.map((x) => matchRow(x.m, x.comp, null, "", lens)).join("")}</div></fieldset>`;
+  // one frame for the day; each competition is a ruled heading inside it, or the legend when it is alone
+  const groups = COMPS.map((c) => [c, list.filter((x) => x.comp === c.slug)]).filter(([, rows]) => rows.length);
+  if (groups.length) {
+    const lone = groups.length === 1;
+    html += `<fieldset class="frame comp-day"><legend>${esc(lone ? stageLabel(...groups[0]) : "Fixtures")}</legend>${groups.map(([c, rows]) =>
+      `${lone ? "" : `<h3 class="dgroup">${esc(stageLabel(c, rows))}</h3>`}<div class="mlist">${rows.map((x) => matchRow(x.m, x.comp, null, "", lens)).join("")}</div>`).join("")}</fieldset>`;
   }
   if (data.missing.length) html += `<p class="note">No fixture data yet for ${esc(data.missing.join(", "))}.</p>`;
   $("m-day").innerHTML = html;
@@ -333,7 +334,7 @@ export function forecastBlocks(m, links = "") {
     return `<li class="${hit ? "hit" : ""}${call ? " call" : ""}${outcome([h, a]) === fav ? "" : " off"}"><span>${h}–${a}</span><i style="width:${((p / max) * 100).toFixed(0)}%"></i><b>${pct1(p)}</b></li>`;
   }).join("");
   const spread = outcome(m.top[0]) !== fav
-    ? `<p class="note">${m.top[0][0]}–${m.top[0][1]} tops the list, but a ${OUTCOMES[fav].toLowerCase()} is likelier overall: its chance is split across more scores.</p>` : "";
+    ? `<p class="note">${m.top[0][0]}–${m.top[0][1]} is the likeliest score, but a ${OUTCOMES[fav].toLowerCase()} is likelier overall.</p>` : "";
   const xg = m.xg ? `<dt>xG (${xgBy(m)})</dt><dd>${dec(m.xg[0], 2)}–${dec(m.xg[1], 2)}</dd>` : "";
   const origin = new Date(m.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
   let call;
@@ -344,9 +345,9 @@ export function forecastBlocks(m, links = "") {
       : `<p>Missed it: the model picked a ${OUTCOMES[fav].toLowerCase()} (<b>${pct1(m.p[fav])}</b>), ${ch}–${ca}; ${result} had <b>${pct1(v.given)}</b>.`)
       + (v.exact ? ` Exact score, too.</p>` : m.p_score != null ? ` The actual ${m.score[0]}–${m.score[1]} had <b>${pct1(m.p_score)}</b>.</p>`
         : ` The actual ${m.score[0]}–${m.score[1]} was not among the saved likeliest scores.</p>`)
-      + `<p class="dim">${m.published ? `Published before kickoff, from the model run of ${new Date(m.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC, ${new Date(m.at).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}.` : "Reconstructed: forecast as of 00:00 UTC on match day, from results before then."}</p>`;
+      + `<p class="dim">${m.published ? `Published before kickoff (run of ${new Date(m.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC, ${new Date(m.at).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}).` : "Reconstructed: as of 00:00 UTC on match day."}</p>`;
   } else {
-    call = `<p>Pick: <b>${OUTCOMES[fav].toLowerCase()}, ${ch}–${ca}</b> (${pct1(m.p[fav])} for the result).</p><p class="dim">Forecast from the model run of ${origin} UTC.</p>`;
+    call = `<p>Pick: <b>${OUTCOMES[fav].toLowerCase()}, ${ch}–${ca}</b> (${pct1(m.p[fav])} for the result).</p><p class="dim">Model run of ${origin} UTC.</p>`;
   }
   return `<div><h4>Likeliest scores</h4><ol class="scores">${scores}</ol>${spread}</div>
     <div><h4>Goals</h4><dl class="kv"><dt>Expected goals</dt><dd>${dec(m.exp[0])}–${dec(m.exp[1])}</dd>${xg}
@@ -409,9 +410,7 @@ export async function stakesTable(m, league, past = null) {
     <td class="b">${base(team.id, key) == null ? "–" : pct(base(team.id, key))}</td>${values.map(cell).join("")}</tr>`).join("");
   return `<div class="scroll"><table class="board stakes-table"><thead><tr><th class="l"></th><th>${past ? "Before" : "Now"}</th>
     <th>If ${esc(m.home)} win</th><th>Draw</th><th>If ${esc(m.away)} win</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="note">${league === "champions-league"
-      ? `A club's chance of winning the trophy, or of a top-eight or top-24 league-phase finish, once this result is in. Only swings of ${BIG_STAKE.title} points or more in a trophy chance, or ${BIG_STAKE.top8} in a top-eight or top-24 chance, are shown.`
-      : `A team's chance of the title, a top-four finish or relegation once this result is in. Only swings of ${BIG_STAKE.title} points or more in a title chance, or ${BIG_STAKE.ucl} in a top-four or relegation chance, are shown.`}${past ? ` As saved before kickoff: “Before” is the chance at the refresh of ${esc(past.day)}, and the result that happened is lit.` : ""}</p>`;
+    <p class="note">Chances once this result is in. Shown only for swings of ${BIG_STAKE.title}+ points for the ${league === "champions-league" ? "trophy" : "title"}, ${league === "champions-league" ? `${BIG_STAKE.top8}+ for the top 8 or top 24` : `${BIG_STAKE.ucl}+ for the top four or relegation`}.${past ? ` Saved before kickoff (${esc(past.day)}); what happened is lit.` : ""}</p>`;
 }
 
 const openRow = (row) => {

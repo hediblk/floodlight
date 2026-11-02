@@ -114,7 +114,7 @@ function hero(m, comp, slugs) {
     const noXg = "No xG for this game";
     probs = `<div class="mp-rows"><span class="mp-rlbl">Forecast</span>${probs}
       <span class="mp-rlbl">On chances</span>${m.xg_p ? probCells({ p: m.xg_p, score: m.score }) : `<span class="m-probs none">${noXg}</span>`}</div>
-      ${m.xg_p ? `<p class="mp-said mp-xgp">On chances: two independent Poissons with each side's observed xG as means. Not a forecast.</p>` : ""}
+      ${m.xg_p ? `<p class="mp-said mp-xgp">On chances: from each side's xG, not a forecast.</p>` : ""}
       ${tag ? `<p class="mp-verdict"><span class="m-verdict ${tag.hit ? "hit" : "miss"}">${tag.word}</span>${tag.clause ? `<span>${esc(tag.clause)}</span>` : ""}</p>` : ""}`;
   }
   return `<p class="crumbs"><a href="#matches/${dayKey(day)}">← Matches, ${esc(day.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }))}</a></p>
@@ -200,17 +200,15 @@ function against(m, comp, file) {
   const least = 1 + given.filter((g) => g < v.given).length;
   const most = 1 + given.filter((g) => g > v.given).length;
   const [n, word] = least <= most ? [least, "least"] : [most, "most"];
-  const published = done.filter((x) => x.published).length;
-  const season = `${n === 1 ? `The ${word}` : `The ${ordinal(n)} ${word}`} expected result of ${done.length} in ${comp.slug === "champions-league" ? "the " : ""}${esc(comp.label)} this season, by the chance the model gave what happened (${esc(happened(m, v))}, ${pct1(v.given)}).`
-    + ` ${published ? `${published} of those forecasts ${published === 1 ? "was" : "were"} published before kickoff; the rest are reconstructed.` : "Those forecasts are all reconstructed."}`;
+  const season = `${n === 1 ? `The ${word}` : `The ${ordinal(n)} ${word}`} expected result of ${done.length} in ${comp.slug === "champions-league" ? "the " : ""}${esc(comp.label)} this season, by the chance the model gave what happened (${esc(happened(m, v))}, ${pct1(v.given)}).`;
   const row = (label, pair, d) => `<tr><td class="h"><b>${dec(pair[0], d)}</b></td><th scope="row">${label}</th><td class="a"><b>${dec(pair[1], d)}</b></td></tr>`;
-  const xgNote = m.xg ? `Shot xG is ${xgBy(m)}'s, from the chances each side had.` : "No shot xG for this game.";
+  const xgNote = m.xg ? `Shot xG from ${xgBy(m)}.` : "No shot xG for this game.";
   return `<fieldset class="frame"><legend>Forecast against result</legend>
     <p class="mp-line">${chance}</p><p class="mp-line">${season}</p>
     <div class="scroll"><table class="board mp-sides mp-vs">
       <thead><tr><th class="h">${clubName(m.home_id, m.home, "inline")}</th><th></th><th class="a">${clubName(m.away_id, m.away, "inline")}</th></tr></thead>
       <tbody>${row("Expected before kickoff (model)", m.exp, 1)}${row("Goals", m.score, 0)}${m.xg ? row(`Shot xG (${xgBy(m)})`, m.xg, 2) : ""}</tbody></table></div>
-    <p class="note">${m.published ? "The forecast was published before kickoff." : "The forecast is reconstructed: as of 00:00 UTC on match day, from results before then."} Expected goals are the model's, before kickoff. ${xgNote}</p>
+    <p class="note">${m.published ? "Published before kickoff." : "Reconstructed from results before match day."} ${xgNote}</p>
   </fieldset>`;
 }
 
@@ -248,7 +246,7 @@ function chances(m, comp) {
   return `<h4>Season chances</h4>
     <div class="scroll"><table class="board stakes-table mp-chances"><thead><tr><th class="l"></th><th>${d1}</th><th>${d2}</th><th>Change</th></tr></thead>
       <tbody>${rows.slice(0, 8).join("")}</tbody></table></div>
-    <p class="note">Across the refreshes of ${d1} and ${d2}, the last before kickoff and the first after it, so other results in between count too. Changes under ${NOISE} points are within simulation noise and shown as –.${m.published && m.stakes ? " Rivals are the clubs in the stakes saved before kickoff." : ""}</p>`;
+    <p class="note">Refreshes either side of the game, so other results count too. – is under ${NOISE} points (noise).</p>`;
 }
 
 /* Club ratings saved at every refresh with fresh ratings (history/<season>/ratings/<YYYY-MM>.json, by forecast
@@ -302,7 +300,7 @@ function strength(m) {
     <div class="scroll"><table class="board mp-sides">
       <thead><tr><th class="h">${clubName(m.home_id, m.home, "inline")}</th><th></th><th class="a">${clubName(m.away_id, m.away, "inline")}</th></tr></thead>
       <tbody>${rows}${leagues}</tbody></table></div>
-    <p class="note">From the last refresh before kickoff (${runLabel(before.as_of)}) to the first after the result (${runLabel(after.as_of)}). Other results and market prices that arrived in between count too.${leagues ? " A change in the league average moves every club in that league, so read a club's change against it." : ""}</p>`;
+    <p class="note">${runLabel(before.as_of)} → ${runLabel(after.as_of)}; other results in between count too.${leagues ? " Read each change against its league average." : ""}</p>`;
 }
 
 /* ---------- chances: Understat shots, after full time ---------- */
@@ -359,7 +357,7 @@ function matchStats(m) {
   return `<fieldset class="frame mp-after mp-stats${physical ? " mp-running" : ""}"><legend>Match stats</legend>
     ${head}${poss}${rows || running ? `<div class="mp-stat-rows">${rows}${running}</div>` : ""}
     ${!page.shots && events.length ? minuteRuler(m, events) : ""}${events.length ? feed(m, events) : ""}
-    <p class="note">${data.sources.espn ? "Match statistics and timeline from ESPN" : "Match data"}${physical ? "; running data from UEFA" : ""}${m.xg ? `, xG from ${xgBy(m)}` : ""}. The better figure in each row is lit; fewer is better for fouls, offsides and cards.${physical ? " Running rows compare activity; neither side is marked better." : ""}</p>
+    <p class="note">Data: ${data.sources.espn ? "ESPN" : "match feed"}${physical ? ", UEFA" : ""}${m.xg ? `, xG ${xgBy(m)}` : ""}. The better figure is lit; fewer is better for fouls, offsides and cards${physical ? ", and running rows aren't judged" : ""}.</p>
   </fieldset>`;
 }
 
@@ -434,7 +432,7 @@ function wherePlayed(m) {
     <p class="mp-key"><span>Less<i class="k heat"></i>More activity</span>${dots ? `<span><i class="k pos"></i>Starter's average position</span>` : ""}</p>
     <p class="mp-key"><span>Thirds</span>${thirds.map((n, i) => `<span>${["Defensive", "Middle", "Attacking"][i]} <b>${share(n)}</b></span>`).join("")}</p>
     ${list}
-    <p class="note">${esc(name)}'s activity with and without the ball, relative to the busiest cell; the surface is smoothed and hovering a cell gives its own share. Player maps need 30 minutes. Positions are average locations, not the formation. UEFA · match data.</p>
+    <p class="note">${esc(name)}'s activity, relative to the busiest cell. Player maps need 30 minutes; positions are averages, not the formation. Data: UEFA.</p>
   </fieldset>`;
 }
 
@@ -509,8 +507,19 @@ function feed(m, events) {
     rows.push(`<li aria-label="${esc(eventLabel(e, m))}" class="mp-feed-row ${side} ${e.type}${isGoal(e) ? " goal" : ""}">${side === "h" ? cell : "<div></div>"}<span class="mp-feed-min">${eventMinute(e)}</span>${side === "a" ? cell : "<div></div>"}</li>`);
   }
   rows.push(marker(`Full time · ${m.score[0]}–${m.score[1]}`));
-  return `<h4>Timeline</h4><ol class="mp-feed">${marker("Kick-off")}${rows.join("")}</ol>`;
+  // substitutions fold away behind a chip, so the goals and cards read first
+  const subs = events.filter((e) => e.type === "substitution").length;
+  const toggle = subs ? `<button type="button" class="chip mp-subs" aria-pressed="false">Substitutions<span>${subs}</span></button>` : "";
+  return `<div class="mp-feed-head"><h4>Timeline</h4>${toggle}</div><ol class="mp-feed${subs ? " no-subs" : ""}">${marker("Kick-off")}${rows.join("")}</ol>`;
 }
+
+$("view-match").addEventListener("click", (e) => {
+  const b = e.target.closest(".mp-subs");
+  if (!b) return;
+  const on = b.getAttribute("aria-pressed") !== "true";
+  b.setAttribute("aria-pressed", String(on));
+  b.closest(".mp-feed-head").nextElementSibling.classList.toggle("no-subs", !on);
+});
 
 function minuteRuler(m, events) {
   const last = Math.max(90, ...events.map((e) => e.minute));
@@ -591,7 +600,7 @@ function shotReport(m) {
     <p class="mp-key"><span><i class="k goal"></i>Goal</span><span><i class="k saved"></i>Saved</span><span><i class="k off"></i>Missed, blocked or post</span><span>Circle area is the shot's xG</span></p>`;
 
   const owns = shots.filter(own);
-  const ogNote = owns.length ? ` Own goals aren't chances, so they're off the map and out of the xG lines: ${owns.map((s) => `${esc(s[8])}'s own goal (${minute(s)}) counted for ${esc(names[other(s[1])])}`).join("; ")}.` : "";
+  const ogNote = owns.length ? ` Own goals are left off: ${owns.map((s) => `${esc(s[8])} (${minute(s)}) for ${esc(names[other(s[1])])}`).join("; ")}.` : "";
   const list = `<details class="mp-list"><summary>Shot list</summary><div class="scroll"><table class="board">
     <thead><tr><th>Min</th><th class="l">Player</th><th>xG</th><th class="l">Result</th><th class="l">Situation</th><th class="l">Body</th><th class="l">Assist</th></tr></thead>
     <tbody>${shots.map((s) => `<tr class="${s[5] === "Goal" || own(s) ? "lit" : ""}"><td>${minute(s)}</td><td class="l">${clubCrest(ids[s[1]], "inline")} ${esc(s[8])}</td><td>${own(s) ? "–" : dec(s[4], 2)}</td><td class="l">${esc(word(s[5]))}</td><td class="l">${esc(word(s[6]))}</td><td class="l">${esc(word(s[7]))}</td><td class="l">${s[9] ? esc(s[9]) : ""}</td></tr>`).join("")}</tbody></table></div></details>`;
@@ -599,14 +608,13 @@ function shotReport(m) {
   const sides = xgLines(shots, m);
   const key = `<p class="mp-key">${sides.map((l, i) => `<span><svg width="22" height="8" aria-hidden="true"><line x1="0" x2="22" y1="4" y2="4" class="${i ? "xa" : "xh"}"/></svg>${clubName(ids["ha"[i]], names["ha"[i]], "inline")} <b>${dec(l.total, 2)}</b>${l.summed ? " summed shot xG" : ""}</span>`).join("")}</p>`;
   const off = sides.map((l, i) => (l.summed && m.xg ? `${esc(names["ha"[i]])}'s line ends at summed shot xG, ${dec(l.total, 2)}, not the match xG of ${dec(m.xg[i], 2)}.` : "")).filter(Boolean);
-  const xgNote = "Each step is a chance. Understat's match xG counts shots from one attack as one chance, so shots in the same minute combine as 1 − ∏(1 − xG) where that gives the match figure."
-    + (off.length ? ` ${off.join(" ")}` : " Both lines end at the match xG above.") + " Amber bulbs are goals.";
+  const xgNote = "Each step is a chance; amber bulbs are goals." + (off.length ? ` ${off.join(" ")}` : "");
 
   let retro = "";
   if (data.retro) {
     const r = data.retro;
     retro = `<h4>From the chances</h4><p class="mp-retro"><span><b>${pct1(r[0])}</b> ${esc(m.home)} win</span><span><b>${pct1(r[1])}</b> Draw</span><span><b>${pct1(r[2])}</b> ${esc(m.away)} win</span></p>
-      <p class="note">After the fact, from shot xG, not a forecast: how often these chances, each taken as an independent shot, give each result. Own goals are left out.</p>`;
+      <p class="note">How often these chances give each result. After the fact, not a forecast.</p>`;
   }
 
   let stand = "";
@@ -616,14 +624,14 @@ function shotReport(m) {
     if (top.length) stand = `<h4>Standouts</h4><div class="scroll"><table class="board mp-stand">
       <thead><tr><th class="l">Player</th><th>Min</th><th>Shots</th><th>xG</th><th>xA</th><th>Key passes</th></tr></thead>
       <tbody>${top.map((p) => `<tr><td class="l">${clubCrest(ids[p.side], "inline")} <b>${esc(p.player)}</b></td><td>${p.minutes}</td><td>${p.shots}</td><td class="b">${dec(p.xg, 2)}</td><td class="b">${dec(p.xa, 2)}</td><td>${p.key_passes}</td></tr>`).join("")}</tbody></table></div>
-      <p class="note">The top three by xG + xA: the chances each player took and the chances their passes made.</p>`;
+      <p class="note">Top three by xG + xA.</p>`;
   }
 
   return `<fieldset class="frame mp-after mp-shots"><legend>Chances</legend>
     <h4>Shot map</h4>${map}${list}
     <h4>xG through the game</h4>${key}<div class="mp-xgline" id="mp-xgline"></div><p class="note">${xgNote}${ogNote}</p>
     ${retro}${stand}
-    <p class="note">Shots, xG and players from Understat.</p>
+    <p class="note">Data: Understat.</p>
   </fieldset>`;
 }
 
@@ -757,6 +765,6 @@ function sides(m, comp, table, clubs, files) {
     <div class="scroll"><table class="board mp-sides">
       <thead><tr><th class="h">${clubName(m.home_id, m.home, "inline")}</th><th></th><th class="a">${clubName(m.away_id, m.away, "inline")}</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
-    <p class="note">Ratings are the share of points against an average European top-flight side, ranked among ${rated.length} clubs; the tick is the average club. ${ucl ? "League-phase place and points" : "Place and points"} are today's; the projected finish is the place in the projected table, with its 80% points range. Last five and goals count every competition we cover, before kickoff; xG is Understat's chance quality, which covers the five leagues only.</p>
+    <p class="note">Rating = share of points against an average European side; tick = average club. Last five and goals cover every competition before kickoff; xG covers the five leagues only.</p>
   </fieldset>`;
 }

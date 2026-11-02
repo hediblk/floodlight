@@ -114,7 +114,7 @@ export function pickTeams(teams, metric) {
 
 function draw() {
   if (!state || $("race-frame").hidden || $("view-tables").hidden) return;
-  const { data, hist } = state, ucl = data.kind === "ucl";
+  const { data, hist } = state;
   const metrics = metricsFor(state);
   if (!metrics.length) { $("race-frame").hidden = true; return; }
   const key = metrics.some(([k]) => k === choice[data.kind]) ? choice[data.kind] : "title";
@@ -124,11 +124,10 @@ function draw() {
 
   const rows = pickTeams(hist.teams, key);
   const first = fmt(hist.dates[0], { day: "numeric", month: "short" });
-  const runs = ucl ? "simulated tournaments" : "simulated seasons";
   // a faint rule at the movers' baseline Monday, when it falls inside the chart
   const baseMs = state.base ? dayOf(state.base.monday) : NaN;
   const baseOn = baseMs > dayOf(hist.dates[0]) && baseMs <= dayOf(hist.dates.at(-1));
-  $("race-note").textContent = `One point per day with new results, from ${first}. Chances are shares of 10,000 ${runs}, as forecast that day.${baseOn ? ` The faint vertical line marks Monday ${fmt(state.base.monday, { day: "numeric", month: "short" })}.` : ""} The table above lists the current values.`;
+  $("race-note").textContent = `Daily since ${first}.${baseOn ? ` Dotted line: Monday ${fmt(state.base.monday, { day: "numeric", month: "short" })}.` : ""}`;
   if (!rows.length) { $("race-chart").innerHTML = `<p class="note">Nobody has been in this race yet.</p>`; return; }
 
   const tone = key === "releg" ? "var(--red)" : "var(--amber)";

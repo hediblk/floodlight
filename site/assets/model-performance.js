@@ -57,7 +57,7 @@ export function pointsComparison(club, matches, leaguePhaseOnly = false, frameWi
     return `<tr><td>${i + 1}</td><td>${shortDate(m.kickoff)}</td><td class="l">${esc(opponent)}</td><td>${result(g.actual)}</td>
       <td>${g.actualTotal}</td><td>${dec(g.expectedTotal, 1)}</td><td class="l">${origin}</td></tr>`;
   }).join("");
-  const source = `${stats.published} of ${stats.n} forecasts were published before kickoff; ${stats.n - stats.published} were reconstructed.`;
+  const source = `${stats.published} of ${stats.n} published before kickoff, ${stats.n - stats.published} reconstructed.`;
   const sentence = `${club.name} have ${stats.actual} point${stats.actual === 1 ? "" : "s"} from games the model expected to yield ${dec(stats.expected, 1)} (${signed(stats.delta)}).`;
 
   return `<p class="lead">${esc(sentence)}</p>
@@ -68,7 +68,7 @@ export function pointsComparison(club, matches, leaguePhaseOnly = false, frameWi
         ${grid}<path class="actual" d="${points("actualTotal")}"/><path class="expected" d="${points("expectedTotal")}"/>
         <text class="tick" x="${pad.l}" y="${height - 6}">Start</text><text class="tick" x="${width - pad.r}" y="${height - 6}" text-anchor="end">Game ${stats.n}</text>
       </svg>
-      <figcaption class="note">Cumulative points by game number. Actual points use the finished result; expected points are 3 × win probability + draw probability.</figcaption>
+      <figcaption class="note">Expected points = 3 × win chance + draw chance.</figcaption>
     </figure>
     <details class="pm-list"><summary>Game-by-game points and forecast origin</summary><div class="scroll"><table class="board">
       <thead><tr><th>Game</th><th>Date</th><th class="l">Opponent</th><th>Result</th><th>Actual pts</th><th>Model pts</th><th class="l">Forecast</th></tr></thead>
@@ -98,15 +98,15 @@ export function rollingXg(club, matches, frameWidth = 600) {
     return stats.difference == null ? null : { game: i + 1, ...stats };
   });
   const available = rolling.filter(Boolean);
-  const chart = available.length ? sparkline(club, rolling, frameWidth) : `<p class="note">No xG was reported for the completed games shown; coverage is listed above.</p>`;
+  const chart = available.length ? sparkline(club, rolling, frameWidth) : "";
   const detail = available.length ? `<details class="pm-list"><summary>Five-game rolling xG values</summary><div class="scroll"><table class="board">
     <thead><tr><th>After game</th><th>Difference / game</th><th>Coverage</th></tr></thead>
     <tbody>${available.map((v) => `<tr><td>${v.game}</td><td>${signed(v.difference)}</td><td>${v.n} of ${v.total} games</td></tr>`).join("")}</tbody>
     </table></div></details>` : "";
   return `<h3 class="sub">Rolling xG · last 5 and last 10</h3>
     <div class="scroll"><table class="board stats pm-xg-table"><thead><tr><th class="l">Window / xG</th><th>xG for</th><th>xG against</th><th>Difference</th></tr></thead><tbody>${cells}</tbody></table></div>
-    <p class="note">The small count is games with xG / games in the window; averages use only games with xG.</p>
-    <figure class="pm-spark">${chart}<figcaption class="note">Five-game rolling xG difference per covered game; windows without xG are left blank.</figcaption></figure>${detail}`;
+    <p class="note">${available.length ? "Small count: games with xG." : "No xG for these games yet."}</p>
+    ${chart ? `<figure class="pm-spark">${chart}<figcaption class="note">Five-game rolling xG difference.</figcaption></figure>` : ""}${detail}`;
 }
 
 function sparkline(club, rolling, frameWidth) {

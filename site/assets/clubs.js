@@ -103,14 +103,11 @@ async function showIndex() {
   view = weeklyView(history);
   const list = clubs.clubs;
   const [best] = list;
-  const topAttack = list.find((c) => c.attack_rank === 1);
-  const topDefense = list.find((c) => c.defense_rank === 1);
   $("c-legend").textContent = `Club strength · ${clubs.season}`;
   $("c-hero").innerHTML = `
     <div class="who">
       <h1><a href="#clubs/${best.slug}">${clubName(best.id, best.name, "hero")}</a></h1>
-      <p class="caption">The strongest club in the five leagues and the Champions League: it would take <b>${Math.round(best.rating)}%</b> of the points off an average European top-flight side ·
-        best attack <b>${clubName(topAttack.id, topAttack.name, "inline")} ${dec(topAttack.attack)}</b> · best defence <b>${clubName(topDefense.id, topDefense.name, "inline")} ${dec(topDefense.defense)}</b> · ${list.length} clubs rated</p>
+      <p class="caption">Strongest of <b>${list.length}</b> clubs: it would take <b>${Math.round(best.rating)}%</b> of the points off an average European top-flight side</p>
     </div>
     <div class="numeral on" role="img" aria-label="${esc(`${best.name}: rating ${dec(best.rating)}`)}">${Math.round(best.rating)}<sup>%</sup></div>`;
 
@@ -144,10 +141,9 @@ function renderRanking() {
     }).join("")}</tbody>`;
   $("c-more").hidden = limit >= shown.length;
   $("c-more").textContent = `Show all ${shown.length} clubs`;
-  $("c-rank-legend").textContent = since ? `Power ranking · arrows ▲▼ since Monday ${since}` : "Power ranking";
-  $("c-rank-note").textContent = since
-    ? `Live ratings, the same as on each club's page. Arrows show places gained or lost since the ranking frozen on Monday ${since}.`
-    : "Live ratings, the same as on each club's page. Movement appears once a Monday ranking has been frozen.";
+  $("c-rank-legend").textContent = "Power ranking";
+  $("c-rank-note").textContent = since ? `Arrows: places moved since Monday ${since}.` : "";
+  $("c-rank-note").hidden = !since;
   renderMoves(shown);
 }
 
@@ -256,7 +252,7 @@ function renderScatter() {
   $("c-scatter-note").textContent = (leagueFilter === "all"
     ? "The twelve big clubs are lit. "
     : `${leagueName(leagueFilter)} clubs are lit. `)
-    + "Hover a dot for its numbers. The lines mark the five-league average; clubs on the diagonal are as strong in attack as in defence.";
+    + "Lines mark the five-league average.";
 }
 
 /* ---------- profile ---------- */
@@ -286,15 +282,13 @@ async function showProfile(club, comparison, squad) {
   profile = new Map(all.map((m) => [`${m.comp}:${m.id}`, m]));
 
   // Hero: rating as the lit number, the season in the caption.
-  const wdl = [0, 0, 0];
-  for (const m of main.filter((x) => x.score)) wdl[sideResult(m)]++;
   const where = domestic ? `${ordinal(team.position)} in ${esc(comp.label)}` : `${esc(club.country)} · ${ordinal(team.position)} in the Champions League league phase`;
   $("p-legend").textContent = `${comp.label} · ${(table || ucl).season} · Strength`;
   $("p-hero").innerHTML = `
     <div class="who">
       <h1>${clubName(club.id, club.name, "hero")}</h1>
-      <p class="caption">${where} · <b>${team.points}</b> pts from ${team.played} (W${wdl[0]} D${wdl[1]} L${wdl[2]})${formDots(club.id) ? ` ${formDots(club.id)}` : ""}${streak(club.id) ? ` · <b>${streak(club.id)}</b>` : ""}
-        · the big number is its strength, <b>#${club.rating_rank}</b> of ${clubs.clubs.length}: the share of points it would take off an average European top-flight side</p>
+      <p class="caption">${where} · <b>${team.points}</b> pts from ${team.played}${formDots(club.id) ? ` ${formDots(club.id)}` : ""}${streak(club.id) ? ` · <b>${streak(club.id)}</b>` : ""}
+        · strength <b>#${club.rating_rank}</b> of ${clubs.clubs.length}</p>
     </div>
     <div class="numeral on" role="img" aria-label="${esc(`${club.name}: rating ${dec(club.rating)}`)}">${Math.round(club.rating)}<sup>%</sup></div>`;
   renderViews(club, comparison, squad);
@@ -304,14 +298,14 @@ async function showProfile(club, comparison, squad) {
   const zones = Object.fromEntries((table || ucl).zones.map((z) => [z.key, z]));
   const tiles = [["Projected points", Math.round(team.xpts), `80% range ${team.p10}–${team.p90}`]];
   if (domestic) {
-    tiles.push(["Title", pct(team.title), "finish first"], [`Top ${zones.ucl.to}`, pct(team.ucl), "Champions League places"]);
-    if (team.releg >= 1) tiles.push(["Relegation", pct(team.releg), `${ordinal(zones.releg.from)} or lower`]);
+    tiles.push(["Title", pct(team.title), ""], [`Top ${zones.ucl.to}`, pct(team.ucl), ""]);
+    if (team.releg >= 1) tiles.push(["Relegation", pct(team.releg), ""]);
     if (uclTeam) tiles.push(["Wins the UCL", pct(uclTeam.title), `Top 8 ${pct(uclTeam.r16)} · final ${pct(uclTeam.stages.final)}`]);
   } else {
-    tiles.push(["Top 8", pct(team.r16), "straight to the last 16"], ["Top 24", pct(stakeNow(team, "top24")), "into the knockouts"],
+    tiles.push(["Top 8", pct(team.r16), ""], ["Top 24", pct(stakeNow(team, "top24")), ""],
       ["Wins the UCL", pct(team.title), `reaches the final ${pct(team.stages.final)}`]);
   }
-  $("p-tiles").innerHTML = tiles.map(([label, value, sub]) => `<div class="tile"><h2>${label}</h2><b>${value}</b><span>${sub}</span></div>`).join("");
+  $("p-tiles").innerHTML = tiles.map(([label, value, sub]) => `<div class="tile"><h2>${label}</h2><b>${value}</b>${sub ? `<span>${sub}</span>` : ""}</div>`).join("");
 
   renderSeason(club, main, domestic ? "League" : "Champions League", domestic ? europe : [], uclTeam);
   renderGoals(main, domestic ? "League games" : "Champions League games", club.name);
@@ -387,7 +381,7 @@ function renderGoals(league, label, clubName) {
   $("p-goals").innerHTML = `<div class="scroll"><table class="board stats">
     <thead><tr><th class="l">Per game</th><th>Goals</th><th>xG</th><th>Model, next ${left}</th></tr></thead>
     <tbody>${line("Scored at home", true, 0)}${line("Scored away", false, 0)}${line("Conceded at home", true, 1)}${line("Conceded away", false, 1)}</tbody></table></div>
-    <p class="note">${label}. xG is ${league.some((m) => m.xg_source === "espn") ? "ESPN's" : "Understat's"} chance quality; the last column is the model's expected goals over the games left.</p>
+    <p class="note">${label}; xG from ${league.some((m) => m.xg_source === "espn") ? "ESPN" : "Understat"}. The last column is the model's expectation for the games left.</p>
     ${rollingXg({ name: clubName }, league, $("p-goals").clientWidth)}`;
 }
 
@@ -441,10 +435,10 @@ function renderProfile(club, profiles) {
   const r = p.run_in, s = p.state, f = p.form;
   const share = (v) => `${Math.round(v * 100)}%`;
   const context = [
-    r.left != null && ["Run-in", `Opponents still to play rate <b>${dec(r.left)}</b> on average, against <b>${dec(r.played)}</b> so far: the <b>${ordinal(r.rank)}</b>-hardest run-in of ${members}, with ${r.games} league game${r.games === 1 ? "" : "s"} left.`],
-    ["Form", `Last ${f.games[0]}: <b>${signed(f.xgd[0])}</b> non-penalty xG difference and <b>${dec(f.ppg[0], 2)}</b> points a game. Over all ${f.games[1]}: ${signed(f.xgd[1])} and ${dec(f.ppg[1], 2)}.`],
-    ["Game state", `Ahead for <b>${share(s.minutes[0])}</b> of the minutes, level ${share(s.minutes[1])}, behind ${share(s.minutes[2])}. Won ${s.led[1]} of the ${s.led[0]} games they led, avoided defeat in ${s.trailed[1]} of the ${s.trailed[0]} they trailed, and won ${s.first[1]} of ${s.first[0]} after scoring first.`],
-    ["After 75'", `Late goals won <b>${s.late[0]}</b> point${s.late[0] === 1 ? "" : "s"} and lost <b>${s.late[1]}</b> against the score at 75 minutes.`],
+    r.left != null && ["Run-in", `<b>${ordinal(r.rank)}</b>-hardest of ${members}: opponents left rate <b>${dec(r.left)}</b> on average (${dec(r.played)} so far), ${r.games} game${r.games === 1 ? "" : "s"} to go.`],
+    ["Form", `Last ${f.games[0]}: <b>${signed(f.xgd[0])}</b> non-penalty xG difference, <b>${dec(f.ppg[0], 2)}</b> pts a game (all ${f.games[1]}: ${signed(f.xgd[1])}, ${dec(f.ppg[1], 2)}).`],
+    ["Game state", `Ahead <b>${share(s.minutes[0])}</b> of minutes, level ${share(s.minutes[1])}, behind ${share(s.minutes[2])}. Won ${s.led[1]} of ${s.led[0]} when leading; unbeaten in ${s.trailed[1]} of ${s.trailed[0]} when trailing.`],
+    ["After 75'", `Late goals won <b>${s.late[0]}</b> pt${s.late[0] === 1 ? "" : "s"} and lost <b>${s.late[1]}</b>.`],
   ].filter(Boolean);
   const every = Object.entries(p.metrics).map(([key, [value, rank, level, games]]) => {
     const [name, what, fmt] = TRAITS[key] ? [TRAITS[key][0], `${TRAITS[key][1]} a game`, TRAITS[key][2]] : [STYLES[key][0], STYLES[key][2], STYLES[key][3]];
@@ -452,7 +446,7 @@ function renderProfile(club, profiles) {
   }).join("");
   const day = (iso) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
   const span = `${day(p.from)} – ${day(p.to)}`;
-  $("p-profile").innerHTML = `<p class="lead">Last <b>${p.games}</b> ${esc(leagueName(p.league))} game${p.games === 1 ? "" : "s"} · ${span} · against the other ${members - 1} clubs</p>
+  $("p-profile").innerHTML = `<p class="lead">Last <b>${p.games}</b> ${esc(leagueName(p.league))} game${p.games === 1 ? "" : "s"} · ${span}</p>
     <div class="pair">
       <section><h3 class="dgroup">Strengths</h3>${list(order(1), "Nothing stands out yet.")}</section>
       <section><h3 class="dgroup">Weaknesses</h3>${list(order(-1), "Nothing stands out yet.")}</section>
@@ -462,7 +456,7 @@ function renderProfile(club, profiles) {
     <details class="pf-every"><summary>Every measure</summary><div class="scroll"><table class="board stats pf-table">
       <thead><tr><th class="l">Measure</th><th>Club</th><th>League</th><th>Rank</th><th>Label</th><th>Games</th></tr></thead>
       <tbody>${every}</tbody></table></div></details>
-    <p class="note">From Understat's shots (xG, situation, body part and the action just before each shot) in league games, and ESPN's match stats for possession, fouls, offsides and cards${box < p.games ? `, which cover ${box} of these games` : ""}. Each rate is pulled toward the league average by how much it swings from game to game, so a short run rarely earns a label, and ranks use those pulled rates (best first; highest first for style measures). A label marks a club at least 0.8 (strong) or 1.5 (very strong) standard deviations of the real spread between clubs from its league's average. Not adjusted for opponents; game state is approximate, from Understat's shot minutes. Strength ratings in the run-in are the live ones shown above. Nothing here feeds the forecasts.</p>`;
+    <p class="note">Understat shots and ESPN match stats${box < p.games ? ` (ESPN covers ${box} of these games)` : ""}. Rates are pulled toward the league average, so short runs rarely earn a label; Strong is 0.8 and Very strong 1.5 standard deviations from it. Not adjusted for opponents, and none of it feeds the forecasts.</p>`;
 }
 
 function clubRow(m) {
@@ -492,7 +486,7 @@ const matchLink = (m) => `<a class="c-go" href="#match/${m.comp}/${m.id}" aria-l
 function renderNext(all) {
   const ahead = all.filter((m) => !m.score).slice(0, 6);
   $("p-next").innerHTML = ahead.length
-    ? `<div class="clist">${ahead.map(clubRow).join("")}</div><p class="note">W/D/L chances from this club's side; the score is the model's pick, the likeliest score for its likeliest result.</p>`
+    ? `<div class="clist">${ahead.map(clubRow).join("")}</div><p class="note">W/D/L from this club's side; the pick is the likeliest score of the likeliest result.</p>`
     : `<p class="note">No fixtures left.</p>`;
 }
 
@@ -531,7 +525,7 @@ function renderStakes(club, groups) {
       <span class="s-res">${values.map((v, i) => `<span${i === lit ? ' class="lit"' : ""}${v == null ? ' title="Too few simulations"' : ""}>${esc(labels[i])} <b>${v == null ? "–" : pct(v)}</b></span>`).join("")}</span>${matchLink(m)}</div>`;
   };
   $("p-stakes").innerHTML = blocks.map((b) => `${blocks.length > 1 ? `<h3 class="dgroup">${esc(b.label)}</h3>` : ""}<div class="slist">${b.rows.map(line).join("")}</div>
-    <p class="note">${esc(club.name)}'s ${b.words[b.key]} is <b>${pct(stakeNow(b.team, b.key))}</b> now. Under each result of these games it would be as shown; the likeliest result is lit. Only games where a result moves it by ${BIG_STAKE[b.key]} points or more are listed.</p>`).join("");
+    <p class="note">${esc(club.name)}'s ${b.words[b.key]}: <b>${pct(stakeNow(b.team, b.key))}</b> now, and after each result. Games that move it ${BIG_STAKE[b.key]} points or more.</p>`).join("");
 }
 
 function renderResults(club, league, europe) {
@@ -551,7 +545,7 @@ function renderResults(club, league, europe) {
       <p class="lead">Called <b>${r.hits} of ${r.n}</b> results · <b>${r.exact}</b> exact score${r.exact === 1 ? "" : "s"} · gave the actual result <b>${avg}</b> on average.</p>
       ${callStrip([...played].reverse())}
       <div class="clist">${played.map(clubRow).join("")}</div>
-      <p class="note">Forecasts published before kickoff use their saved probabilities; reconstructed forecasts use results available before match day. Tap a game for the scorelines the model expected.</p>` : `<p class="note">No games played yet.</p>`}`;
+      <p class="note">Tap a game for its likeliest scores.</p>` : `<p class="note">No games played yet.</p>`}`;
   };
   $("p-results").onclick = (e) => {
     const button = e.target.closest("button[data-pcomp]");
@@ -579,7 +573,7 @@ function callStrip(games) {
   }).join("");
   return `<div class="callstrip" role="group" aria-label="Chance the model gave each actual result">
     <span class="cs-axis"><em>100%</em><em>50%</em><em>0</em></span><div class="cs-bars">${bars}</div></div>
-    <p class="key"><span><i class="k-lamp hit"></i>Called: the result was the model's pick</span><span><i class="k-lamp miss"></i>Missed</span><span>Bar height: chance it gave what happened</span></p>`;
+    <p class="key"><span><i class="k-lamp hit"></i>Called</span><span><i class="k-lamp miss"></i>Missed</span><span>Height: chance given to the result</span></p>`;
 }
 
 const dateMs = (iso) => Date.parse(`${iso}T00:00:00Z`);
@@ -685,9 +679,9 @@ function historyCaption(history, rated, metric) {
       .find((point) => Number.isFinite(point.value));
     if (!first) return `${club.name}: no earlier weekly rating`;
     const change = Number((club[metric] - first.value).toFixed(1));
-    return `${club.name} ${signedRating(change)} since the first week (${weekDay(first.week.date)})`;
+    return `${club.name} ${signedRating(change)} since ${weekDay(first.week.date)}`;
   });
-  return `${label} rating. ${changes.join("; ")}. The last point is the live rating.`;
+  return `${label}: ${changes.join("; ")}. The last point is live.`;
 }
 
 function historyTable(history, rated, metric, liveDate) {
@@ -737,10 +731,10 @@ function renderStrength(club, comparison, history) {
       <span class="note">${note}</span></div>`;
   $("p-strength").innerHTML = `<div class="gauges">
       ${meter("Overall", "rating", club.rating, club.rating_rank, place)}
-      ${meter("Attack", "attack", club.attack, club.attack_rank, `Scores ${dec(club.gf, 2)} a game against an average European top-flight side`)}
-      ${meter("Defence", "defense", club.defense, club.defense_rank, `Concedes ${dec(club.ga, 2)} a game against the same side`)}
+      ${meter("Attack", "attack", club.attack, club.attack_rank, `${dec(club.gf, 2)} goals a game v an average side`)}
+      ${meter("Defence", "defense", club.defense, club.defense_rank, `${dec(club.ga, 2)} conceded a game`)}
     </div>
-    <p class="note">Share of points against an average European top-flight side: <b>${dec(club.home)}</b> at home, <b>${dec(club.away)}</b> away. Against ${home} it would take ${dec(club.league_rating)}%. The solid tick is the ${n}-club average${comparison ? `; the outlined tick is ${esc(comparison.name)}` : ""}.</p>
+    <p class="note">Home <b>${dec(club.home)}</b> · away <b>${dec(club.away)}</b> · <b>${dec(club.league_rating)}</b> against ${home}. Tick: average club${comparison ? `; outlined: ${esc(comparison.name)}` : ""}.</p>
     ${renderRatingHistory(club, comparison, history)}`;
   ratingState = { club, comparison, history, liveDate: clubs.generated_at.slice(0, 10) };
   $("p-compare").value = comparison?.slug || "";

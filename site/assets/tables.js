@@ -1,5 +1,5 @@
 // Tables view: the projected final table for one competition.
-import { $, esc, nf, ordinal, num, pct, bulb, getJSON, setStatus, clubName, loadForm, formDots, formPoints } from "./core.js";
+import { $, esc, ordinal, num, pct, bulb, getJSON, setStatus, clubName, loadForm, formDots, formPoints } from "./core.js";
 import { showRounds } from "./rounds.js";
 import { showRace } from "./race.js";
 import { pointsByClub } from "./model-performance.js";
@@ -57,27 +57,25 @@ function render(data, matches) {
 function renderHero(data) {
   const ucl = data.kind === "ucl";
   const byTitle = [...data.teams].sort((a, b) => b.title - a.title);
-  const [fav, ...rest] = byTitle;
-  const runs = ucl ? "simulated tournaments" : "simulated seasons";
-  const wins = Math.round((fav.title / 100) * data.n_sim);
-  const rivals = rest.slice(0, 2).map((t) => `${clubName(t.id, t.name, "inline")} <b>${pct(t.title)}</b>`).join(" · ");
+  // the rivals are listed in the race lines just below, so the caption keeps to one fact
+  const [fav] = byTitle;
   const extra = ucl
     ? `Reaches the final in <b>${pct(fav.stages.final)}</b>`
-    : `Expected <b>${Math.round(fav.xpts)}</b> pts (${fav.p10}–${fav.p90})`;
+    : `Projected <b>${Math.round(fav.xpts)}</b> pts (${fav.p10}–${fav.p90})`;
   $("hero-legend").textContent = `${data.name} · ${data.season} · ${ucl ? "Trophy" : "Title"}`;
   $("hero-in").innerHTML = `
     <div class="who">
       <h1>${clubName(fav.id, fav.name, "hero")}</h1>
-      <p class="caption">${ucl ? "Wins it" : "Champions"} in <b>${nf.format(wins)}</b> of ${nf.format(data.n_sim)} ${runs} · ${rivals} · ${extra}</p>
+      <p class="caption">${extra}</p>
     </div>
-    <div class="numeral on" role="img" aria-label="${esc(`${fav.name}: ${pct(fav.title)} chance`)}">${Math.round(fav.title)}<sup>%</sup></div>`;
+    <div class="numeral on" role="img" aria-label="${esc(`${fav.name}: ${pct(fav.title)} chance of ${ucl ? "winning it" : "the title"}`)}">${Math.round(fav.title)}<sup>%</sup></div>`;
 }
 
-function raceLine(title, note, rows, field, tone, emptyText) {
+function raceLine(title, rows, field, tone, emptyText) {
   const items = rows.length
     ? `<ol>${rows.map((t) => `<li><span class="nm">${clubName(t.id, t.name)}</span><span class="v">${pct(t[field])}</span></li>`).join("")}</ol>`
     : `<span class="empty">${emptyText}</span>`;
-  return `<div class="race ${tone}"><h2>${title}<small>${note}</small></h2>${items}</div>`;
+  return `<div class="race ${tone}"><h2>${title}</h2>${items}</div>`;
 }
 
 function renderRaces(data) {
@@ -87,17 +85,17 @@ function renderRaces(data) {
   if (data.kind === "ucl") {
     const finalists = [...t].sort((a, b) => b.stages.final - a.stages.final).slice(0, 6).map((x) => ({ ...x, final: x.stages.final }));
     lines = [
-      raceLine("Final", "reach the final", finalists, "final", "", ""),
-      raceLine("Top eight", "skip the play-offs", pick("r16", 15, 92), "r16", "", "No close calls right now."),
-      raceLine("Danger", "out before the knockouts", pick("out", 10, 95), "out", "red", "Nobody in real danger."),
+      raceLine("Final", finalists, "final", "", ""),
+      raceLine("Top 8", pick("r16", 15, 92), "r16", "", "No close calls right now."),
+      raceLine("Out", pick("out", 10, 95), "out", "red", "Nobody in real danger."),
     ];
   } else {
     const top = data.zones.find((z) => z.key === "ucl").to;
     const rel = data.zones.find((z) => z.key === "releg");
     lines = [
-      raceLine("Title", "finish first", t.filter((x) => x.title >= 0.5).sort((a, b) => b.title - a.title).slice(0, 6), "title", "", ""),
-      raceLine(`Top ${top}`, "Champions League places", pick("ucl", 4, 97), "ucl", "", "The top places look settled."),
-      raceLine("Drop", `${ordinal(rel.from)} or lower`, t.filter((x) => x.releg >= 4).sort((a, b) => b.releg - a.releg).slice(0, 6), "releg", "red", "Nobody in real danger."),
+      raceLine("Title", t.filter((x) => x.title >= 0.5).sort((a, b) => b.title - a.title).slice(0, 6), "title", "", ""),
+      raceLine(`Top ${top}`, pick("ucl", 4, 97), "ucl", "", "The top places look settled."),
+      raceLine("Relegation", t.filter((x) => x.releg >= 4).sort((a, b) => b.releg - a.releg).slice(0, 6), "releg", "red", "Nobody in real danger."),
     ];
   }
   $("races").innerHTML = lines.join("");
@@ -190,17 +188,17 @@ function renderTable(data, matches) {
   $("table-legend").textContent = ucl ? "League phase · projected" : "Projected table";
   const sample = [1, 5, 20, 50].map((p) => `<i style="background:${bulb(p, top)}"></i>`).join("");
   $("table-key").innerHTML = `
-    <span><i class="k-range"></i>80% points range</span>
+    <span><i class="k-range"></i>80% range</span>
     <span><i class="k-proj"></i>Projected</span>
     <span><i class="k-now"></i>Now</span>
-    <span><span class="k-bulbs">${sample}</span>Chance of each finishing place: brighter is likelier</span>
-    <span>Tap a club for its full spread</span>`;
+    <span><span class="k-bulbs">${sample}</span>Chance of each place</span>
+    <span>Tap a club for more</span>`;
   $("table-note").textContent = (ucl
-    ? "Places 1–8 go straight to the round of 16, 9–24 enter the knockout play-offs and 25–36 are eliminated."
-    : `Europe = places ${data.zones[1].from}–${data.zones[1].to}; the real Europa and Conference League spots also depend on cup winners.`
-      + (n === 18 ? ` Down includes ${ordinal(bad.from)}, which goes to a relegation play-off.` : "")
+    ? "1–8 go to the round of 16, 9–24 to the play-offs, 25–36 are out."
+    : `Europe = places ${data.zones[1].from}–${data.zones[1].to}; cup winners can change the real spots.`
+      + (n === 18 ? ` Down includes ${ordinal(bad.from)} (relegation play-off).` : "")
       + fixtureNotes(data))
-    + " vs model is actual minus model-expected points (3 × win probability + draw probability) from finished games with a forecast; Champions League points cover the league phase.";
+    + " vs model = points won minus points the model expected.";
 }
 
 /* cancelled/awarded fixtures the model had to interpret, from the forecast metadata */
@@ -318,8 +316,8 @@ function renderBracket(data) {
   const el = $("bracket");
   el.innerHTML = `<svg class="b-lines" aria-hidden="true"></svg>` + cols + `<div class="b-col"><h3>Winner<small>&nbsp;</small></h3><div class="b-ties">
     <div class="champ" data-t="${esc(key(b.champion, b.champion_id ?? champion?.id))}"><div class="who-won">${clubName(b.champion_id ?? champion?.id, b.champion, "card")}</div>
-    ${champion ? `<div class="sub">${pct(champion.title)} to win across every draw</div>` : ""}</div></div></div>`;
-  $("bracket-note").innerHTML = `One path through the knockouts: the most likely league-phase order, a permitted draw, and the favourite going through in every tie (the number is that tie's chance). Half the last 16 comes straight from the league table: the top eight (<i class="seed bye">Top 8</i>, dashed line) skip the play-offs, while 9th to 24th play off for the other eight places. Hover a club to trace its run. Pairings are illustrative until the real draw.`;
+    ${champion ? `<div class="sub">${pct(champion.title)} to win it</div>` : ""}</div></div></div>`;
+  $("bracket-note").innerHTML = `One likely path: the favourite wins every tie (the number is its chance). Pairings are illustrative until the draw; hover a club to trace its run.`;
   drawBracketLines(el);
   bracketObserver.disconnect();
   bracketObserver.observe(el);
