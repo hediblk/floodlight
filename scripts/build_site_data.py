@@ -22,7 +22,7 @@ import pandas as pd
 
 from champions_league.identities import AREA_LEAGUES, COUNTRY_LEAGUES, canonical_team
 from standing_prediction import site_history
-from standing_prediction.scorecard import combine_entries, fixture_diagnostics, scorecard_entry, scoring_rows
+from standing_prediction.scorecard import combine_entries, fixture_diagnostics, scorecard_entry, scoring_rows, valid_pair
 
 
 LEAGUES = [
@@ -200,7 +200,7 @@ def match_stakes(src, prefix, name=short_name):
     return stakes
 
 
-def export_matches(src, slug, prefix, receipts=None):
+def export_matches(src, slug, prefix, receipts=None, previous=None):
     data = json.loads((src / f"{prefix}_match_forecasts.json").read_text())
     display = data.get("display_names", {})
     name = lambda team: short_name(display.get(team, team))
@@ -208,6 +208,7 @@ def export_matches(src, slug, prefix, receipts=None):
     # Understat has no Champions League; fetch_ucl_xg.py adds ESPN's team xG for display, marked by source.
     espn_xg = read_json(src / f"{prefix}_espn_xg.json") or {"matches": {}}
     matches = []
+    retained_xg = 0
     for match in data["matches"]:
         row = {
             "id": match["id"], "kickoff": match["utcDate"], "status": match["status"],
@@ -227,6 +228,12 @@ def export_matches(src, slug, prefix, receipts=None):
             row["xg"] = [num(match["home_xg"]), num(match["away_xg"])]
         elif match["status"] == "FINISHED" and str(match["id"]) in espn_xg["matches"]:
             row.update(xg=espn_xg["matches"][str(match["id"])]["xg"], xg_source="espn")
+        saved = (previous or {}).get(match["id"], {})
+        identity = ("kickoff", "status", "home_id", "away_id", "home", "away", "score")
+        if (row["status"] == "FINISHED" and "xg" not in row and valid_pair(saved.get("xg"))
+                and all(row.get(key) == saved.get(key) for key in identity)):
+            row.update({key: saved[key] for key in ("xg", "xg_source") if key in saved})
+            retained_xg += 1
         if "p_home" in match:
             row.update({
                 "p": [num(match[key], 4) for key in ("p_home", "p_draw", "p_away")],
@@ -256,6 +263,8 @@ def export_matches(src, slug, prefix, receipts=None):
         row.update(fixture_diagnostics(row, match))
         matches.append(row)
     matches.sort(key=lambda row: (row["kickoff"] or "", row["id"]))
+    if retained_xg:
+        print(f"WARNING: {slug}: retained published xG for {retained_xg} fixtures missing fresh xG.")
     rule = "Finished fixtures use published forecasts saved before kickoff where available; otherwise reconstructed forecasts as of 00:00 UTC on match day, from results before then."
     return {"slug": slug, "generated_at": data["generated_at"], "rule": rule, "matches": matches}
 
@@ -726,7 +735,8 @@ def publish_matches(src, dest, competition, prefix):
     path = history_path(dest, competition, f"forecasts/{slug}")
     history = read_json(path) or {"slug": slug, "season": competition["season"], "fixtures": {}}
     receipts = history["fixtures"]
-    data = export_matches(src, slug, prefix, receipts)
+    previous = read_json(dest / "matches" / f"{slug}.json") or {"matches": []}
+    data = export_matches(src, slug, prefix, receipts, {row["id"]: row for row in previous["matches"]})
     now = pd.Timestamp.now(tz="UTC")
     generated = pd.Timestamp(competition["generated_at"])
     changed = False
