@@ -6,6 +6,7 @@ import {
 import { forecastBlocks, stakesTable, stageLabel, probCells, PENDING, stakeKinds, stakeLines } from "./matches.js";
 import { rankTag } from "./clubs.js";
 import { cardChips, offerCard, matchCard } from "./cards.js";
+import { clubColors } from "./colors.js";
 
 const OUTCOMES = ["Home win", "Draw", "Away win"];
 const STRENGTH = [["rating", "Rating"], ["attack", "Attack"], ["defense", "Defence"]];
@@ -606,7 +607,8 @@ function shotReport(m) {
     <tbody>${shots.map((s) => `<tr class="${s[5] === "Goal" || own(s) ? "lit" : ""}"><td>${minute(s)}</td><td class="l">${clubCrest(ids[s[1]], "inline")} ${esc(s[8])}</td><td>${own(s) ? "–" : dec(s[4], 2)}</td><td class="l">${esc(word(s[5]))}</td><td class="l">${esc(word(s[6]))}</td><td class="l">${esc(word(s[7]))}</td><td class="l">${s[9] ? esc(s[9]) : ""}</td></tr>`).join("")}</tbody></table></div></details>`;
 
   const sides = xgLines(shots, m);
-  const key = `<p class="mp-key">${sides.map((l, i) => `<span><svg width="22" height="8" aria-hidden="true"><line x1="0" x2="22" y1="4" y2="4" class="${i ? "xa" : "xh"}"/></svg>${clubName(ids["ha"[i]], names["ha"[i]], "inline")} <b>${dec(l.total, 2)}</b>${l.summed ? " summed shot xG" : ""}</span>`).join("")}</p>`;
+  const colors = clubColors([m.home_id, m.away_id]);
+  const key = `<p class="mp-key">${sides.map((l, i) => `<span class="k-item" data-s="${"ha"[i]}"><i class="sw" style="background:${colors[i]}"></i>${clubName(ids["ha"[i]], names["ha"[i]], "inline")} <b>${dec(l.total, 2)}</b>${l.summed ? " summed shot xG" : ""}</span>`).join("")}</p>`;
   const off = sides.map((l, i) => (l.summed && m.xg ? `${esc(names["ha"[i]])}'s line ends at summed shot xG, ${dec(l.total, 2)}, not the match xG of ${dec(m.xg[i], 2)}.` : "")).filter(Boolean);
   const xgNote = "Each step is a chance; amber bulbs are goals." + (off.length ? ` ${off.join(" ")}` : "");
 
@@ -627,7 +629,7 @@ function shotReport(m) {
       <p class="note">Top three by xG + xA.</p>`;
   }
 
-  return `<fieldset class="frame mp-after mp-shots"><legend>Chances</legend>
+  return `<fieldset class="frame mp-after mp-shots" data-series><legend>Chances</legend>
     <h4>Shot map</h4>${map}${list}
     <h4>xG through the game</h4>${key}<div class="mp-xgline" id="mp-xgline"></div><p class="note">${xgNote}${ogNote}</p>
     ${retro}${stand}
@@ -687,11 +689,12 @@ function drawXg() {
     const mid = (hi.y + lo.y) / 2;
     hi.y = mid - 6; lo.y = mid + 6;
   }
-  const endLabels = ends.map((e) => `<text class="end${e.i ? " away" : ""}" x="${x(last) + 5}" y="${e.y.toFixed(1)}">${dec(totals[e.i], 2)}</text>`).join("");
+  const colors = clubColors([m.home_id, m.away_id]);
+  const endLabels = ends.map((e) => `<text class="end${e.i ? " away" : ""}" data-s="${"ha"[e.i]}" x="${x(last) + 5}" y="${e.y.toFixed(1)}">${dec(totals[e.i], 2)}</text>`).join("");
   const scored = goals.map((g) => g.label).join(", ");
   const aria = `xG through the game: ${m.home} ${dec(totals[0], 2)}, ${m.away} ${dec(totals[1], 2)}.${scored ? ` Goals and red cards: ${scored}.` : ""}`;
   box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria)}">${grid}
-    <path class="xa" d="${path(lines[1])}"/><path class="xh" d="${path(lines[0])}"/>${endLabels}${goals.map((g) => g.svg).join("")}</svg>`;
+    <path class="xa" data-s="a" style="stroke:${colors[1]}" d="${path(lines[1])}"/><path class="xh" data-s="h" style="stroke:${colors[0]}" d="${path(lines[0])}"/>${endLabels}${goals.map((g) => g.svg).join("")}</svg>`;
 }
 
 let resizing;

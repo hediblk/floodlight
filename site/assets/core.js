@@ -227,6 +227,20 @@ document.addEventListener("focusin", (e) => {
 });
 window.addEventListener("scroll", () => { tip.hidden = true; }, { passive: true });
 
+/* Charts with several lines: inside a [data-series] chart, pointing at (or focusing) anything marked data-s —
+   a line, its end label or its legend entry — fades every other series, so one line can be followed. */
+let seriesRoot = null;
+const fadeSeries = (root, s) => root.querySelectorAll("[data-s]").forEach((el) => el.classList.toggle("faded", s != null && el.dataset.s !== s));
+function followSeries(e) {
+  const el = e.target.closest && e.target.closest("[data-s]");
+  const root = el && el.closest("[data-series]");
+  if (seriesRoot && seriesRoot !== root) fadeSeries(seriesRoot, null);
+  seriesRoot = root || null;
+  if (root) fadeSeries(root, el.dataset.s);
+}
+document.addEventListener("pointerover", followSeries);
+document.addEventListener("focusin", followSeries);
+
 /* Rows that expand: click or Enter/Space on [data-toggle] calls `open(row)` / closes the panel after it. */
 export function expandable(container, selector, build) {
   const toggle = (row) => {

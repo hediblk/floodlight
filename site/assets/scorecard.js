@@ -1,4 +1,5 @@
 import { COMPS, $, dec, esc, getJSON } from "./core.js";
+import { SERIES } from "./colors.js";
 
 const share = (value, n) => n ? `${Math.round(100 * value / n)}%` : "–";
 const signed = (value) => `${value < 0 ? "−" : "+"}${Math.abs(value).toFixed(3)}`;
@@ -60,6 +61,9 @@ function reliability(row) {
     <details><summary>Calibration counts</summary>${table(["Bin", "Count", "Forecast", "Observed"], row.calibration.map(b => cells([`${Math.round(b.lo * 100)}–${Math.round(b.hi * 100)}%`, b.n, b.n ? `${dec(100 * b.probability, 1)}%` : "–", b.n ? `${dec(100 * b.observed, 1)}%` : "–"])))}</details>`;
 }
 
+// the model first, in the accent; the two baselines in the second and third line colours
+const LINE = { model: SERIES[0], frequency: SERIES[1], elo: SERIES[2] };
+const NAME = { model: "Floodlight", frequency: "Prior frequency", elo: "Elo" };
 function rolling(row) {
   const series = row.weekly;
   const keys = ["model", "frequency", "elo"].filter(k => series.some(p => p[k].n));
@@ -69,10 +73,11 @@ function rolling(row) {
   const y = v => 235 - (v - low) / (high - low) * 210;
   const ticks = Array.from({ length: 5 }, (_, i) => low + (high - low) * i / 4);
   const body = axes(y, ticks, v => dec(v, 2))
-    + keys.map(k => `<path class="sc-line sc-${k}" d="${series.map((p, i) => p[k].n ? `${series.slice(0, i).some(v => v[k].n) ? "L" : "M"}${x(i)},${y(p[k].log_loss)}` : "").join(" ")}"/>`).join("")
+    + keys.map(k => `<path class="sc-path" data-s="${k}" style="stroke:${LINE[k]}" d="${series.map((p, i) => p[k].n ? `${series.slice(0, i).some(v => v[k].n) ? "L" : "M"}${x(i)},${y(p[k].log_loss)}` : "").join(" ")}"/>`).join("")
     + series.filter((_, i) => i === 0 || i === series.length - 1 || i % Math.ceil(series.length / 4) === 0).map(p => `<text x="${x(series.indexOf(p))}" y="265" text-anchor="middle">${esc(p.week.slice(5))}</text>`).join("");
-  return `<h3>Cumulative log loss</h3>${chart("Cumulative mean log loss by Monday week: model solid, prior frequency dashed, Elo dotted", body)}
-    <p class="note">Model solid, prior frequency dashed, Elo dotted. Lower is better.</p>
+  const key = `<div class="key">${keys.map(k => `<span class="k-item" data-s="${k}"><i class="sw" style="background:${LINE[k]}"></i>${NAME[k]}</span>`).join("")}</div>`;
+  return `<div data-series><h3>Cumulative log loss</h3>${key}${chart(`Cumulative mean log loss by Monday week: ${keys.map(k => NAME[k]).join(", ")}`, body)}</div>
+    <p class="note">Lower is better.</p>
     <details><summary>Weekly scores and counts</summary>${table(["Monday week", ...keys.map(k => `${k === "frequency" ? "Prior frequency" : k} · n`)], series.map(p => cells([p.week, ...keys.map(k => `${dec(p[k].log_loss, 3)} · ${p[k].n}`)])))}</details>`;
 }
 

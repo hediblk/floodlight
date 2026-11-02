@@ -62,10 +62,10 @@ export function pointsComparison(club, matches, leaguePhaseOnly = false, frameWi
 
   return `<p class="lead">${esc(sentence)}</p>
     <p class="note pm-source">${source}${leaguePhaseOnly ? " Champions League points cover the league phase." : ""}</p>
-    <figure class="pm-chart">
-      <div class="key"><span><i class="pm-key actual"></i>Actual points</span><span><i class="pm-key expected"></i>Model-expected points</span></div>
+    <figure class="pm-chart" data-series>
+      <div class="key"><span class="k-item" data-s="0"><i class="sw" style="background:var(--amber)"></i>Actual points</span><span class="k-item" data-s="1"><i class="sw" style="background:var(--series-2)"></i>Model-expected points</span></div>
       <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`${club.name}: cumulative actual and model-expected points across ${stats.n} finished games with forecasts`)}">
-        ${grid}<path class="actual" d="${points("actualTotal")}"/><path class="expected" d="${points("expectedTotal")}"/>
+        ${grid}<path class="expected" data-s="1" d="${points("expectedTotal")}"/><path class="actual" data-s="0" d="${points("actualTotal")}"/>
         <text class="tick" x="${pad.l}" y="${height - 6}">Start</text><text class="tick" x="${width - pad.r}" y="${height - 6}" text-anchor="end">Game ${stats.n}</text>
       </svg>
       <figcaption class="note">Expected points = 3 × win chance + draw chance.</figcaption>

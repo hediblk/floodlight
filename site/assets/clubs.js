@@ -6,6 +6,7 @@ import {
 import { matchPanel, record, BIG_STAKE, stakeNow } from "./matches.js";
 import { spreadPanel } from "./tables.js";
 import { pointsComparison, rollingXg } from "./model-performance.js";
+import { clubColors } from "./colors.js";
 import { showSquad } from "./squad.js";
 
 const RESULT = ["W", "D", "L"];
@@ -587,7 +588,7 @@ export function renderRatingComparisonChart(history, rated, metric, width = 640,
 
   const W = Math.round(Math.max(300, width || 640));
   const phone = W < 480, H = phone ? 220 : 270;
-  const pad = { l: 36, r: phone ? 104 : 150, t: 14, b: 30 };
+  const pad = { l: 36, r: phone ? 114 : 160, t: 14, b: 30 };
   const times = weeks.map((week) => dateMs(week.date));
   let liveTime = dateMs(liveDate || weeks.at(-1).date);
   if (!Number.isFinite(liveTime) || liveTime <= times.at(-1)) liveTime = times.at(-1) + 60 * 60 * 1000;
@@ -616,6 +617,7 @@ export function renderRatingComparisonChart(history, rated, metric, width = 640,
     .filter(({ i }) => i % every === 0)
     .filter(({ x: at }) => times.length < 3 || x(liveTime) - at > (phone ? 30 : 42))
     .map(({ x: at, i, label }) => `<line class="week-tick" x1="${at}" x2="${at}" y1="${H - pad.b}" y2="${H - pad.b + 4}"/><text class="tick" x="${at}" y="${H - 8}" text-anchor="${i === 0 ? "start" : "middle"}">${esc(label)}</text>`).join("");
+  const colors = clubColors(rated.map((club) => club.id));
   const linesSvg = lines.map(({ club, values }, index) => {
     const cls = index ? "comparison" : "primary";
     let path = "", open = false;
@@ -625,7 +627,7 @@ export function renderRatingComparisonChart(history, rated, metric, width = 640,
       open = true;
       return `<circle class="point ${cls}${i === values.length - 1 ? " live" : ""}" cx="${x(times[i]).toFixed(1)}" cy="${y(value).toFixed(1)}" r="${i === values.length - 1 ? 3.5 : 1.8}"/>`;
     }).join("");
-    return `<g class="rating-series ${cls}"><path d="${path}"/>${points}</g>`;
+    return `<g class="rating-series ${cls}" data-s="${index}" style="--c:${colors[index]}"><path d="${path}"/>${points}</g>`;
   }).join("");
 
   const ends = lines.map(({ club, values }, i) => ({ club, i, value: values.at(-1), y: y(values.at(-1)) }));
@@ -636,7 +638,7 @@ export function renderRatingComparisonChart(history, rated, metric, width = 640,
   }
   const endLabels = ends.map(({ club, i, value, y: labelY }) => {
     const actualY = y(value), short = club.name.length > (phone ? 8 : 13) ? `${club.name.slice(0, phone ? 7 : 12)}…` : club.name;
-    return `<line class="end-leader" x1="${x(liveTime) + 2}" y1="${actualY}" x2="${x(liveTime) + 7}" y2="${labelY}"/><text class="end ${i ? "comparison" : "primary"}" x="${x(liveTime) + 9}" y="${labelY + 4}">${esc(short)} ${dec(value)}</text>`;
+    return `<g class="end-lbl" data-s="${i}"><line class="end-leader" x1="${x(liveTime) + 2}" y1="${actualY}" x2="${x(liveTime) + 7}" y2="${labelY}"/><circle cx="${x(liveTime) + 13}" cy="${labelY}" r="3.5" fill="${colors[i]}"/><text class="end ${i ? "comparison" : "primary"}" x="${x(liveTime) + 20}" y="${labelY + 4}">${esc(short)} ${dec(value)}</text></g>`;
   }).join("");
   const names = lines.map(({ club }) => `${club.name} ${dec(club[metric])}`).join("; ");
   const metricLabel = RATING_METRICS.find(([key]) => key === metric)?.[1] || "Rating";
@@ -710,7 +712,7 @@ function renderRatingHistory(club, comparison, history) {
   const metrics = RATING_METRICS.map(([key, label]) => `<button type="button" class="chip" data-rating-metric="${key}" aria-pressed="${ratingMetric === key}">${label}</button>`).join("");
   return `${compareOptions(club)}
     <div class="chips rating-metrics" role="group" aria-label="Rating history measure">${metrics}</div>
-    <figure class="rating-history"><div class="rating-chart" id="p-rating-chart"></div><figcaption class="note" id="p-rating-caption"></figcaption></figure>
+    <figure class="rating-history"><div class="rating-chart" id="p-rating-chart" data-series></div><figcaption class="note" id="p-rating-caption"></figcaption></figure>
     <details class="rating-history-values"><summary>Weekly values</summary><div id="p-rating-table"></div></details>`;
 }
 
@@ -726,15 +728,15 @@ function renderStrength(club, comparison, history) {
   const meter = (label, metric, value, rank, note) => `<div class="gauge">
       <h3>${label}</h3><b>${dec(value)}</b><span class="rank">${rankTag(rank, "span")} of ${n}${ratingChange(club, metric, history, baseline)}</span>
       <span class="meter big" role="img" aria-label="${esc(`${label} ${dec(value)}; average ${dec(avg)}${comparison ? `; ${comparison.name} ${dec(comparison[metric])}` : ""}`)}">
-        <i style="width:${value}%"></i><em style="left:${avg}%" title="Average club"></em>${comparison ? `<span class="rating-compare-tick" style="left:${comparison[metric]}%" title="${esc(`${comparison.name}: ${dec(comparison[metric])}`)}"></span>` : ""}</span>
-      ${comparison ? `<span class="rating-compare-value">${esc(comparison.name)} <b>${dec(comparison[metric])}</b></span>` : ""}
+        <i style="width:${value}%"></i><em style="left:${avg}%" title="Average club"></em>${comparison ? `<span class="rating-compare-tick" style="left:${comparison[metric]}%;border-color:${clubColors([club.id, comparison.id])[1]}" title="${esc(`${comparison.name}: ${dec(comparison[metric])}`)}"></span>` : ""}</span>
+      ${comparison ? `<span class="rating-compare-value"><i class="sw" style="background:${clubColors([club.id, comparison.id])[1]}"></i> ${esc(comparison.name)} <b>${dec(comparison[metric])}</b></span>` : ""}
       <span class="note">${note}</span></div>`;
   $("p-strength").innerHTML = `<div class="gauges">
       ${meter("Overall", "rating", club.rating, club.rating_rank, place)}
       ${meter("Attack", "attack", club.attack, club.attack_rank, `${dec(club.gf, 2)} goals a game v an average side`)}
       ${meter("Defence", "defense", club.defense, club.defense_rank, `${dec(club.ga, 2)} conceded a game`)}
     </div>
-    <p class="note">Home <b>${dec(club.home)}</b> · away <b>${dec(club.away)}</b> · <b>${dec(club.league_rating)}</b> against ${home}. Tick: average club${comparison ? `; outlined: ${esc(comparison.name)}` : ""}.</p>
+    <p class="note">Home <b>${dec(club.home)}</b> · away <b>${dec(club.away)}</b> · <b>${dec(club.league_rating)}</b> against ${home}. Tick: average club${comparison ? `; coloured: ${esc(comparison.name)}` : ""}.</p>
     ${renderRatingHistory(club, comparison, history)}`;
   ratingState = { club, comparison, history, liveDate: clubs.generated_at.slice(0, 10) };
   $("p-compare").value = comparison?.slug || "";

@@ -16,6 +16,8 @@
   --draw: #8a8f98;
   --green-t: #88cb8a;
   --yellow: #f2c14e;
+  --series-2: #4a8fe0; /* second and third line colours for charts that aren't clubs; amber is the first */
+  --series-3: #d55fa0;
   --heat-lo: #16803c; /* the activity map only: less → more activity */
   --heat-mid: #f4db49;
   --heat-hi: #e3342f;
@@ -575,12 +577,11 @@ h3.sub + .scroll { margin-top: 8px; }
 .pm-chart .grid { stroke: var(--rule-2); stroke-width: 1; }
 .pm-chart .tick, .pm-spark .tick { fill: var(--dim); font: 500 10px var(--mono); }
 .pm-chart path { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-.pm-chart path.actual { stroke: var(--ink); }
-.pm-chart path.expected { stroke: var(--ink-2); stroke-dasharray: 5 4; }
+.pm-chart path.actual { stroke: var(--amber); stroke-width: 2.5; }
+.pm-chart path.expected { stroke: var(--series-2); }
 .pm-chart .key { margin: 0 0 4px; color: var(--dim); font-size: 11px; }
+.pm-chart .key { display: flex; flex-wrap: wrap; gap: 6px 20px; }
 .pm-chart .key span { display: inline-flex; align-items: center; gap: 7px; }
-.pm-key { display: inline-block; width: 18px; height: 2px; background: var(--ink); }
-.pm-key.expected { background: repeating-linear-gradient(to right, var(--ink-2) 0 5px, transparent 5px 9px); }
 .pm-chart figcaption, .pm-spark figcaption { margin: 4px 0 10px; }
 .pm-source { margin: -8px 0 10px; }
 .pm-list { margin: 8px 0 16px; }
@@ -603,6 +604,13 @@ h3.sub + .scroll { margin-top: 8px; }
 .gauge .rank { color: var(--dim); font-size: 11px; }
 .gauge .meter, .gauge .note { grid-column: 1 / -1; }
 .gauge .note { margin: 4px 0 0; }
+
+/* line charts: solid coloured lines; pointing at a line's label or legend entry fades the others */
+.sw { display: inline-block; width: 18px; height: 3px; border-radius: 2px; flex: none; }
+.tip-sw { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+[data-series] [data-s] { transition: opacity .12s; }
+[data-series] .faded { opacity: .18; }
+[data-series] .end-lbl, [data-series] .race-legend li, [data-series] .k-item { cursor: default; }
 
 /* tooltip */
 .tip { position: fixed; z-index: 50; pointer-events: none; background: var(--ink); color: var(--bg); font: 500 12px/1.4 var(--mono); padding: 6px 9px; max-width: 260px; }
@@ -669,20 +677,18 @@ h3.sub + .scroll { margin-top: 8px; }
 .race-chart > svg { width: 100%; height: auto; display: block; }
 .race-chart .grid { stroke: var(--rule-2); stroke-width: 1; }
 .race-chart .tick { fill: var(--dim); font: 500 10px var(--mono); }
-.race-chart .ln path { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-linejoin: round; }
-.race-chart .ln.first path { stroke: var(--tone, var(--amber)); stroke-width: 2.5; }
-.race-chart .ln circle { fill: var(--ink-2); }
-.race-chart .ln.first circle { fill: var(--tone, var(--amber)); }
+.race-chart .ln path { fill: none; stroke: var(--c); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.race-chart .ln.first path { stroke-width: 3; }
+.race-chart .ln circle { fill: var(--c); }
 .race-chart .lead-ln { stroke: var(--rule); stroke-width: 1; }
-.race-chart .end-lbl { fill: var(--ink-2); font: 500 11px var(--mono); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
-.race-chart .end-lbl.first { fill: var(--tone-t, var(--amber-t)); font-weight: 700; }
+.race-chart .end-lbl text { fill: var(--ink-2); font: 500 11px var(--mono); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+.race-chart .end-lbl.first text { fill: var(--ink); font-weight: 700; }
 .race-chart .xhair { stroke: var(--rule); stroke-width: 1; pointer-events: none; }
-.race-chart .hov circle { fill: var(--ink-2); stroke: var(--bg); stroke-width: 2; pointer-events: none; }
-.race-chart .hov circle.first { fill: var(--tone, var(--amber)); }
+.race-chart .hov circle { stroke: var(--bg); stroke-width: 2; pointer-events: none; }
 .race-chart .hit { fill: transparent; touch-action: pan-y; }
 .race-legend { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--ink-2); font-size: 11.5px; }
-.race-legend li { display: inline-flex; align-items: center; gap: 7px; }
-.race-legend li.first b { color: var(--tone-t, var(--amber-t)); }
+.race-legend li { display: inline-flex; align-items: center; gap: 7px; cursor: default; }
+.race-legend li.first b { color: var(--ink); }
 
 /* ---------- stakes ---------- */
 /* a dim ruled tag on fixtures where a result moves someone's title, top-four or relegation chance */
@@ -832,8 +838,7 @@ a.cs { color: inherit; text-decoration: none; }
 .mp-xgline svg { display: block; width: 100%; height: auto; }
 .mp-xgline .grid { stroke: var(--rule-2); stroke-width: 1; }
 .mp-xgline .tick { fill: var(--dim); font: 500 10px var(--mono); }
-.mp-xgline path, .mp-key line { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
-.mp-xgline path.xa, .mp-key line.xa { stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 5 3; }
+.mp-xgline path { fill: none; stroke-width: 2.2; stroke-linejoin: round; }
 .mp-xgline .goal { fill: var(--amber); stroke: var(--bg); stroke-width: 2; }
 .mp-xgline .glbl { fill: var(--amber-t); font: 500 10.5px var(--mono); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
 .mp-xgline .end { fill: var(--ink); font: 700 11px var(--mono); }
@@ -854,9 +859,10 @@ table.mp-stand { min-width: 460px; }
 .sc-grid { stroke: var(--rule); stroke-width: .6; }
 .sc-diagonal { fill: none; stroke: var(--ink-2); stroke-dasharray: 5 5; }
 .sc-dot { fill: var(--amber); }
-.sc-line { fill: none; stroke: var(--ink); stroke-width: 1.8; }
-.sc-frequency { stroke-dasharray: 7 5; }
-.sc-elo { stroke: var(--ink-2); stroke-dasharray: 2 4; }
+.sc-path { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.sc-path[data-s="model"] { stroke-width: 2.6; }
+.sc-frame .key { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0 0 6px; color: var(--dim); font-size: 11px; }
+.sc-frame .key span { display: inline-flex; align-items: center; gap: 7px; }
 .sc-frame details { margin: 12px 0; }
 .sc-frame summary { cursor: pointer; color: var(--ink-2); }
 .sc-frame .board { white-space: nowrap; }
@@ -1029,14 +1035,12 @@ table.mp-stand { min-width: 460px; }
 .rating-chart .grid { stroke: var(--rule-2); stroke-width: 1; }
 .rating-chart .tick { fill: var(--dim); font: 500 10px var(--mono); }
 .rating-chart .week-tick, .rating-chart .end-leader { stroke: var(--rule); stroke-width: 1; }
-.rating-chart .rating-series path { fill: none; stroke-width: 1.7; stroke-linejoin: round; }
-.rating-chart .rating-series.primary path { stroke: var(--amber); stroke-width: 2.4; }
-.rating-chart .rating-series.comparison path { stroke: var(--ink-2); stroke-dasharray: 5 4; }
-.rating-chart .point.primary { fill: var(--amber); stroke: var(--bg); stroke-width: 1; }
-.rating-chart .point.comparison { fill: var(--panel); stroke: var(--ink-2); stroke-width: 1.5; }
+.rating-chart .rating-series path { fill: none; stroke: var(--c); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.rating-chart .rating-series.primary path { stroke-width: 2.6; }
+.rating-chart .point { fill: var(--c); stroke: var(--bg); stroke-width: 1; }
 .rating-chart .end { font: 500 10px var(--mono); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
-.rating-chart .end.primary { fill: var(--amber-t); font-weight: 700; }
-.rating-chart .end.comparison { fill: var(--ink); }
+.rating-chart .end.primary { fill: var(--ink); font-weight: 700; }
+.rating-chart .end.comparison { fill: var(--ink-2); }
 .rating-compare-tick { position: absolute; z-index: 1; top: -4px; bottom: -4px; width: 5px; transform: translateX(-50%); box-sizing: border-box; border: 1px solid var(--ink-2); background: var(--panel); }
 .rating-history-values { margin: 12px 0 4px; color: var(--ink-2); font-size: 11px; }
 .rating-history-values summary { width: max-content; max-width: 100%; cursor: pointer; color: var(--dim); }
@@ -1260,7 +1264,7 @@ table.mp-stand { min-width: 460px; }
 .bt-grid { stroke: var(--rule-2); }
 .bt-start { stroke: var(--rule); stroke-dasharray: 2 5; }
 .bt-line { fill: none; stroke: var(--amber); stroke-width: 2; vector-effect: non-scaling-stroke; }
-.bt-line.bt-reference { stroke: var(--ink-2); stroke-dasharray: 6 4; stroke-width: 1.5; }
+.bt-line.bt-reference { stroke: var(--series-2); stroke-width: 1.5; }
 .bt-table { width: 100%; table-layout: fixed; }
 .bt-table td, .bt-table th { white-space: normal; overflow-wrap: anywhere; padding: 10px 8px; font-size: 12px; }
 #view-backtest .bt-table th:first-child, #view-backtest .bt-table td:first-child { text-align: left; }
