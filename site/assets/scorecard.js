@@ -150,11 +150,21 @@ function renderTrackRecord() {
   CW = Math.round(Math.max(300, parseFloat(first) || 600));
   $("sc-charts").innerHTML = row.n ? `<div>${reliability(row)}</div><div>${rolling(row)}</div>` : `<p class="note">No ${cohort} forecasts have finished yet.</p>`;
   $("misses").innerHTML = misses(row);
-  const sources = competition === "all" ? Object.entries(data.competitions) : [[competition, entry]];
-  $("sc-baselines").innerHTML = table(["Competition", "Frequency seasons", "History n", "Scored n", "Log loss", "vs frequency", "Elo n", "Elo log loss", "vs Elo"], sources.map(([slug, r]) => {
-    const b = r.frequency_baseline, selected = cohort === "combined" ? r : r[cohort];
-    return cells([esc(COMPS.find(c => c.slug === slug).label), b ? b.seasons.map(y => `${y}/${String(y + 1).slice(-2)}`).join(", ") : "Awaiting forecast export", b?.n ?? 0, selected.baselines.frequency.n, dec(selected.baselines.frequency.log_loss, 3), delta(selected), selected.baselines.elo.n, dec(selected.baselines.elo.log_loss, 3), delta(selected, "elo")]);
-  }));
+  const sources = competition === "all" ? [...Object.entries(data.competitions), ["all", data.all]] : [[competition, entry]];
+  const versus = (r, key) => {
+    const b = r.baselines[key];
+    if (!b.n) return ["–", "–"];
+    return [dec(b.log_loss, 3), `${delta(r, key)}${b.n < r.n ? ` <small>on ${b.n}</small>` : ""}`];
+  };
+  const pct = (p) => `${Math.round(100 * p)}%`;
+  const prior = (b) => b?.p ? `${b.p.map(pct).join(" · ")} <small>${b.n} games</small>` : b ? `${b.seasons.length} of 5 seasons loaded` : "–";
+  $("sc-baselines").innerHTML = `<div class="scroll"><table class="board sc-vs"><thead>
+    <tr><th class="l">Competition</th><th>Games</th><th>Floodlight</th><th>Prior frequency</th><th>Gap</th><th>Elo</th><th>Gap</th><th class="l">Prior shares <small>home · draw · away</small></th></tr></thead>
+    <tbody>${sources.map(([slug, r]) => {
+      const selected = cohort === "combined" ? r : r[cohort];
+      const values = [selected.n, dec(selected.model.log_loss, 3), ...versus(selected, "frequency"), ...versus(selected, "elo")];
+      return `<tr${slug === "all" ? ' class="total"' : ""}><td class="l">${slug === "all" ? "All" : esc(COMPS.find(c => c.slug === slug).label)}</td>${values.map(v => `<td>${v}</td>`).join("")}<td class="l">${slug === "all" ? "" : prior(r.frequency_baseline)}</td></tr>`;
+    }).join("")}</tbody></table></div>`;
   $("sc-counts").textContent = `Lower is better for log loss, Brier and RPS. Small samples are noisy.`;
 }
 
