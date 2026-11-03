@@ -28,7 +28,7 @@ export async function renderScorecardTable(lens = "score") {
     if (!card.all.n) { frame.hidden = true; return; }
     frame.hidden = false;
     const xg = lens === "xg" && card.all.misses;
-    $("m-called-note").textContent = xg ? "Called on xG = share of games with a clear xG winner (by more than 0.5) where that side was the favourite; level games and games without xG are left out." : "Called = hit rate.";
+    $("m-called-note").textContent = xg ? "Called on xG = share of games with a clear xG winner (by more than 0.5) where that side was the favourite; level games and games without xG are left out." : "Called = how often the likeliest outcome happened.";
     const line = (name, row, total = false) => `<tr${total ? ' class="total"' : ""}><td class="club l">${esc(name)}</td><td>${row.n}</td>
       <td class="lit">${dec(row.model.log_loss, 3)}</td><td>${delta(row)}</td><td>${dec(row.model.brier, 3)}</td>
       <td>${xg ? xgCalled(row) : share(row.called, row.n)}</td><td>${share(row.n_published, row.n)}</td></tr>`;
@@ -138,16 +138,26 @@ function renderTrackRecord() {
   $("sc-cohorts").innerHTML = ["combined", "published", "reconstructed"].map(k => `<button type="button" class="chip" data-cohort="${k}" aria-pressed="${k === cohort}">${k[0].toUpperCase() + k.slice(1)}<span>${k === "combined" ? entry.n : entry[k].n}</span></button>`).join("");
   $("sc-summary").innerHTML = table(["Forecasts", "n", "Log loss", "Brier", "RPS", "Called", "Exact score", "Avg chance given"], ["combined", "published", "reconstructed"].map(k => {
     const r = k === "combined" ? entry : entry[k];
-    return cells([k, r.n, dec(r.model.log_loss, 3), dec(r.model.brier, 3), dec(r.model.rps, 3), share(r.called, r.n), share(r.exact, r.n), r.n ? `${dec(r.avg_chance_given * 100, 1)}%` : "–"]);
+    return cells([k[0].toUpperCase() + k.slice(1), r.n, dec(r.model.log_loss, 3), dec(r.model.brier, 3), dec(r.model.rps, 3), share(r.called, r.n), share(r.exact, r.n), r.n ? `${dec(r.avg_chance_given * 100, 1)}%` : "–"]);
   }));
   $("sc-charts").innerHTML = row.n ? `<div>${reliability(row)}</div><div>${rolling(row)}</div>` : `<p class="note">No ${cohort} forecasts have finished yet.</p>`;
   $("misses").innerHTML = misses(row);
-  const sources = competition === "all" ? Object.entries(data.competitions) : [[competition, entry]];
-  $("sc-baselines").innerHTML = table(["Competition", "Frequency seasons", "History n", "Scored n", "Log loss", "vs frequency", "Elo n", "Elo log loss", "vs Elo"], sources.map(([slug, r]) => {
-    const b = r.frequency_baseline, selected = cohort === "combined" ? r : r[cohort];
-    return cells([esc(COMPS.find(c => c.slug === slug).label), b ? b.seasons.map(y => `${y}/${String(y + 1).slice(-2)}`).join(", ") : "Awaiting forecast export", b?.n ?? 0, selected.baselines.frequency.n, dec(selected.baselines.frequency.log_loss, 3), delta(selected), selected.baselines.elo.n, dec(selected.baselines.elo.log_loss, 3), delta(selected, "elo")]);
-  }));
-  $("sc-counts").textContent = `${row.n} ${cohort} finished forecasts; ${row.n_published} published before kickoff. Small samples are noisy. Scores cover 90 minutes; log loss uses natural logs, Brier sums three squared errors, and RPS averages the two cumulative errors in home/draw/away order.`;
+  const sources = competition === "all" ? [...Object.entries(data.competitions), ["all", data.all]] : [[competition, entry]];
+  const versus = (r, key) => {
+    const b = r.baselines[key];
+    if (!b.n) return ["–", "–"];
+    return [dec(b.log_loss, 3), `${delta(r, key)}${b.n < r.n ? ` <small>on ${b.n}</small>` : ""}`];
+  };
+  const pct = (p) => `${Math.round(100 * p)}%`;
+  const prior = (b) => b?.p ? `${b.p.map(pct).join(" · ")} <small>${b.n} games</small>` : b ? `${b.seasons.length} of 5 seasons loaded` : "–";
+  $("sc-baselines").innerHTML = `<div class="scroll"><table class="board sc-vs"><thead>
+    <tr><th class="l">Competition</th><th>Games</th><th>Floodlight</th><th>Prior frequency</th><th>Gap</th><th>Elo</th><th>Gap</th><th class="l">Prior shares <small>home · draw · away</small></th></tr></thead>
+    <tbody>${sources.map(([slug, r]) => {
+      const selected = cohort === "combined" ? r : r[cohort];
+      const values = [selected.n, dec(selected.model.log_loss, 3), ...versus(selected, "frequency"), ...versus(selected, "elo")];
+      return `<tr${slug === "all" ? ' class="total"' : ""}><td class="l">${slug === "all" ? "All" : esc(COMPS.find(c => c.slug === slug).label)}</td>${values.map(v => `<td>${v}</td>`).join("")}<td class="l">${slug === "all" ? "" : prior(r.frequency_baseline)}</td></tr>`;
+    }).join("")}</tbody></table></div>`;
+  $("sc-counts").innerHTML = `${row.n} ${cohort} finished forecasts; ${row.n_published} published before kickoff. Small samples are noisy. Scores cover 90 minutes. <a href="#model/terms">What these terms mean</a>`;
 }
 
 export async function showTrackRecord() {

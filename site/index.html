@@ -90,7 +90,7 @@
       <legend>Scorecard · this season</legend>
       <div class="scroll"><table class="board record" id="m-record-table"></table></div>
       <p class="sc-line" id="m-misses" hidden></p>
-      <p class="note">Lower is better. A blind one-in-three guess scores 1.099. Combined published and reconstructed forecasts; vs baseline = model minus prior frequency on the same fixtures. <span id="m-called-note">Called = hit rate.</span></p>
+      <p class="note">Log loss: lower is better; a blind one-in-three guess scores 1.099. Every finished game counts once, using the forecast published before kickoff where there is one and a reconstructed one otherwise. vs baseline = Floodlight minus <a href="#model/benchmarks">prior frequency</a> (each competition's usual home, draw and away shares) on the same games; negative is better. <span id="m-called-note">Called = how often the likeliest outcome happened.</span> <a href="#model/terms">All terms explained</a>.</p>
       <p class="more-link"><a href="#model/scorecard">Calibration and the rolling record →</a></p>
     </fieldset>
   </div>
@@ -227,6 +227,43 @@
       </dl>
     </fieldset>
 
+    <fieldset class="frame method" id="benchmarks">
+      <legend>What we compare against</legend>
+      <p class="note top-note">A forecast's score means little on its own, so every score on this site sits beside simpler forecasts made for the same games.</p>
+      <dl>
+        <dt>Blind guess</dt>
+        <dd>One in three for home, draw and away in every game. It knows nothing, and scores a log loss of 1.099. Any useful forecast must beat it.</dd>
+        <dt>Prior frequency</dt>
+        <dd>How often home wins, draws and away wins happened in the competition over the five seasons before this one, given unchanged to every game (each competition's shares are listed under Track record). It knows home advantage but nothing about either team, so beating it is the first real test. "vs baseline" on <a href="#matches">Matches</a> is this comparison.</dd>
+        <dt>Elo</dt>
+        <dd>The results-only rating inside our own blend (the 16% in the blend above), scored alone. Beating it shows what goals, expected goals and the goal model add. It is compared only on games where its own chances were saved with the forecast.</dd>
+        <dt>Bookmakers</dt>
+        <dd>Odds are archived every day but not yet compared: too few games have prices saved before kickoff. (Champions League strengths already use them, so that record is not market-free.)</dd>
+      </dl>
+    </fieldset>
+
+    <fieldset class="frame method" id="terms">
+      <legend>Reading the track record</legend>
+      <dl>
+        <dt>Published</dt>
+        <dd>Forecasts the site actually showed before kickoff, saved with a timestamp. These are the receipts.</dd>
+        <dt>Reconstructed</dt>
+        <dd>Games played before the site saved receipts, forecast afterwards with the same model from results available before 00:00 UTC on match day. Nothing from the game itself leaks in, but they were never shown in advance.</dd>
+        <dt>Combined</dt>
+        <dd>Every finished game counted once: its published forecast where there is one, otherwise the reconstructed one. This is the default.</dd>
+        <dt>Log loss</dt>
+        <dd>The main score: the average of −ln(chance given to what happened). Giving the actual result 50% costs 0.69, 33% costs 1.10 and 10% costs 2.30, so confident misses hurt most. Lower is better.</dd>
+        <dt>Brier, RPS</dt>
+        <dd>Two more error scores, lower is better. Brier adds up the squared errors on home, draw and away. RPS (ranked probability score) treats the outcomes as ordered, so calling a home win is closer to a draw than to an away win.</dd>
+        <dt>Called</dt>
+        <dd>How often the single likeliest outcome happened. Easy to read, but it ignores how confident the forecast was.</dd>
+        <dt>Exact score</dt>
+        <dd>How often the single likeliest scoreline happened.</dd>
+        <dt>Avg chance given</dt>
+        <dd>The average chance the forecast gave to the outcome that actually happened.</dd>
+      </dl>
+    </fieldset>
+
     <fieldset class="frame sc-frame" id="scorecard" hidden>
       <legend>Track record</legend>
       <div class="sc-controls"><label for="sc-competition">Competition</label> <select id="sc-competition"></select></div>
@@ -235,10 +272,10 @@
       <p class="note" id="sc-counts"></p>
       <div id="sc-charts"></div>
       <div class="sc-misses" id="misses"></div>
-      <details><summary>Baselines and coverage</summary><div id="sc-baselines"></div>
-        <p class="note">Prior frequency is fixed from the five seasons before this one, with seasons listed above. It is unavailable until all five are loaded. Elo compares only fixtures with a saved component from the same forecast run.</p>
-      </details>
-      <p class="note">Published forecasts were saved before kickoff. Reconstructed forecasts use results before match day and fill games without a receipt; the combined record counts each fixture once. Calibrated seasons are not independent holdouts. Champions League strengths already use archived market prices. Market comparison awaits enough archived quotes.</p>
+      <h3>Against the benchmarks</h3>
+      <div id="sc-baselines"></div>
+      <p class="note">Log loss, lower is better. Prior frequency shares come from the five seasons before this one and wait until all five are loaded. Gap is Floodlight minus the benchmark on the games both forecast: negative (green ▲) means Floodlight did better. Where a benchmark covers fewer games, the gap shows how many (Elo needs its chances saved with the forecast); see <a href="#model/benchmarks">What we compare against</a>.</p>
+      <p class="note">The seasons used to set the weights are not independent holdouts.</p>
     </fieldset>
 
     <fieldset class="frame method">

@@ -857,6 +857,8 @@ table.mp-stand { min-width: 460px; }
 .sc-frame summary { cursor: pointer; color: var(--ink-2); }
 .sc-frame .board { white-space: nowrap; }
 #m-scorecard .board { min-width: 710px; }
+.sc-vs th small, .sc-vs td small { color: var(--dim); font-size: 11px; letter-spacing: 0; text-transform: none; margin-left: 6px; }
+.sc-vs td:nth-child(3) { color: var(--ink); }
 #sc-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 @media (max-width: 700px) {
   #sc-charts { grid-template-columns: minmax(0, 1fr); gap: 8px; }
