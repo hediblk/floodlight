@@ -1,6 +1,6 @@
 # Floodlight light mode
 
-Status: implemented locally, 3 November 2026. The site defaults to dark and offers a saved explicit light choice; this change has not been deployed.
+Status: implemented, 3 November 2026. The site defaults to dark and offers a saved explicit light choice.
 
 ## Direction: the scoreboard in daylight
 
@@ -78,4 +78,4 @@ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python scripts/check_site.py --site site
 git diff --check
 ```
 
-Verification: the published-data validator passed for 651 site files. The existing headless browser traversal passed in Dark and Light across all six competitions, match views, club comparison and Squad, Model, the optional Backtest fixture, and generated PNG cards at 1280px and 375px; all 12 backtest parity cases passed in each run. Full-time PNGs were compared in both themes for readable text, crests, bulbs and opaque backgrounds. Separate browser checks verified dark default, early saved-theme application, persistence, invalid and blocked storage, keyboard activation, no OS following, and preservation of focus, scroll, route and expanded/selected UI. Desktop/tablet/phone layouts were inspected at 1280, 768, 375 and 320px with no horizontal overflow. A representative light title-race chart was inspected with protanopia, deuteranopia and tritanopia simulations; this is not an exhaustive colour-vision review. The UEFA activity map was reviewed in both themes with its original green–yellow–red scale; light pitch markings and yellow-card outlines were checked on screen. The browser check does not cover 200% zoom, and the feature has not been deployed.
+Verification: the published-data validator passed for 651 site files. The existing headless browser traversal passed in Dark and Light across all six competitions, match views, club comparison and Squad, Model, the optional Backtest fixture, and generated PNG cards at 1280px and 375px; all 12 backtest parity cases passed in each run. Full-time PNGs were compared in both themes for readable text, crests, bulbs and opaque backgrounds. Separate browser checks verified dark default, early saved-theme application, persistence, invalid and blocked storage, keyboard activation, no OS following, and preservation of focus, scroll, route and expanded/selected UI. Desktop/tablet/phone layouts were inspected at 1280, 768, 375 and 320px with no horizontal overflow. A representative light title-race chart was inspected with protanopia, deuteranopia and tritanopia simulations; this is not an exhaustive colour-vision review. The UEFA activity map was reviewed in both themes with its original green–yellow–red scale; light pitch markings and yellow-card outlines were checked on screen. The browser check does not cover 200% zoom.

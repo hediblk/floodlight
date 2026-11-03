@@ -1,4 +1,5 @@
-// Line colours. Charts of clubs use each club's own colours, tuned to read on the dark ground; a club's second
+// Line colours. Charts of clubs use each club's own colours, tuned to read on the dark ground (and darkened
+// until they read on the light one); a club's second
 // colour (or a neutral spare) stands in when its first is too close to a club already on the chart. Charts of
 // other series (model against baselines, actual against expected) use the three SERIES colours in order.
 
@@ -57,6 +58,9 @@ function oklab(hex) {
 }
 const apart = (a, b) => Math.hypot(...oklab(a).map((v, i) => v - oklab(b)[i])) * 100;
 const MIN_APART = 15; // the normal-vision floor for telling two marks apart
+const MIN_CONTRAST = 3; // light ground: the floor for chart marks; club colours never colour text
+const MIN_CHROMA = 4; // whites and greys darken to a neutral grey, which reads as a benchmark line
+const chroma = (hex) => Math.hypot(...oklab(hex).slice(1)) * 100;
 
 function channels(hex) {
   return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
@@ -87,36 +91,33 @@ function darker(hex, bg) {
     const rgb = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x]
       : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
     const candidate = `#${rgb.map((v) => Math.round((v + m) * 255).toString(16).padStart(2, "0")).join("")}`;
-    if (contrast(candidate, bg) >= 4.5) return candidate;
+    if (contrast(candidate, bg) >= MIN_CONTRAST) return candidate;
   }
   return "#24211d";
 }
 
-function lightOptions(id, bg) {
-  const hash = Math.abs(Number(id) || 0) % SPARE.length;
-  const own = CLUB[id] || [SPARE[hash]];
-  const spare = [...SPARE.slice(hash), ...SPARE.slice(0, hash)];
-  const readable = (color) => contrast(color, bg) >= 4.5;
-  return [...new Set([
-    ...own.filter(readable), ...own.map((color) => darker(color, bg)),
-    ...spare.filter(readable), ...spare.map((color) => darker(color, bg)),
-  ])];
+/* on the light ground: a club's readable hues, then its hues darkened until readable, then the same for the spares */
+function lightOptions(own, spare, bg) {
+  return [...new Set([own, spare].flatMap((set) => {
+    const hues = set.filter((c) => chroma(c) >= MIN_CHROMA);
+    return [...hues.filter((c) => contrast(c, bg) >= MIN_CONTRAST), ...hues.map((c) => darker(c, bg))];
+  }))];
 }
 
 /* one colour per club id, in order (the leader first): each club takes the first of its own colours, then the
-   spares, that sits far enough from every colour already taken */
+   spares, that sits far enough from every colour already taken; on the light ground, failing that, the most distinct */
 export function clubColors(ids) {
   const light = document.documentElement.dataset.theme === "light";
-  const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#131312";
+  const bg = light && getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
   const taken = [];
+  const nearest = (c) => Math.min(Infinity, ...taken.map((t) => apart(c, t)));
   return ids.map((id) => {
     const hash = Math.abs(Number(id) || 0) % SPARE.length;
     const own = CLUB[id] || [SPARE[hash]];
-    const options = [...own, ...SPARE.slice(hash), ...SPARE.slice(0, hash)];
-    const choices = light ? lightOptions(id, bg) : options;
-    const color = choices.find((c) => (!light || contrast(c, bg) >= 4.5) && taken.every((t) => apart(c, t) >= MIN_APART))
-      || (light ? choices.reduce((best, c) => Math.min(...taken.map((t) => apart(c, t)), Infinity)
-        > Math.min(...taken.map((t) => apart(best, t)), Infinity) ? c : best, choices[0]) : options[0]);
+    const spare = [...SPARE.slice(hash), ...SPARE.slice(0, hash)];
+    const options = light ? lightOptions(own, spare, bg) : [...own, ...spare];
+    const color = options.find((c) => nearest(c) >= MIN_APART)
+      || (light ? options.reduce((best, c) => (nearest(c) > nearest(best) ? c : best)) : options[0]);
     taken.push(color);
     return color;
   });

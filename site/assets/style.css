@@ -127,7 +127,8 @@ button { font: inherit; color: inherit; }
 @media (pointer: coarse) { .theme-toggle { width: 44px; height: 44px; } }
 .lamp { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 6px var(--amber); flex: none; }
 .lamp.stale { background: var(--rule); box-shadow: none; }
-:root[data-theme="light"] .lamp { box-shadow: none; }
+/* light mode keeps the marks but drops their emitted glow */
+:root[data-theme="light"] .lamp, :root[data-theme="light"] .m-verdict::before, :root[data-theme="light"] .mp-note-bulb { box-shadow: none; }
 
 /* ---------- frames (signature: legends cut into the border) ---------- */
 .page { max-width: 1320px; margin: 0 auto; padding: 0 16px 24px; }

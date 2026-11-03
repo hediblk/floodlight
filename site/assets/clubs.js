@@ -747,7 +747,6 @@ function renderStrength(club, comparison, history) {
     ${renderRatingHistory(club, comparison, history)}`;
   ratingState = { club, comparison, history, liveDate: clubs.generated_at.slice(0, 10) };
   $("p-compare").value = comparison?.slug || "";
-  recolorComparison();
   drawRatingHistory();
 }
 

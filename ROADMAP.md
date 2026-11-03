@@ -38,7 +38,7 @@ A Backtest tab where a strategy is a universe (leagues, seasons, teams), a rule 
 
 ### 5. Light mode
 
-Implemented locally from the [3 November design proposal](docs/light-mode-plan-2026-11-03.md): an explicit sun/moon preference, dark-by-default behavior, warm ivory surfaces, deeper amber and checked light chart colours. The implementation has not been deployed.
+Built from the [3 November design proposal](docs/light-mode-plan-2026-11-03.md): an explicit sun/moon preference, dark-by-default behavior, warm ivory surfaces, deeper amber and checked light chart colours.
 
 ## Parked
 
