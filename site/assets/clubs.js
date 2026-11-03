@@ -708,6 +708,13 @@ function drawRatingHistory() {
   $("p-rating-table").innerHTML = historyTable(history, rated, ratingMetric, liveDate);
 }
 
+function recolorComparison() {
+  if (!ratingState?.comparison) return;
+  const [, color] = clubColors([ratingState.club.id, ratingState.comparison.id]);
+  $("p-strength").querySelectorAll(".rating-compare-value .sw").forEach((swatch) => { swatch.style.backgroundColor = color; });
+  $("p-strength").querySelectorAll(".rating-compare-tick").forEach((tick) => { tick.style.borderColor = color; });
+}
+
 function renderRatingHistory(club, comparison, history) {
   const metrics = RATING_METRICS.map(([key, label]) => `<button type="button" class="chip" data-rating-metric="${key}" aria-pressed="${ratingMetric === key}">${label}</button>`).join("");
   return `${compareOptions(club)}
@@ -775,4 +782,13 @@ window.addEventListener("resize", () => {
     if (!$("clubs-index").hidden) renderScatter();
     else drawRatingHistory();
   }, 150);
+});
+
+window.addEventListener("floodlight-theme-change", () => {
+  if (!clubs || $("view-clubs").hidden) return;
+  if (!$('clubs-index').hidden) renderScatter();
+  else {
+    recolorComparison();
+    drawRatingHistory();
+  }
 });

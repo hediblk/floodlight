@@ -234,7 +234,7 @@ function line(x1, y1, x2, y2, color, width = 2) {
 }
 function circle(x, y, r, color, glow = 0) {
   ctx.save();
-  if (glow) { ctx.shadowColor = color; ctx.shadowBlur = glow; }
+  if (glow && document.documentElement.dataset.theme !== "light") { ctx.shadowColor = color; ctx.shadowBlur = glow; }
   ctx.fillStyle = color;
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);

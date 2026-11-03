@@ -220,3 +220,7 @@ window.addEventListener("resize", () => {
   clearTimeout(resizing);
   resizing = setTimeout(draw, 150);
 });
+
+window.addEventListener("floodlight-theme-change", () => {
+  if (state && !$("view-tables").hidden) draw();
+});
