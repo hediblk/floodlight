@@ -39,11 +39,12 @@ export function pointsByClub(matches, leaguePhaseOnly = false) {
 const signed = (n) => `${n < 0 ? "−" : "+"}${Math.abs(n).toFixed(1)}`;
 const result = (points) => points === 3 ? "Win" : points === 1 ? "Draw" : "Loss";
 
-export function pointsComparison(club, matches, leaguePhaseOnly = false) {
+export function pointsComparison(club, matches, leaguePhaseOnly = false, frameWidth = 720) {
   const stats = pointsForClub(matches, club.id, leaguePhaseOnly);
   if (!stats.n) return `<p class="note">No finished games with forecasts yet. <b>0</b> published forecasts.</p>`;
 
-  const width = 720, height = 220, pad = { l: 48, r: 14, t: 12, b: 30 };
+  // drawn at the frame's width so ticks keep their size on phones and wide screens
+  const width = Math.round(Math.max(300, frameWidth || 720)), height = width < 480 ? 200 : 240, pad = { l: 36, r: 14, t: 12, b: 30 };
   const max = Math.max(1, Math.ceil(Math.max(...stats.games.map((g) => Math.max(g.actualTotal, g.expectedTotal)))));
   const x = (game) => pad.l + (game / stats.n) * (width - pad.l - pad.r);
   const y = (points) => height - pad.b - (points / max) * (height - pad.t - pad.b);
@@ -56,18 +57,18 @@ export function pointsComparison(club, matches, leaguePhaseOnly = false) {
     return `<tr><td>${i + 1}</td><td>${shortDate(m.kickoff)}</td><td class="l">${esc(opponent)}</td><td>${result(g.actual)}</td>
       <td>${g.actualTotal}</td><td>${dec(g.expectedTotal, 1)}</td><td class="l">${origin}</td></tr>`;
   }).join("");
-  const source = `${stats.published} of ${stats.n} forecasts were published before kickoff; ${stats.n - stats.published} were reconstructed.`;
+  const source = `${stats.published} of ${stats.n} published before kickoff, ${stats.n - stats.published} reconstructed.`;
   const sentence = `${club.name} have ${stats.actual} point${stats.actual === 1 ? "" : "s"} from games the model expected to yield ${dec(stats.expected, 1)} (${signed(stats.delta)}).`;
 
   return `<p class="lead">${esc(sentence)}</p>
     <p class="note pm-source">${source}${leaguePhaseOnly ? " Champions League points cover the league phase." : ""}</p>
-    <figure class="pm-chart">
-      <div class="key"><span><i class="pm-key actual"></i>Actual points</span><span><i class="pm-key expected"></i>Model-expected points</span></div>
+    <figure class="pm-chart" data-series>
+      <div class="key"><span class="k-item" data-s="0"><i class="sw" style="background:var(--amber)"></i>Actual points</span><span class="k-item" data-s="1"><i class="sw" style="background:var(--series-2)"></i>Model-expected points</span></div>
       <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`${club.name}: cumulative actual and model-expected points across ${stats.n} finished games with forecasts`)}">
-        ${grid}<path class="actual" d="${points("actualTotal")}"/><path class="expected" d="${points("expectedTotal")}"/>
+        ${grid}<path class="expected" data-s="1" d="${points("expectedTotal")}"/><path class="actual" data-s="0" d="${points("actualTotal")}"/>
         <text class="tick" x="${pad.l}" y="${height - 6}">Start</text><text class="tick" x="${width - pad.r}" y="${height - 6}" text-anchor="end">Game ${stats.n}</text>
       </svg>
-      <figcaption class="note">Cumulative points by game number. Actual points use the finished result; expected points are 3 × win probability + draw probability.</figcaption>
+      <figcaption class="note">Expected points = 3 × win chance + draw chance.</figcaption>
     </figure>
     <details class="pm-list"><summary>Game-by-game points and forecast origin</summary><div class="scroll"><table class="board">
       <thead><tr><th>Game</th><th>Date</th><th class="l">Opponent</th><th>Result</th><th>Actual pts</th><th>Model pts</th><th class="l">Forecast</th></tr></thead>
@@ -85,7 +86,7 @@ function xgWindow(games) {
   return { n: covered.length, total: games.length, for: xgFor, against: xgAgainst, difference: xgFor - xgAgainst };
 }
 
-export function rollingXg(club, matches) {
+export function rollingXg(club, matches, frameWidth = 600) {
   const played = matches.filter((m) => m.status === "FINISHED" && Array.isArray(m.score))
     .sort((a, b) => a.kickoff.localeCompare(b.kickoff));
   const windows = [5, 10].map((size) => ({ size, ...xgWindow(played.slice(-size)) }));
@@ -97,19 +98,19 @@ export function rollingXg(club, matches) {
     return stats.difference == null ? null : { game: i + 1, ...stats };
   });
   const available = rolling.filter(Boolean);
-  const chart = available.length ? sparkline(club, rolling) : `<p class="note">No xG was reported for the completed games shown; coverage is listed above.</p>`;
+  const chart = available.length ? sparkline(club, rolling, frameWidth) : "";
   const detail = available.length ? `<details class="pm-list"><summary>Five-game rolling xG values</summary><div class="scroll"><table class="board">
     <thead><tr><th>After game</th><th>Difference / game</th><th>Coverage</th></tr></thead>
     <tbody>${available.map((v) => `<tr><td>${v.game}</td><td>${signed(v.difference)}</td><td>${v.n} of ${v.total} games</td></tr>`).join("")}</tbody>
     </table></div></details>` : "";
   return `<h3 class="sub">Rolling xG · last 5 and last 10</h3>
     <div class="scroll"><table class="board stats pm-xg-table"><thead><tr><th class="l">Window / xG</th><th>xG for</th><th>xG against</th><th>Difference</th></tr></thead><tbody>${cells}</tbody></table></div>
-    <p class="note">The small count is games with xG / games in the window; averages use only games with xG.</p>
-    <figure class="pm-spark">${chart}<figcaption class="note">Five-game rolling xG difference per covered game; windows without xG are left blank.</figcaption></figure>${detail}`;
+    <p class="note">${available.length ? "Small count: games with xG." : "No xG for these games yet."}</p>
+    ${chart ? `<figure class="pm-spark">${chart}<figcaption class="note">Five-game rolling xG difference.</figcaption></figure>` : ""}${detail}`;
 }
 
-function sparkline(club, rolling) {
-  const width = 600, height = 112, pad = { l: 8, r: 8, t: 8, b: 22 };
+function sparkline(club, rolling, frameWidth) {
+  const width = Math.round(Math.max(300, frameWidth || 600)), height = 112, pad = { l: 8, r: 8, t: 8, b: 22 };
   const values = rolling.filter(Boolean);
   const range = Math.max(0.1, ...values.map((v) => Math.abs(v.difference))) * 1.1;
   const x = (game) => pad.l + ((game - 1) / Math.max(1, rolling.length - 1)) * (width - pad.l - pad.r);

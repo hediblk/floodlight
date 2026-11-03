@@ -298,10 +298,10 @@ function renderChart() {
     const low = Math.min(...values), high = Math.max(...values), span = high - low || 1;
     const x = (day) => 52 + ((day ? Date.parse(day) : start) - start) / (end - start || 1) * 622;
     const y = (value) => 160 - (value - low) / span * 135;
-    html += `<div class="bt-season-chart"><h2>${seasonName(season)} <span>Reset to ${units(current.bankroll)}</span></h2><svg viewBox="0 0 700 195" role="img" aria-label="${seasonName(season)} bankroll in units; solid strategy and dashed market favourite. Daily values follow in the table.">
+    html += `<div class="bt-season-chart" data-series><h2>${seasonName(season)} <span>Reset to ${units(current.bankroll)}</span></h2><p class="key"><span class="k-item" data-s="0"><i class="sw" style="background:var(--amber)"></i>Strategy</span><span class="k-item" data-s="1"><i class="sw" style="background:var(--series-2)"></i>Market favourite, flat stake</span></p><svg viewBox="0 0 700 195" role="img" aria-label="${seasonName(season)} bankroll in units: the strategy and the market favourite. Daily values follow in the table.">
       ${[low, (low + high) / 2, high].map((v) => `<line x1="52" x2="674" y1="${y(v)}" y2="${y(v)}" class="bt-grid"/><text x="46" y="${y(v) + 4}" text-anchor="end">${fmt(v, 0)}</text>`).join("")}
       <line x1="52" x2="674" y1="${y(current.bankroll)}" y2="${y(current.bankroll)}" class="bt-start"/>
-      ${paths.map((path, i) => path.length ? `<path d="${path.map((p, j) => `${j ? "L" : "M"}${x(p.day).toFixed(2)},${y(p.bankroll).toFixed(2)}`).join(" ")}" class="bt-line ${i ? "bt-reference" : ""}"/>` : "").join("")}
+      ${paths.map((path, i) => path.length ? `<path d="${path.map((p, j) => `${j ? "L" : "M"}${x(p.day).toFixed(2)},${y(p.bankroll).toFixed(2)}`).join(" ")}" class="bt-line ${i ? "bt-reference" : ""}" data-s="${i}"/>` : "").join("")}
       <text x="52" y="185">Start</text><text x="674" y="185" text-anchor="end">${esc(dates.at(-1) || "")}</text></svg></div>`;
     const maps = paths.map((path) => new Map(path.map((p) => [p.day, p.bankroll])));
     let balances = [current.bankroll, current.bankroll];

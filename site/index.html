@@ -53,7 +53,7 @@
       <p class="note" id="table-note"></p>
     </fieldset>
 
-    <fieldset class="frame" id="race-frame" hidden><legend>The race so far</legend><div class="chips" id="race-chips" role="group" aria-label="Race"></div><div class="moves race-moves" id="race-moves" hidden></div><div class="race-chart" id="race-chart"></div><p class="note" id="race-note"></p><div id="race-card"></div></fieldset>
+    <fieldset class="frame" id="race-frame" hidden><legend>The race so far</legend><div class="chips" id="race-chips" role="group" aria-label="Race"></div><div class="moves race-moves" id="race-moves" hidden></div><div class="race-chart" id="race-chart" data-series></div><p class="note" id="race-note"></p><div id="race-card"></div></fieldset>
 
     <fieldset class="frame" id="bracket-frame" hidden>
       <legend>Projected bracket</legend>
@@ -63,7 +63,7 @@
 
     <fieldset class="frame" id="ko-frame" hidden>
       <legend>Road to the final</legend>
-      <p class="note top-note">Chance of reaching each round across every simulated league phase and draw. Sixteen likeliest winners.</p>
+      <p class="note top-note">Chance of reaching each round. Top 16 by title chance.</p>
       <div class="scroll"><table class="board ko" id="ko-table"></table></div>
     </fieldset>
 
@@ -90,7 +90,7 @@
       <legend>Scorecard · this season</legend>
       <div class="scroll"><table class="board record" id="m-record-table"></table></div>
       <p class="sc-line" id="m-misses" hidden></p>
-      <p class="note">Lower is better. A blind one-in-three guess scores 1.099. Combined published and reconstructed forecasts; vs baseline = model minus prior frequency on the same fixtures. <span id="m-called-note">Called = hit rate.</span></p>
+      <p class="note">Lower is better; a blind guess scores 1.099. vs baseline = model minus prior frequency. <span id="m-called-note">Called = hit rate.</span></p>
       <p class="more-link"><a href="#model/scorecard">Calibration and the rolling record →</a></p>
     </fieldset>
   </div>
@@ -150,7 +150,7 @@
       <div class="hero-in">
         <div class="who">
           <h1>How the forecasts are made</h1>
-          <p class="caption">Rate every team from past results and expected goals, price each remaining match, then play the rest of the season out <b>10,000 times</b>. Every percentage on this site is a share of those simulated seasons.</p>
+          <p class="caption">Rate every team, price every match, then play the season out <b>10,000 times</b>. Every percentage is a share of those runs.</p>
         </div>
         <div class="numeral" role="img" aria-label="10,000 simulations">10K</div>
       </div>
@@ -161,15 +161,15 @@
       <ol class="steps">
         <li>
           <h2><span>01</span>Rate the teams</h2>
-          <p>A Dixon–Coles goal model fits each team's attack and defence from its goals, counting recent matches more: a game a year old weighs about a third as much as last weekend's. A quarter of that strength comes from real goals and three quarters from the same model fitted to expected goals (xG), which is steadier over a few games. An Elo rating tracks results alone.</p>
+          <p>Attack and defence from goals and expected goals, recent games counting more. An Elo rating tracks results alone.</p>
         </li>
         <li>
           <h2><span>02</span>Price every match</h2>
-          <p>Both models give home, draw and away chances for each remaining fixture. They are blended in log space, 84% Dixon–Coles and 16% Elo, and the goal model supplies the likely scorelines within each result.</p>
+          <p>Home, draw and away chances from both models, blended, with likely scorelines from the goal model.</p>
         </li>
         <li>
           <h2><span>03</span>Play out the season</h2>
-          <p>Each simulated season draws a result and a score for every fixture left, adds up points and goals, and ranks the table with the competition's own tie-breakers (La Liga, for one, settles level points on head-to-head). Ten thousand seasons give the chance of every finishing place.</p>
+          <p>Every fixture left is simulated and the table ranked with the competition's own tie-breakers.</p>
         </li>
       </ol>
     </fieldset>
@@ -188,30 +188,30 @@
           <div class="w-row"><span>Elo</span><i style="--w:15.6%"></i><b>16%</b></div>
         </div>
       </div>
-      <p class="note">One fit across the top five leagues, 2015/16 to 2025/26, chose these weights; the daily forecasts never refit them. xG strengths are stretched by 1.3 because xG understates the gap between strong and weak sides. Bookmaker odds are archived but not used.</p>
+      <p class="note">Set once on the top five leagues, 2015/16 to 2025/26; daily forecasts never refit them. Domestic forecasts don't use bookmaker odds.</p>
     </fieldset>
 
     <fieldset class="frame method">
       <legend>Reading the numbers</legend>
       <dl>
         <dt>Ranges</dt>
-        <dd>Point ranges cover the middle 80% of simulated seasons (10th to 90th percentile). They show match-to-match luck, not doubt about the ratings themselves.</dd>
+        <dd>The middle 80% of simulated seasons: match-to-match luck, not doubt about the ratings.</dd>
         <dt>Zones</dt>
-        <dd>Title, Europe and Down are finishing places. Real European spots also depend on cup winners, and deciding play-offs are not simulated.</dd>
-        <dt>Track record</dt>
-        <dd>Every played match is forecast at 00:00 UTC on its match day from earlier results only, so the record on <a href="#matches">Matches</a> never peeks at the result. A call is right when the model's likeliest outcome happens.</dd>
+        <dd>Finishing places. Cup winners can change real European spots; deciding play-offs aren't simulated.</dd>
+        <dt>Calls</dt>
+        <dd>Each played match is forecast at 00:00 UTC on match day, from earlier results only. A call is right when the likeliest outcome happens.</dd>
       </dl>
     </fieldset>
 
     <fieldset class="frame method">
       <legend>Champions League</legend>
       <dl>
-        <dt>One fit</dt>
-        <dd>Domestic and European results from every entrant's league feed a single goal model. Country offsets put leagues on a common scale, and European games get their own scoring and home baselines. Bookmaker prices for upcoming Champions League games set each league's current level, since two seasons of European results can lag behind.</dd>
+        <dt>One model</dt>
+        <dd>Every entrant's domestic and European results feed one goal model, with each league on a common scale. Bookmaker prices for upcoming games keep league levels current.</dd>
         <dt>League phase</dt>
-        <dd>All 144 fixtures are played out and ranked with UEFA's tie-breakers, including opponents' combined points.</dd>
+        <dd>All 144 fixtures are simulated and ranked with UEFA's tie-breakers.</dd>
         <dt>Knockouts</dt>
-        <dd>Draws follow the fixed bracket and seeding. Extra time runs at a third of the second leg's scoring rate and shoot-outs are a coin toss. The projected bracket is one illustrative path; title chances average every simulated draw.</dd>
+        <dd>Simulated draws follow the bracket and seeding rules; shoot-outs are a coin toss. Title chances average every draw.</dd>
       </dl>
     </fieldset>
 
@@ -219,11 +219,11 @@
       <legend>Club ratings</legend>
       <dl>
         <dt>Rating</dt>
-        <dd>The share of the points a club would take off an average European top-flight side on a neutral pitch, from the model behind the Champions League forecasts: domestic and European results, goals and expected goals, recent games counting more.</dd>
+        <dd>The share of points a club would take off an average European top-flight side on a neutral pitch, from the Champions League model.</dd>
         <dt>Attack, defence</dt>
-        <dd>Attack rates a club as if its defence were exactly as good as its attack, and defence the reverse, so all three numbers share one scale. Scores and Concedes are goals per game against that average side.</dd>
+        <dd>Attack rates a club as if its defence matched its attack, and defence the reverse, so all three share one scale. Scores and Concedes are goals per game against the average side.</dd>
         <dt>Across leagues</dt>
-        <dd>Leagues are compared through matches between clubs from different countries in the European cups; a league with few such matches is assumed to be a typical European league until results say otherwise. Bookmaker prices for upcoming Champions League games then set each league's current level. The average side is the mean of <span id="c-pool">every club with domestic results in the past year</span>. League averages on this scale: <span id="c-factors">loading</span>.</dd>
+        <dd>Leagues are linked by European cup games. The average side is the mean of <span id="c-pool">every club with domestic results in the past year</span>. League averages: <span id="c-factors">loading</span>.</dd>
       </dl>
     </fieldset>
 
@@ -236,20 +236,20 @@
       <div id="sc-charts"></div>
       <div class="sc-misses" id="misses"></div>
       <details><summary>Baselines and coverage</summary><div id="sc-baselines"></div>
-        <p class="note">Prior frequency is fixed from the five seasons before this one, with seasons listed above. It is unavailable until all five are loaded. Elo compares only fixtures with a saved component from the same forecast run.</p>
+        <p class="note">Prior frequency uses the five seasons before this one. Elo compares only fixtures with a saved Elo forecast from the same run.</p>
       </details>
-      <p class="note">Published forecasts were saved before kickoff. Reconstructed forecasts use results before match day and fill games without a receipt; the combined record counts each fixture once. Calibrated seasons are not independent holdouts. Champions League strengths already use archived market prices. Market comparison awaits enough archived quotes.</p>
+      <p class="note">Published: saved before kickoff. Reconstructed: rebuilt from results before match day; each fixture counts once. The seasons used for calibration aren't independent holdouts, and Champions League strengths already use market prices.</p>
     </fieldset>
 
     <fieldset class="frame method">
       <legend>Limits</legend>
       <dl>
         <dt>Fixed ratings</dt>
-        <dd>Chances assume today's ratings are right. Transfers, injuries and managerial changes only show up once they change results.</dd>
+        <dd>Transfers, injuries and new managers count only once they show in results.</dd>
         <dt>Calibration</dt>
-        <dd>Weights were tuned on single matches, not on final standings.</dd>
+        <dd>Weights were tuned on single matches, not final tables.</dd>
         <dt>Data gaps</dt>
-        <dd>Cancelled fixtures are played as if rescheduled. Expected goals cover only the top five leagues, so Champions League sides from elsewhere are rated on goals.</dd>
+        <dd>Postponed games are played as if rescheduled. Clubs outside the five leagues have no xG, so they're rated on goals.</dd>
       </dl>
     </fieldset>
   </div>
@@ -273,9 +273,9 @@
       <a href="https://www.football-data.org/">football-data.org <small>results, fixtures</small></a>
       <a href="https://www.football-data.co.uk/">football-data.co.uk <small>past seasons</small></a>
       <a href="https://understat.com/">Understat <small>expected goals</small></a>
-      <a href="https://www.espn.com/soccer/">ESPN <small>· match statistics</small></a>
-      <a href="https://www.uefa.com/uefachampionsleague/">UEFA <small>· match data</small></a>
-      <a href="https://www.ea.com/games/ea-sports-fc/ratings">EA SPORTS FC <small>· player ratings</small></a>
+      <a href="https://www.espn.com/soccer/">ESPN <small>match statistics</small></a>
+      <a href="https://www.uefa.com/uefachampionsleague/">UEFA <small>match data</small></a>
+      <a href="https://www.ea.com/games/ea-sports-fc/ratings">EA SPORTS FC <small>player ratings</small></a>
     </nav>
   </div>
 </footer>
