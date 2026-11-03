@@ -334,15 +334,15 @@ export function forecastBlocks(m, links = "") {
     return `<li class="${hit ? "hit" : ""}${call ? " call" : ""}${outcome([h, a]) === fav ? "" : " off"}"><span>${h}–${a}</span><i style="width:${((p / max) * 100).toFixed(0)}%"></i><b>${pct1(p)}</b></li>`;
   }).join("");
   const spread = outcome(m.top[0]) !== fav
-    ? `<p class="note">${m.top[0][0]}–${m.top[0][1]} is the likeliest score, but a ${OUTCOMES[fav].toLowerCase()} is likelier overall.</p>` : "";
+    ? `<p class="note">${m.top[0][0]}–${m.top[0][1]} is the likeliest score, but ${fav === 2 ? "an" : "a"} ${OUTCOMES[fav].toLowerCase()} is likelier overall.</p>` : "";
   const xg = m.xg ? `<dt>xG (${xgBy(m)})</dt><dd>${dec(m.xg[0], 2)}–${dec(m.xg[1], 2)}</dd>` : "";
   const origin = new Date(m.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
   let call;
   if (v) {
     const result = OUTCOMES[v.actual].toLowerCase().replace("draw", "the draw");
     call = (v.hit
-      ? `<p>Called it: the model picked a ${OUTCOMES[fav].toLowerCase()} (<b>${pct1(m.p[fav])}</b>), ${ch}–${ca}.`
-      : `<p>Missed it: the model picked a ${OUTCOMES[fav].toLowerCase()} (<b>${pct1(m.p[fav])}</b>), ${ch}–${ca}; ${result} had <b>${pct1(v.given)}</b>.`)
+      ? `<p>Called it: the model picked ${fav === 2 ? "an" : "a"} ${OUTCOMES[fav].toLowerCase()} (<b>${pct1(m.p[fav])}</b>), ${ch}–${ca}.`
+      : `<p>Missed it: the model picked ${fav === 2 ? "an" : "a"} ${OUTCOMES[fav].toLowerCase()} (<b>${pct1(m.p[fav])}</b>), ${ch}–${ca}; ${result} had <b>${pct1(v.given)}</b>.`)
       + (v.exact ? ` Exact score, too.</p>` : m.p_score != null ? ` The actual ${m.score[0]}–${m.score[1]} had <b>${pct1(m.p_score)}</b>.</p>`
         : ` The actual ${m.score[0]}–${m.score[1]} was not among the saved likeliest scores.</p>`)
       + `<p class="dim">${m.published ? `Published before kickoff (run of ${new Date(m.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC, ${new Date(m.at).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}).` : "Reconstructed: as of 00:00 UTC on match day."}</p>`;
