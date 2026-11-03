@@ -3,9 +3,9 @@ import { $, esc, pct, getJSON, clubName, clubCrest } from "./core.js";
 import { stakeNow } from "./matches.js";
 import { baseWeek } from "./clubs.js";
 import { cardChips, offerCard, raceCard } from "./cards.js";
+import { clubColors } from "./colors.js";
 
 const UCL_METRICS = [["top8", "Top 8"], ["top24", "Top 24"], ["last16", "Last 16"], ["qf", "Quarter-finals"], ["sf", "Semi-finals"], ["final", "Final"], ["title", "Winner"]];
-const DASHES = ["", "4 3", "1 3", "6 2 1 2", "2 2"];
 const MAX_LINES = 6;
 const MOVE = 3, MAX_MOVERS = 5; // movers: changes of at least 3 points (the series are whole percentages), five at most
 const STAGES = { last16: "round16", qf: "quarterfinal", sf: "semifinal", final: "final" };
@@ -114,7 +114,7 @@ export function pickTeams(teams, metric) {
 
 function draw() {
   if (!state || $("race-frame").hidden || $("view-tables").hidden) return;
-  const { data, hist } = state, ucl = data.kind === "ucl";
+  const { data, hist } = state;
   const metrics = metricsFor(state);
   if (!metrics.length) { $("race-frame").hidden = true; return; }
   const key = metrics.some(([k]) => k === choice[data.kind]) ? choice[data.kind] : "title";
@@ -124,17 +124,17 @@ function draw() {
 
   const rows = pickTeams(hist.teams, key);
   const first = fmt(hist.dates[0], { day: "numeric", month: "short" });
-  const runs = ucl ? "simulated tournaments" : "simulated seasons";
   // a faint rule at the movers' baseline Monday, when it falls inside the chart
   const baseMs = state.base ? dayOf(state.base.monday) : NaN;
   const baseOn = baseMs > dayOf(hist.dates[0]) && baseMs <= dayOf(hist.dates.at(-1));
-  $("race-note").textContent = `One point per day with new results, from ${first}. Chances are shares of 10,000 ${runs}, as forecast that day.${baseOn ? ` The faint vertical line marks Monday ${fmt(state.base.monday, { day: "numeric", month: "short" })}.` : ""} The table above lists the current values.`;
+  $("race-note").textContent = `Daily since ${first}.${baseOn ? ` Dotted line: Monday ${fmt(state.base.monday, { day: "numeric", month: "short" })}.` : ""}`;
   if (!rows.length) { $("race-chart").innerHTML = `<p class="note">Nobody has been in this race yet.</p>`; return; }
 
-  const tone = key === "releg" ? "var(--red)" : "var(--amber)";
-  const W = Math.round(Math.min(760, Math.max(300, $("race-chart").clientWidth || 760)));
+  // each club in its own colour (the leader keeps its first choice); every line also has a label or legend entry
+  const colors = clubColors(rows.map((r) => r.t.id));
+  const W = Math.round(Math.max(300, $("race-chart").clientWidth || 760));
   const phone = W < 480;
-  const H = Math.round(Math.max(240, W * 0.5)), pad = { l: 36, r: phone ? 12 : 130, t: 12, b: 26 };
+  const H = Math.round(Math.min(360, Math.max(240, W * 0.5))), pad = { l: 36, r: phone ? 12 : 150, t: 12, b: 26 };
   const times = hist.dates.map(dayOf), t0 = times[0], t1 = times[times.length - 1];
   const x = (ms) => pad.l + ((ms - t0) / (t1 - t0)) * (W - pad.l - pad.r);
   const y = (v) => H - pad.b - (v / 100) * (H - pad.t - pad.b);
@@ -161,8 +161,7 @@ function draw() {
   };
   const lines = rows.map((r, i) => {
     const [d, dots] = path(r.vals);
-    const style = i ? `stroke-dasharray="${DASHES[(i - 1) % DASHES.length]}"` : "";
-    return `<g class="ln${i ? "" : " first"}"><path d="${d}" ${style}/>${dots}</g>`;
+    return `<g class="ln${i ? "" : " first"}" data-s="${i}" style="--c:${colors[i]}"><path d="${d}"/>${dots}</g>`;
   }).reverse().join(""); // leader drawn last
 
   // end labels, pushed apart vertically with a short leader when moved
@@ -175,7 +174,7 @@ function draw() {
     labels = L.map(({ r, i, y0, y: ly }) => {
       const name = r.t.name.length > 12 ? r.t.name.slice(0, 11) + "…" : r.t.name;
       const mover = Math.abs(ly - y0) > 1 ? `<line class="lead-ln" x1="${xe + 2}" y1="${y0}" x2="${xe + 8}" y2="${ly}"/>` : "";
-      return `${mover}<text class="end-lbl${i ? "" : " first"}" x="${xe + 11}" y="${ly + 4}">${esc(name)} ${pct(r.now)}</text>`;
+      return `<g class="end-lbl${i ? "" : " first"}" data-s="${i}">${mover}<circle cx="${xe + 15}" cy="${ly}" r="4" fill="${colors[i]}"/><text x="${xe + 23}" y="${ly + 4}">${esc(name)} ${pct(r.now)}</text></g>`;
     }).join("");
   }
 
@@ -183,17 +182,16 @@ function draw() {
   const hits = hist.dates.map((iso, i) => {
     const x0 = i ? (x(times[i - 1]) + x(times[i])) / 2 : pad.l, x1 = i < times.length - 1 ? (x(times[i]) + x(times[i + 1])) / 2 : W - pad.r;
     const vals = rows.filter((r) => r.vals[i] != null).sort((a, b) => b.vals[i] - a.vals[i]);
-    const tip = `<b>${fmt(iso, { weekday: "short", day: "numeric", month: "short" })}</b>${vals.map((r) => `<br>${clubName(r.t.id, r.t.name, "inline")} <b>${pct(r.vals[i])}</b>`).join("")}`;
+    const tip = `<b>${fmt(iso, { weekday: "short", day: "numeric", month: "short" })}</b>${vals.map((r) => `<br><i class="tip-sw" style="background:${colors[rows.indexOf(r)]}"></i>${clubName(r.t.id, r.t.name, "inline")} <b>${pct(r.vals[i])}</b>`).join("")}`;
     return `<rect class="hit" data-i="${i}" x="${x0.toFixed(1)}" y="${pad.t}" width="${(x1 - x0).toFixed(1)}" height="${H - pad.t - pad.b}" data-tip="${esc(tip)}"/>`;
   }).join("");
 
   const now = rows.map((r) => `${r.t.name} ${pct(r.now)}`).join(", ");
   const aria = `${label} chances since ${first}: ${now}. The table above lists the current values.`;
-  $("race-chart").style.cssText = `--tone:${tone};--tone-t:${key === "releg" ? tone : "var(--amber-t)"}`;
   $("race-chart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria)}">
     ${grid}${axis.join("")}${baseOn ? `<line class="base-ln" x1="${x(baseMs)}" x2="${x(baseMs)}" y1="${pad.t}" y2="${H - pad.b}"/>` : ""}${lines}${labels}
     <line class="xhair" y1="${pad.t}" y2="${H - pad.b}" hidden/><g class="hov"></g>${hits}</svg>`
-    + (phone ? `<ul class="race-legend">${rows.map((r, i) => `<li class="${i ? "" : "first"}"><svg width="22" height="8" aria-hidden="true"><line x1="0" x2="22" y1="4" y2="4" stroke="${i ? "var(--ink-2)" : tone}" stroke-width="${i ? 1.5 : 2.5}" ${i ? `stroke-dasharray="${DASHES[(i - 1) % DASHES.length]}"` : ""}/></svg>${clubCrest(r.t.id, "inline")}<span>${esc(r.t.name)}</span> <b>${pct(r.now)}</b></li>`).join("")}</ul>` : "");
+    + (phone ? `<ul class="race-legend">${rows.map((r, i) => `<li class="${i ? "" : "first"}" data-s="${i}" tabindex="0"><i class="sw" style="background:${colors[i]}"></i>${clubCrest(r.t.id, "inline")}<span>${esc(r.t.name)}</span> <b>${pct(r.now)}</b></li>`).join("")}</ul>` : "");
 
   // crosshair and points follow the pointer, snapped to the date
   const svg = $("race-chart").querySelector("svg"), xhair = svg.querySelector(".xhair"), hov = svg.querySelector(".hov");
@@ -203,7 +201,7 @@ function draw() {
     if (i == null) return clear();
     const cx = x(times[i]);
     xhair.setAttribute("x1", cx); xhair.setAttribute("x2", cx); xhair.removeAttribute("hidden");
-    hov.innerHTML = rows.map((r, n) => r.vals[i] == null ? "" : `<circle class="${n ? "" : "first"}" cx="${cx}" cy="${y(r.vals[i])}" r="3.5"/>`).join("");
+    hov.innerHTML = rows.map((r, n) => r.vals[i] == null ? "" : `<circle cx="${cx}" cy="${y(r.vals[i])}" r="3.5" fill="${colors[n]}"/>`).join("");
   };
   svg.addEventListener("pointermove", track);
   svg.addEventListener("pointerdown", track);
