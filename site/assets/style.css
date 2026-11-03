@@ -474,7 +474,8 @@ h3.dgroup { margin: 18px 0 4px; padding-bottom: 6px; border-bottom: 1px solid va
 .call p { margin: 0 0 8px; color: var(--ink-2); max-width: 62ch; }
 .call b { color: var(--ink); }
 .call .dim { color: var(--dim); font-size: 11.5px; }
-.call .links { margin-top: 12px; }
+p.links { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 22px; } /* centred, so crest links sit level with plain ones */
+p.links a.more { margin-right: 0; }
 
 table.record td.lit { color: var(--amber); font-weight: 700; }
 table.record tr.total td { border-top: 1px solid var(--rule); color: var(--ink); font-weight: 700; }
