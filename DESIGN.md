@@ -1,6 +1,6 @@
 # Floodlight — design DNA
 
-Chosen from four dealt directions (design-for-ai dealer, project `final-table-football-forecasts`, 2026-10-11, hand 3). Dark only, by request.
+Chosen from four dealt directions (design-for-ai dealer, project `final-table-football-forecasts`, 2026-10-11, hand 3). Dark remains the default; an optional light appearance keeps the same scoreboard system.
 
 ## Scoreboard
 
@@ -38,6 +38,35 @@ SIGNATURE   Section headings are legends cut into their frame's top border, like
 ```
 
 `--green` came from the same generator (`--seed 145`, accent steps 9 and 11); it marks a called result and, with `--green-t`, a rank gained. Calls always pair a lamp with a word (Called, Missed, Exact), never colour alone.
+
+## Appearance
+
+Dark is the default when no choice is saved. The header's single 18px outline sun/moon button has a 32px desktop target and 44px touch target; it switches directly between Dark and Light, with a changing accessible name and tooltip. The choice is saved as `floodlight-theme`; the site does not follow the operating-system appearance. The early `data-theme` on `<html>` also sets `color-scheme` and the browser toolbar colour.
+
+Light mode changes the surface, rules, text and semantic colours while retaining the same typography, geometry, chart meaning and probability scale. These are the light token values; `--yellow` and the activity-map scale keep their dark-token values:
+
+```css
+--bg:       #F4F1EB;
+--panel:    #FCFAF6;
+--bulb-off: #E5DED3;
+--rule:     #B7AC9E;
+--rule-2:   #E0D8CD;
+--ink:      #24211D;
+--ink-2:    #585149;
+--dim:      #71685E;
+--amber:    #A45C16;
+--amber-t:  #895019;
+--red:      #B23632;
+--green:    #287739;
+--green-t:  #287739;
+--draw:     #626A75;
+--series-2: #2466A6;
+--series-3: #A43E78;
+```
+
+Light mode uses `--on-accent: #FCFAF6` for text on filled accent plates, and `#71685E` for inactive values and neutral scatter dots. Its pitch markings use `--pitch-line: #817465`; yellow cards keep their existing fill and add a `--yellow-outline: #332C1E`. Club chart colours keep the shipped dark palette. In light mode, a club's secondary colour is preferred when its primary is too pale; otherwise the colour is darkened until it contrasts at least 4.5:1 with the page surface. The chart picker still checks 15 points of OKLab distance; this normal-vision separation is not a colour-vision guarantee. Comparison ticks and swatches use the same checked colour, while their text stays neutral.
+
+The downloadable cards read the active CSS tokens at drawing time. Crests and the UEFA activity scale retain their original artwork and meaning; pitch markings, labels and player markers follow the current surface. The light activity map uses the same green–yellow–red data scale with stronger charcoal pitch overlays.
 
 ## Components added with Matches and Clubs
 

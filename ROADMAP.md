@@ -36,6 +36,10 @@ Task 5 adds the Backtest page over the data exporter and browser engine, with lo
 
 A Backtest tab where a strategy is a universe (leagues, seasons, teams), a rule on our standalone forecasts (model pick, edge, probability, expected goals, Stakes), a stake rule (flat, fraction, by probability or edge, Kelly) and a price (book, pre-closing or closing). It reports profit, ROI with an interval, drawdowns and closing-line value. football-data.co.uk already has this season's 1X2, over/under and handicap prices, and the calibration replays cover 2015/16–2025/26 (in-sample for calibration; 2026/27 is the holdout). The market's log loss is 0.013 lower than our no-odds blend's, so broad strategies are expected to lose. The [backtest plan (24 October 2026)](docs/backtest-plan-2026-10-24.md) has the data checks, the rule and staking catalogue, the UI, the deployment and product decisions and eight tasks.
 
+### 5. Light mode
+
+Implemented locally from the [3 November design proposal](docs/light-mode-plan-2026-11-03.md): an explicit sun/moon preference, dark-by-default behavior, warm ivory surfaces, deeper amber and checked light chart colours. The implementation has not been deployed.
+
 ## Parked
 
 - **Repository rename:** deferred. GitHub redirects remotes but not the Pages address; preserve existing links or set up a custom domain before renaming.

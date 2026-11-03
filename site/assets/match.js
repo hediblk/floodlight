@@ -697,6 +697,23 @@ function drawXg() {
     <path class="xa" data-s="a" style="stroke:${colors[1]}" d="${path(lines[1])}"/><path class="xh" data-s="h" style="stroke:${colors[0]}" d="${path(lines[0])}"/>${endLabels}${goals.map((g) => g.svg).join("")}</svg>`;
 }
 
+function updateThemeCharts() {
+  if (!page || $("view-match").hidden) return;
+  drawXg();
+  const colors = clubColors([page.m.home_id, page.m.away_id]);
+  $("view-match").querySelectorAll(".mp-shots .k-item[data-s]").forEach((item) => {
+    item.querySelector(".sw").style.backgroundColor = colors[item.dataset.s === "h" ? 0 : 1];
+  });
+  const image = $("view-match").querySelector(".heat-surface");
+  const heat = page.detail?.heat?.[page.heatSide];
+  if (image && heat) {
+    const selected = heat.players.find((player) => String(player.id) === page.heatPlayer);
+    image.setAttribute("href", heatImage(selected ? selected.grid : heat.team));
+  }
+}
+
+window.addEventListener("floodlight-theme-change", updateThemeCharts);
+
 let resizing;
 window.addEventListener("resize", () => {
   clearTimeout(resizing);

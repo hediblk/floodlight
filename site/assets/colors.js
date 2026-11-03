@@ -58,15 +58,65 @@ function oklab(hex) {
 const apart = (a, b) => Math.hypot(...oklab(a).map((v, i) => v - oklab(b)[i])) * 100;
 const MIN_APART = 15; // the normal-vision floor for telling two marks apart
 
+function channels(hex) {
+  return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+}
+
+function luminance(hex) {
+  return channels(hex).map((v) => lin(v / 255)).reduce((sum, value, i) => sum + value * [0.2126, 0.7152, 0.0722][i], 0);
+}
+
+function contrast(a, b) {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+function darker(hex, bg) {
+  const [r, g, b] = channels(hex).map((v) => v / 255);
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+  let h = 0, s = 0, l = (max + min) / 2;
+  if (d) {
+    s = d / (1 - Math.abs(2 * l - 1));
+    if (max === r) h = ((g - b) / d) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h = (h * 60 + 360) % 360;
+  }
+  for (; l >= 0; l -= 0.01) {
+    const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
+    const rgb = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x]
+      : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+    const candidate = `#${rgb.map((v) => Math.round((v + m) * 255).toString(16).padStart(2, "0")).join("")}`;
+    if (contrast(candidate, bg) >= 4.5) return candidate;
+  }
+  return "#24211d";
+}
+
+function lightOptions(id, bg) {
+  const hash = Math.abs(Number(id) || 0) % SPARE.length;
+  const own = CLUB[id] || [SPARE[hash]];
+  const spare = [...SPARE.slice(hash), ...SPARE.slice(0, hash)];
+  const readable = (color) => contrast(color, bg) >= 4.5;
+  return [...new Set([
+    ...own.filter(readable), ...own.map((color) => darker(color, bg)),
+    ...spare.filter(readable), ...spare.map((color) => darker(color, bg)),
+  ])];
+}
+
 /* one colour per club id, in order (the leader first): each club takes the first of its own colours, then the
    spares, that sits far enough from every colour already taken */
 export function clubColors(ids) {
+  const light = document.documentElement.dataset.theme === "light";
+  const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#131312";
   const taken = [];
   return ids.map((id) => {
     const hash = Math.abs(Number(id) || 0) % SPARE.length;
     const own = CLUB[id] || [SPARE[hash]];
     const options = [...own, ...SPARE.slice(hash), ...SPARE.slice(0, hash)];
-    const color = options.find((c) => taken.every((t) => apart(c, t) >= MIN_APART)) || options[0];
+    const choices = light ? lightOptions(id, bg) : options;
+    const color = choices.find((c) => (!light || contrast(c, bg) >= 4.5) && taken.every((t) => apart(c, t) >= MIN_APART))
+      || (light ? choices.reduce((best, c) => Math.min(...taken.map((t) => apart(c, t)), Infinity)
+        > Math.min(...taken.map((t) => apart(best, t)), Infinity) ? c : best, choices[0]) : options[0]);
     taken.push(color);
     return color;
   });

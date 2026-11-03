@@ -8,9 +8,34 @@ import { showModel } from "./model.js";
 import { showMatch } from "./match.js";
 
 const VIEWS = ["tables", "matches", "clubs", "model", "match", "backtest"];
+const THEME_KEY = "floodlight-theme";
 let lastComp = COMPS[0].slug;
 let lastView = null;
 let lastArg = null;
+
+function setTheme(theme, save = false) {
+  const resolved = theme === "light" ? "light" : "dark";
+  const root = document.documentElement;
+  root.dataset.theme = resolved;
+  root.style.colorScheme = resolved;
+  document.querySelector('meta[name="theme-color"]').content = resolved === "light" ? "#F4F1EB" : "#131312";
+  const action = resolved === "light" ? "Switch to dark mode" : "Switch to light mode";
+  const button = $("theme-toggle");
+  button.setAttribute("aria-label", action);
+  button.title = action;
+  if (save) {
+    try { localStorage.setItem(THEME_KEY, resolved); } catch { /* Keep this page usable when storage is blocked. */ }
+  }
+  window.dispatchEvent(new CustomEvent("floodlight-theme-change", { detail: { theme: resolved } }));
+}
+
+$("theme-toggle").addEventListener("click", () => {
+  setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light", true);
+});
+window.addEventListener("storage", (event) => {
+  if (event.key === THEME_KEY) setTheme(event.newValue, false);
+});
+setTheme(document.documentElement.dataset.theme);
 
 $("tabs").querySelector('[data-view="backtest"]').hidden = !BACKTEST_ENABLED;
 
