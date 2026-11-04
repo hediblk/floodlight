@@ -1,7 +1,7 @@
 // Clubs view: a strength ranking for the five leagues and the Champions League, and a profile for every club.
 import {
   LEAGUES, compBySlug, $, esc, getJSON, setStatus, ordinal, pct, pct1, dec, verdict, sideProbs, sidePair,
-  outcome, expandable, bulb, shortDate, clock, callScore, clubName, loadForm, formDots, streak,
+  outcome, expandable, bulb, shortDate, clock, callScore, clubName, loadForm, formDots, streak, xgBy,
 } from "./core.js";
 import { matchPanel, record, BIG_STAKE, stakeNow } from "./matches.js";
 import { spreadPanel } from "./tables.js";
@@ -382,7 +382,7 @@ function renderGoals(league, label, clubName) {
   $("p-goals").innerHTML = `<div class="scroll"><table class="board stats">
     <thead><tr><th class="l">Per game</th><th>Goals</th><th>xG</th><th>Model, next ${left}</th></tr></thead>
     <tbody>${line("Scored at home", true, 0)}${line("Scored away", false, 0)}${line("Conceded at home", true, 1)}${line("Conceded away", false, 1)}</tbody></table></div>
-    <p class="note">${label}; xG from ${league.some((m) => m.xg_source === "espn") ? "ESPN" : "Understat"}. The last column is the model's expectation for the games left.</p>
+    <p class="note">${label}; xG from ${[...new Set(league.filter((m) => m.xg).map(xgBy))].join(" and ") || "Understat"}. The last column is the model's expectation for the games left.</p>
     ${rollingXg({ name: clubName }, league, $("p-goals").clientWidth)}`;
 }
 

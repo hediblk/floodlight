@@ -73,7 +73,7 @@ export function matchCard(m, o) {
       detail: [heading("The forecast"), bulbs(m.p, labels), rows([["Expected goals", pair(m.exp, 1)], ["Most likely score", `${h}–${a} · ${pct1(p)}`]]),
         o.stake ? tag("Stakes", o.stake) : null,
         note(`Forecast from the model run of ${new Date(m.at).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}, ${kickoffTime(m.at)}.`)],
-      sources: "Fixtures: football-data.org · xG: Understat · Forecast: Floodlight model",
+      sources: "Fixtures: football-data.org · xG: Understat, ESPN · Forecast: Floodlight model",
     };
   }
   const actual = m.score[0] > m.score[1] ? 0 : m.score[0] === m.score[1] ? 1 : 2;
@@ -143,7 +143,7 @@ export function raceCard({ name, slug, date, runs, since, races }) {
       heading(first.label), race(first, since)],
     detail: [...races.slice(1).flatMap((r) => [heading(r.label), race(r, since)]),
       note(since ? `Arrows give the change since ${since}; under 3 points shows as –. Green is good news for that club, red bad.` : "No frozen Monday to compare with yet, so no changes are shown.")],
-    sources: "Results: football-data.org · xG: Understat · Chances: Floodlight model",
+    sources: "Results: football-data.org · xG: Understat, ESPN · Chances: Floodlight model",
   };
 }
 

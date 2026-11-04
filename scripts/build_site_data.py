@@ -205,7 +205,7 @@ def export_matches(src, slug, prefix, receipts=None, previous=None):
     display = data.get("display_names", {})
     name = lambda team: short_name(display.get(team, team))
     stakes = match_stakes(src, prefix, name)
-    # Understat has no Champions League; fetch_ucl_xg.py adds ESPN's team xG for display, marked by source.
+    # Domestic xG is Understat's, or ESPN's where marked; fetch_ucl_xg.py adds ESPN's Champions League xG for display.
     espn_xg = read_json(src / f"{prefix}_espn_xg.json") or {"matches": {}}
     matches = []
     retained_xg = 0
@@ -226,6 +226,9 @@ def export_matches(src, slug, prefix, receipts=None, previous=None):
             row["score"] = [int(match["homeGoals"]), int(match["awayGoals"])]
         if match.get("home_xg") is not None and match.get("away_xg") is not None:
             row["xg"] = [num(match["home_xg"]), num(match["away_xg"])]
+            if match.get("xg_source") == "espn":
+                # The model fits ESPN xG scaled to Understat's level; the site shows ESPN's own figures.
+                row.update(xg=[num(match["espn_home_xg"]), num(match["espn_away_xg"])], xg_source="espn")
         elif match["status"] == "FINISHED" and str(match["id"]) in espn_xg["matches"]:
             row.update(xg=espn_xg["matches"][str(match["id"])]["xg"], xg_source="espn")
         saved = (previous or {}).get(match["id"], {})
