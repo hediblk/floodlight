@@ -15,20 +15,20 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-10-30T07:09:22.351703+00:00",
-    "url": "https://api.football-data.org/v4/competitions/PL/teams",
-    "sha256": "34ea3aaa91afd5e8090330c8cfdf92d4f96e8478c94f575a8b7b8fa5e5c6a26d",
-    "snapshot": "data/players/rosters/2026-10-30/PL.json"
+    "observed_at": "2026-11-04T07:34:02.221324+00:00",
+    "url": "https://api.football-data.org/v4/competitions/CL/teams",
+    "sha256": "e0bc8e70c5e7c79f7f3d8798149a724e3741bbd951b14a7292773fcbf89686d0",
+    "snapshot": "data/players/rosters/2026-11-04/CL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 30,
+    "players": 29,
     "matched": 29
   },
   "ideal_xi": {
     "formation": "4-3-3",
-    "status": "provisional",
+    "status": "complete",
     "mean_overall": 84.5,
     "slots": [
       {
@@ -721,20 +721,10 @@
         "defending": 37,
         "physical": 49
       }
-    },
-    {
-      "id": 302268,
-      "name": "Joshua Sonni-Lambie",
-      "dob": "2007-11-16",
-      "provider_position": null,
-      "status": "unmatched",
-      "method": null,
-      "ea": null,
-      "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "b6a9b04efc470277",
-  "generated_at": "2026-10-30T07:09:54.613577+00:00",
+  "baseline_id": "27ac613f8a33c8aa",
+  "generated_at": "2026-11-04T07:34:09.584934+00:00",
   "usage": {
     "premier-league": {
       "source": "understat",
@@ -1094,17 +1084,6 @@
           ],
           "xg": 0.4113,
           "xa": 0.0424
-        },
-        "302268": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 1,
-          "unknown_games": 8,
-          "provider_ids": [],
-          "xg": 0,
-          "xa": 0
         }
       },
       "most_used_xi": {
@@ -2885,17 +2864,6 @@
           ],
           "avg_x": 0.6288,
           "avg_y": 0.5641
-        },
-        "302268": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 2,
-          "unknown_games": 1,
-          "provider_ids": [],
-          "avg_x": null,
-          "avg_y": null
         }
       },
       "most_used_xi": {
@@ -3446,5 +3414,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-02T07:50:31.362126+00:00"
+  "usage_generated_at": "2026-11-04T07:34:49.447312+00:00"
 }
