@@ -3,15 +3,16 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import dataclass, replace
+from pathlib import Path
 from typing import Dict
 
 import numpy as np
 import pandas as pd
-import requests
 from scipy.optimize import minimize
 
-from standing_prediction.utils import cache_max_age, cached_get, normalize_team
+from standing_prediction.utils import cached_get, normalize_team
 
+LOG = logging.getLogger(__name__)
 UNDERSTAT_BASE = "https://understat.com"
 XG_PROVIDER = "understat"
 XG_COLUMNS = ["home_xg", "away_xg"]
@@ -20,35 +21,101 @@ COMPETITION_TO_UNDERSTAT_LEAGUE = {
     "PD": "La_liga", "PL": "EPL", "BL1": "Bundesliga", "SA": "Serie_A", "FL1": "Ligue_1",
 }
 UNDERSTAT_FIRST_SEASON = 2014
+UNDERSTAT_COLUMNS = ["understat_id", "utcDate", "homeTeam", "awayTeam", "homeGoals", "awayGoals", *XG_COLUMNS]
+# Saved league data (see data/xg/README.md), the only Understat source since it went offline.
+UNDERSTAT_ARCHIVE = Path(__file__).resolve().parents[2] / "data" / "xg"
+# ESPN publishes team xG for these leagues from 2026/27 and fills matches Understat lacks.
+ESPN_SITE = "https://site.api.espn.com/apis/site/v2/sports/soccer"
+ESPN_CORE = "https://sports.core.api.espn.com/v2/sports/soccer/leagues"
+COMPETITION_TO_ESPN_LEAGUE = {"PD": "esp.1", "PL": "eng.1", "BL1": "ger.1", "SA": "ita.1", "FL1": "fra.1"}
+ESPN_FIRST_SEASON = 2026
+# ESPN reads below Understat, so its values are scaled to Understat's level before fitting: mean Understat over
+# ESPN team xG on the 296 2026/27 matches both cover (through 12 October 2026). The raw values stay for display.
+ESPN_TO_UNDERSTAT = {"PL": 1.117, "PD": 1.117, "BL1": 1.133, "SA": 1.169, "FL1": 1.078}
+ESPN_XG_COLUMNS = ["espn_home_xg", "espn_away_xg"]
+XG_PROVIDERS = "understat, espn where understat has none"
+# Finished matches whose xG is still missing this long before the latest result count as stale.
+XG_STALE_AFTER = pd.Timedelta(days=2)
 
 
-def fetch_understat_matches(*, competition, season, timeout=30, cache_dir=".cache/understat", use_cache=True):
-    """Completed league matches with Understat xG; kickoff times are UTC."""
+def understat_rows(content):
+    return [[match["id"], match["datetime"], match["h"]["title"], match["a"]["title"], match["goals"]["h"],
+             match["goals"]["a"], match["xG"]["h"], match["xG"]["a"]]
+            for match in json.loads(content).get("dates", []) if match.get("isResult")]
+
+
+def understat_frame(rows):
+    out = pd.DataFrame(rows, columns=UNDERSTAT_COLUMNS)
+    out["utcDate"] = pd.to_datetime(out["utcDate"], utc=True, errors="coerce")
+    for column in ["homeGoals", "awayGoals", *XG_COLUMNS]:
+        out[column] = pd.to_numeric(out[column], errors="coerce")
+    return out.sort_values("utcDate").reset_index(drop=True)
+
+
+def fetch_understat_matches(*, competition, season, archive=UNDERSTAT_ARCHIVE):
+    """Completed league matches with Understat xG from the archive; kickoff times are UTC.
+
+    Understat has been unreachable since 2 November 2026, so nothing here touches the network.
+    """
     league = COMPETITION_TO_UNDERSTAT_LEAGUE.get(competition)
     if league is None:
         raise ValueError(f"Understat does not cover competition {competition}.")
     if season < UNDERSTAT_FIRST_SEASON:
         raise ValueError(f"Understat xG starts in {UNDERSTAT_FIRST_SEASON}/{UNDERSTAT_FIRST_SEASON + 1 - 2000}.")
-    session = requests.Session()
-    session.headers.update({"User-Agent": "Mozilla/5.0", "X-Requested-With": "XMLHttpRequest"})
-    content = cached_get(f"{UNDERSTAT_BASE}/getLeagueData/{league}/{season}", session=session, timeout=timeout,
-                         cache_dir=cache_dir if use_cache else None, max_age=cache_max_age(season), stale_if_error=True)
+    path = Path(archive) / league / f"{season}.csv.gz"
+    if not path.exists():
+        raise FileNotFoundError(f"No archived Understat xG for {competition} {season}.")
+    return understat_frame(pd.read_csv(path, dtype={"understat_id": str}))
+
+
+def _espn_json(url, path, keep, *, timeout, use_cache):
+    # Only final payloads are cached: completed scoreboards and team statistics that carry xG.
+    if use_cache and path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    payload = json.loads(cached_get(url, timeout=timeout, cache_dir=None))
+    if use_cache and keep(payload):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload), encoding="utf-8")
+    return payload
+
+
+def _espn_team_xg(payload):
+    for category in payload.get("splits", {}).get("categories", []):
+        for stat in category.get("stats", []):
+            if stat.get("name") == "expectedGoals" and stat.get("value") is not None:
+                return float(stat["value"])
+    return None
+
+
+def fetch_espn_xg(*, competition, dates, timeout=30, cache_dir=".cache/espn/xg", use_cache=True):
+    """Completed league matches on the given UTC dates with ESPN team xG (NaN when unpublished)."""
+    league = COMPETITION_TO_ESPN_LEAGUE.get(competition)
+    if league is None:
+        raise ValueError(f"ESPN xG is not configured for competition {competition}.")
+    cache = Path(cache_dir) / league
     rows = []
-    for match in json.loads(content).get("dates", []):
-        if not match.get("isResult"):
-            continue
-        rows.append({
-            "understat_id": match["id"], "utcDate": match["datetime"],
-            "homeTeam": match["h"]["title"], "awayTeam": match["a"]["title"],
-            "homeGoals": match["goals"]["h"], "awayGoals": match["goals"]["a"],
-            "home_xg": match["xG"]["h"], "away_xg": match["xG"]["a"],
-        })
-    columns = ["understat_id", "utcDate", "homeTeam", "awayTeam", "homeGoals", "awayGoals", *XG_COLUMNS]
-    out = pd.DataFrame(rows, columns=columns)
+    for date in sorted({pd.Timestamp(value).strftime("%Y%m%d") for value in dates}):
+        board = _espn_json(f"{ESPN_SITE}/{league}/scoreboard?dates={date}", cache / "scoreboards" / f"{date}.json",
+                           lambda b: all(e["status"]["type"]["state"] == "post" for e in b.get("events", [])),
+                           timeout=timeout, use_cache=use_cache)
+        for event in board.get("events", []):
+            competition_data = event["competitions"][0]
+            if not competition_data["status"]["type"]["completed"]:
+                continue
+            sides = {row["homeAway"]: row for row in competition_data["competitors"]}
+            xg = [_espn_team_xg(_espn_json(
+                f"{ESPN_CORE}/{league}/events/{event['id']}/competitions/{competition_data['id']}/competitors/{sides[side]['id']}/statistics",
+                cache / "teams" / f"{event['id']}-{sides[side]['id']}.json", lambda p: _espn_team_xg(p) is not None,
+                timeout=timeout, use_cache=use_cache)) for side in ("home", "away")]
+            rows.append({"espn_id": str(event["id"]), "utcDate": competition_data["date"],
+                         "homeTeam": sides["home"]["team"]["displayName"], "awayTeam": sides["away"]["team"]["displayName"],
+                         "homeGoals": sides["home"]["score"], "awayGoals": sides["away"]["score"],
+                         "home_xg": xg[0], "away_xg": xg[1]})
+    out = pd.DataFrame(rows, columns=["espn_id", "utcDate", "homeTeam", "awayTeam", "homeGoals", "awayGoals", *XG_COLUMNS])
     out["utcDate"] = pd.to_datetime(out["utcDate"], utc=True, errors="coerce")
     for column in ["homeGoals", "awayGoals", *XG_COLUMNS]:
         out[column] = pd.to_numeric(out[column], errors="coerce")
-    return out.sort_values("utcDate").reset_index(drop=True)
+    return out
 
 
 def attach_xg(matches, xg, *, max_kickoff_gap=pd.Timedelta(days=2)):
@@ -58,6 +125,7 @@ def attach_xg(matches, xg, *, max_kickoff_gap=pd.Timedelta(days=2)):
     """
     out = matches.copy()
     out["understat_id"] = None
+    out["xg_source"] = None
     for column in XG_COLUMNS:
         out[column] = np.nan
     coverage = {"provider": XG_PROVIDER, "finished": 0, "matched": 0, "unmatched": 0,
@@ -86,22 +154,78 @@ def attach_xg(matches, xg, *, max_kickoff_gap=pd.Timedelta(days=2)):
             continue
         out.loc[index, XG_COLUMNS] = row[XG_COLUMNS].to_numpy(dtype=float)
         out.at[index, "understat_id"] = row.get("understat_id")
+        out.at[index, "xg_source"] = XG_PROVIDER
         coverage["matched"] += 1
     out.attrs["xg_coverage"] = coverage
     return out
 
 
+def _same_club(ours, theirs):
+    ours, theirs = normalize_team(ours), normalize_team(theirs)
+    return bool(ours and theirs) and (ours in theirs or theirs in ours)
+
+
+def attach_espn_xg(matches, espn, *, scale=1.0, max_kickoff_gap=pd.Timedelta(hours=3)):
+    """Fill finished results still missing xG from ESPN, matched by kickoff, final score and a club name.
+
+    Provider names differ (Hamburg SV, Deportivo), so one agreeing side is enough once kickoff and score agree.
+    The xG columns get ESPN's values times `scale`; `espn_home_xg`/`espn_away_xg` keep the raw values.
+    """
+    out = matches.copy()
+    for column in ESPN_XG_COLUMNS:
+        out[column] = np.nan
+    coverage = dict(out.attrs.get("xg_coverage", {}))
+    coverage.update(espn_matched=0, espn_unmatched=0, espn_scale=scale)
+    kickoffs = pd.to_datetime(out["utcDate"], utc=True, errors="coerce")
+    missing = out["homeGoals"].notna() & out["awayGoals"].notna() & out["home_xg"].isna()
+    for index in out.index[missing]:
+        candidates = espn[(espn["utcDate"] - kickoffs[index]).abs().le(max_kickoff_gap)
+                          & espn["homeGoals"].eq(out.at[index, "homeGoals"]) & espn["awayGoals"].eq(out.at[index, "awayGoals"])]
+        agree = [_same_club(out.at[index, "homeTeam"], row.homeTeam) + _same_club(out.at[index, "awayTeam"], row.awayTeam)
+                 for row in candidates.itertuples()]
+        best = candidates[[0 < count == max(agree) for count in agree]]
+        if len(best) != 1 or np.isnan(best[XG_COLUMNS].to_numpy(dtype=float)).any():
+            coverage["espn_unmatched"] += 1
+            continue
+        raw = best[XG_COLUMNS].to_numpy(dtype=float)[0]
+        out.loc[index, ESPN_XG_COLUMNS] = raw
+        out.loc[index, XG_COLUMNS] = raw * scale
+        out.at[index, "xg_source"] = "espn"
+        coverage["espn_matched"] += 1
+    out.attrs["xg_coverage"] = coverage
+    return out
+
+
 def load_season_xg(matches, *, competition, season, cache=True):
-    """Attach Understat xG to one season's results; unavailable seasons keep missing xG."""
+    """Attach Understat xG to one season's results, then ESPN's where Understat has none.
+
+    Unavailable seasons keep missing xG; `xg_coverage` counts stale gaps before the latest result.
+    """
     try:
-        xg = fetch_understat_matches(competition=competition, season=season, use_cache=cache)
+        xg = fetch_understat_matches(competition=competition, season=season)
     except (ValueError, OSError, RuntimeError, KeyError) as exc:
-        logging.getLogger(__name__).warning("Understat xG unavailable for %s %s (%s).",
-                                            competition, season, type(exc).__name__)
+        LOG.warning("Understat xG unavailable for %s %s (%s).", competition, season, type(exc).__name__)
         out = attach_xg(matches, None)
         out.attrs["xg_coverage"]["error"] = type(exc).__name__
-        return out
-    return attach_xg(matches, xg)
+    else:
+        out = attach_xg(matches, xg)
+    finished = out["homeGoals"].notna() & out["awayGoals"].notna()
+    if competition in COMPETITION_TO_ESPN_LEAGUE and season >= ESPN_FIRST_SEASON and out.loc[finished, "home_xg"].isna().any():
+        dates = pd.to_datetime(out.loc[finished & out["home_xg"].isna(), "utcDate"], utc=True, errors="coerce").dropna()
+        try:
+            espn = fetch_espn_xg(competition=competition, dates=dates, use_cache=cache)
+        except (ValueError, OSError, RuntimeError, KeyError, TypeError) as exc:
+            LOG.warning("ESPN xG unavailable for %s %s (%s).", competition, season, type(exc).__name__)
+            out.attrs["xg_coverage"]["espn_error"] = type(exc).__name__
+        else:
+            out = attach_espn_xg(out, espn, scale=ESPN_TO_UNDERSTAT[competition])
+    kickoffs = pd.to_datetime(out["utcDate"], utc=True, errors="coerce")
+    stale = finished & out["home_xg"].isna() & kickoffs.lt(kickoffs[finished].max() - XG_STALE_AFTER)
+    out.attrs["xg_coverage"]["stale"] = int(stale.sum())
+    if stale.any() and season >= ESPN_FIRST_SEASON:
+        LOG.warning("xG missing for %s finished %s matches before %s.", int(stale.sum()), competition,
+                    (kickoffs[finished].max() - XG_STALE_AFTER).date())
+    return out
 
 
 @dataclass(frozen=True)

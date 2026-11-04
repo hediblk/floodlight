@@ -31,7 +31,7 @@ flowchart LR
     subgraph Inputs
         FD[football-data.org<br/>standings, results, fixtures]
         HIST[football-data.co.uk<br/>2 prior seasons]
-        US[Understat<br/>match xG]
+        US[Understat archive + ESPN<br/>match xG]
         ODDS[The Odds API<br/>optional 1X2 odds]
     end
 
@@ -134,7 +134,7 @@ classDiagram
 | Component | File | Role |
 | --- | --- | --- |
 | Dixon–Coles | `dixon_coles.py` | Expected goals and scoreline probabilities per fixture |
-| xG strengths | `xg.py` | Attack/defence fitted to Understat xG |
+| xG strengths | `xg.py` | Attack/defence fitted to match xG: Understat (live or [archived](data/xg/README.md)), ESPN where Understat has none |
 | Elo | `elo.py` | Result-based ratings, regressed toward average each season |
 | Odds | `odds.py` | De-margined bookmaker probabilities, only if quoted before the forecast time |
 | Blend | `ensemble.py` | Weighted geometric mean of the available models |
@@ -262,7 +262,7 @@ python3 -m http.server -d site 8000
 
 ## Data quirks
 
-- **Unavailable xG:** if an Understat download fails, reuse its saved response and warn with the original retrieval time, without renewing the cache. Site exports also retain previously published xG for unchanged finished fixtures when fresh xG is missing; new games stay without xG until the source recovers.
+- **Unavailable xG:** Understat has been offline since 2 November 2026, so its xG comes only from the committed [archive](data/xg/README.md) (through 12 October 2026) and nothing calls Understat for it; ESPN team xG fills finished league games from 2026/27 that still lack xG, marked `xg_source: "espn"`. `refresh_site.sh` warns when finished games more than two days before the latest result still have no xG. Site exports also retain previously published xG for unchanged finished fixtures when fresh xG is missing; new games stay without xG until the source recovers.
 - **Cancelled** fixtures are simulated as if they will be replayed; `--strict-fixtures` makes them an error.
 - **Awarded** results count as played. Official decisions without a score go in `fixture_overrides.csv`.
 - **Lagging** results, where the table already counts a match still listed as unplayed, take their score from Understat.
