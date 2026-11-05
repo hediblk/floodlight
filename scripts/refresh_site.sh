@@ -15,7 +15,7 @@ warn() {
 
 clear_outputs() {
   rm -f "$OUT/$1"_{summary,position_probs,standings_snapshot,matches_snapshot,club_ratings}.csv \
-    "$OUT/$1"_{forecast,metadata,match_forecasts,stakes,espn_xg}.json
+    "$OUT/$1"_{forecast,metadata,match_forecasts,stakes,espn_xg,matchup_params}.json
 }
 
 failed=()

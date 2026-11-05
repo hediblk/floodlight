@@ -1,4 +1,4 @@
-// Router: #<competition> (tables), #matches[/YYYY-MM-DD], #match/<competition>/<fixture id>, #clubs[/<club>[/squad | /vs/<club>]], #model[/<section>], #backtest[/<encoded strategy>].
+// Router: #<competition> (tables), #matches[/YYYY-MM-DD], #match/<competition>/<fixture id>, #clubs[/<club>[/squad | /vs/<club>]], #model[/<section>], #backtest[/<encoded strategy>], #whatif[/<home>/<away>/<mode>[/<first leg>]].
 import { COMPS, $, loadCrests, loadRun } from "./core.js";
 import { BACKTEST_ENABLED } from "./features.js";
 import { showTables } from "./tables.js";
@@ -6,8 +6,9 @@ import { showMatches } from "./matches.js";
 import { showClubs } from "./clubs.js";
 import { showModel } from "./model.js";
 import { showMatch } from "./match.js";
+import { showWhatIf } from "./whatif.js";
 
-const VIEWS = ["tables", "matches", "clubs", "model", "match", "backtest"];
+const VIEWS = ["tables", "matches", "clubs", "model", "match", "backtest", "whatif"];
 const THEME_KEY = "floodlight-theme";
 let lastComp = COMPS[0].slug;
 let lastView = null;
@@ -64,6 +65,7 @@ function route() {
   else if (view === "matches") showMatches(arg);
   else if (view === "match") showMatch(arg, sub);
   else if (view === "clubs") showClubs(arg, sub === "vs" ? extra : "", sub === "squad");
+  else if (view === "whatif") showWhatIf(location.hash.slice(1).split("/").slice(1));
   else if (view === "backtest") import("./backtest.js").then(({ showBacktest }) => {
     if (location.hash.split("/")[0] === "#backtest") showBacktest();
   });

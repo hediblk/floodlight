@@ -29,6 +29,7 @@ from standing_prediction.odds import (
 )
 from standing_prediction.h2h import encounter_residuals, h2h_shifts, pair_effects
 from standing_prediction.match_forecasts import describe_match, forecast_played, match_records, write_match_forecasts
+from standing_prediction.matchups import matchup_params, single_reference, write_matchup_params
 from standing_prediction.scorecard import frequency_baseline
 from standing_prediction.simulate import FixtureSimulationSpec, simulate_season_scores
 from standing_prediction.stakes import fixture_stakes
@@ -318,6 +319,16 @@ def run_prediction(*, competition="PD", season=None, n_sim=10000, seed=7, max_go
     ratings_path.unlink(missing_ok=True)
     if current_models is not None:
         club_ratings(current_models[0], teams).to_csv(ratings_path, index=False, float_format="%.4f")
+    params_path = Path(out_dir) / f"{competition.lower()}_matchup_params.json"
+    params_path.unlink(missing_ok=True)
+    if current_models is not None and calibrator is None and not current_models[0].pair_shift:
+        dc, elo = current_models
+        model_weights = weights or DEFAULT_WEIGHTS
+        params = matchup_params(dc, elo, model_weights, teams=teams, generated_at=metadata["generated_at"],
+                                as_of=cutoff.isoformat(), max_goals=max_goals)
+        params["reference"] = [single_reference(dc, elo.predict_probs, model_weights, home, away, max_goals=max_goals)
+                               for home, away in zip(teams[0:4:2], teams[1:4:2])]
+        write_matchup_params(params_path, params)
     stakes_path = Path(out_dir) / f"{competition.lower()}_stakes.json"
     stakes_path.unlink(missing_ok=True)
     if details is not None:

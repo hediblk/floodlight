@@ -25,6 +25,7 @@ Contract validation guarantees that published data conforms to these rules. It c
 | `clubs.json` | `generated_at, season, scale, league_averages, featured, clubs`; nonempty ranked clubs with identity, domestic league, UCL participation, ratings, expected goals against the reference opponent, and overall/attack/defense/domestic ranks. Champions League clubs from outside the five leagues have a null `league` and `league_rank`, with `country` and a three-letter `country_code`. |
 | `squads/<season>/<slug>.json` | Optional per-club squad reference: identity, generation/baseline provenance, EA vintage and source hashes, roster observation, coverage, players and ideal XI. See Squad references below. |
 | `profiles.json` | Optional club profiles: `generated_at, season, window, form, leagues, clubs`. `leagues` maps each league slug to its pooled per-game means; `clubs` maps decimal-string club IDs (league clubs only) to their measures, form, game state and run-in. See Club profiles below. |
+| `matchups.json` | Optional What if parameters: `generated_at, engines`. `engines.europe` (the joint European model) is required; each league slug may add that league's own model. Each engine has `generated_at, as_of, max_goals, rate_bounds, intercept, home_advantage, rho, elo, weights, clubs, reference`; `clubs` maps site club slugs to `attack, defense, elo`. See What if parameters below. |
 | `crests.json` | Object keyed by decimal-string provider IDs. Entries contain `name, source, path`, with dimensions for PNGs. Published crest paths refer to local site assets. A missing crest entry leaves the club name usable. |
 | `history/<season>/<competition>.json` | `slug, season, metrics, dates, cutoff, teams`. Each team has one series per metric, with entries aligned to `dates`. Domestic metrics are `title,ucl,releg`; UCL metrics are `top8,top24,last16,qf,sf,final,title`. |
 | `history/<season>/clubs.json` | `season, fields, weeks`; each week has a Monday `date`, nullable result `cutoff`, and club-ID-string keys mapped to rating tuples. `fields` is currently `rating,attack,defense`. |
@@ -167,6 +168,14 @@ A breaking change must update schemas, exporter, affected consumers, fixtures, a
 
 Passing this gate means data is valid under this contract. The browser checks then show that every view renders from it without script errors; neither proves the numbers are right.
 
+
+## What if parameters
+
+`football-predict` writes `<prefix>_matchup_params.json` and `football-ucl` writes `cl_matchup_params.json` beside their club ratings. Each holds the fitted goal model (`intercept`, `home_advantage`, `rho` and every club's log-rate `attack` and `defense`), Elo (`ratings` per club, `home_advantage`, `draw_base`, `draw_scale`) and the no-odds blend weights `main`/`elo`, normalized to sum to one. The domestic goal model is the one after the xG adjustment, which produced the published forecasts. Only the joint model has `rate_bounds` (`RATE_BOUNDS`, applied to each expected-goal rate). A domestic run with a calibrator or head-to-head shifts writes no file, because the browser cannot reproduce either. `scripts/build_site_data.py` keeps only site clubs, keyed by slug, at full float precision. An engine without fresh parameters keeps its previous block and timestamps; without a European block at all, the previous `matchups.json` stays.
+
+`reference` cases are computed in Python with the fitted model objects: single games (`p` home/draw/away, goal `rates`, the blended chance of 1–1 `score_1_1`), and for the joint model a two-leg tie with and without a first-leg score (`p` is `team1`'s chance to go through, `second_home` hosts the second leg, `first_leg` is `[first host goals, visitors' goals]`) and a final (one neutral game). `check_site.py` requires the browser engine to reproduce each to 1e-9. The validator checks the weights, bounds and reference identities, and that every `clubs.json` club appears in the European model and in its league's model when that block exists.
+
+The parameters describe the models as of their run's `as_of`; nothing later enters. What if results are model only (no bookmaker prices), are computed in the browser, and are never saved as forecasts or history.
 
 ## Club profiles
 
