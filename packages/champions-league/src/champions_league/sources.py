@@ -152,6 +152,11 @@ def european_supplement(*, cache=True):
     return frames
 
 
+def openfootball_ucl(season, *, cache=True):
+    url = f"https://raw.githubusercontent.com/openfootball/champions-league/{EURO_CUPS_COMMIT}/{season}-{(season + 1) % 100:02d}/cl.txt"
+    return football_txt(get_source(url, cache=cache, pinned=True), season=season, source=url, competition="CL")
+
+
 def slovak_matches(season, *, cache=True):
     base = f"https://www.nikeliga.sk/zapasy/{season}"
     index = get_source(base, season=season, cache=cache)
