@@ -184,11 +184,11 @@ Read `AGENTS.md`, `DESIGN.md`, the [site data contract](site-data-contract.md), 
 
 | Task | Wave | Depends on | Size | Suggested agent | Status |
 | --- | --- | --- | --- | --- | --- |
-| 1. Feasibility study | A | none | M | Codex | [PR #76](https://github.com/hediblk/football-predictions/pull/76) |
-| 2. Raw prices in the odds archive | A | none | S | Claude | [PR #75](https://github.com/hediblk/football-predictions/pull/75) |
-| 3. Backtest data, 1X2 | A | 1 for parity summaries | L | Codex | [PR #77](https://github.com/hediblk/football-predictions/pull/77) |
-| 4. Backtest engine | A | this plan's strategy shape | L | Claude | [PR #78](https://github.com/hediblk/football-predictions/pull/78) |
-| 5. Backtest view | B | 3, 4 | L | Codex | [PR #79](https://github.com/hediblk/football-predictions/pull/79) |
+| 1. Feasibility study | A | none | M | Codex | [PR #76](https://github.com/hediblk/floodlight/pull/76) |
+| 2. Raw prices in the odds archive | A | none | S | Claude | [PR #75](https://github.com/hediblk/floodlight/pull/75) |
+| 3. Backtest data, 1X2 | A | 1 for parity summaries | L | Codex | [PR #77](https://github.com/hediblk/floodlight/pull/77) |
+| 4. Backtest engine | A | this plan's strategy shape | L | Claude | [PR #78](https://github.com/hediblk/floodlight/pull/78) |
+| 5. Backtest view | B | 3, 4 | L | Codex | [PR #79](https://github.com/hediblk/floodlight/pull/79) |
 | 6. Over/under and Asian handicap | C | 3, 4, 5 | M | Codex | Pending |
 | 7. Robustness and comparison | C | 5 | M | Claude | Pending |
 | 8. Paper trading | D | 2, 5, D3 | M | Codex | Pending |

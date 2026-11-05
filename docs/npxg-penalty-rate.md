@@ -107,7 +107,7 @@ Title and top-four log loss move by less than their standard errors, in opposite
 
 ## Reproduce
 
-**Code removed from `main` (24 October 2026).** The experiment was not adopted, so only this report stays. The code is at commit `bb6a1b7`: [`npxg.py`](https://github.com/hediblk/football-predictions/blob/bb6a1b7/packages/forecast-calibration/src/forecast_calibration/npxg.py) and the opt-in npxG join in [`xg.py`](https://github.com/hediblk/football-predictions/blob/bb6a1b7/src/standing_prediction/xg.py). Check out that commit to run the commands below.
+**Code removed from `main` (24 October 2026).** The experiment was not adopted, so only this report stays. The code is at commit `bb6a1b7`: [`npxg.py`](https://github.com/hediblk/floodlight/blob/bb6a1b7/packages/forecast-calibration/src/forecast_calibration/npxg.py) and the opt-in npxG join in [`xg.py`](https://github.com/hediblk/floodlight/blob/bb6a1b7/src/standing_prediction/xg.py). Check out that commit to run the commands below.
 
 From the repository root, with the shared `.cache` (features and replays each take several minutes on 7 workers):
 

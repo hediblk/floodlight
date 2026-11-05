@@ -3,7 +3,7 @@
 import { crestPath, pct, pct1, dec, xgBy } from "./core.js";
 
 const SIZES = { portrait: [1080, 1350], landscape: [1200, 675] };
-const SITE = "hediblk.github.io/football-predictions";
+const SITE = "hediblk.github.io/floodlight";
 const TOKENS = ["bg", "bulb-off", "rule", "rule-2", "ink", "ink-2", "dim", "amber", "amber-t", "red", "green", "green-t", "draw", "sign", "mono"];
 const builders = {}; // card kind -> () => card, set by the page that shows its chips
 

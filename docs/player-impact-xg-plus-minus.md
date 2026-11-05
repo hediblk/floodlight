@@ -321,7 +321,7 @@ The first version gave every training row the ratings dated before the **evaluat
 
 ## Reproduce
 
-**Code removed from `main` (24 October 2026).** The experiment was not adopted, so only this report stays. The code is at commit `bb6a1b7`: [`player_impact.py`](https://github.com/hediblk/football-predictions/blob/bb6a1b7/src/standing_prediction/player_impact.py) and [`player_prior.py`](https://github.com/hediblk/football-predictions/blob/bb6a1b7/src/standing_prediction/player_prior.py). Check out that commit to run the commands below.
+**Code removed from `main` (24 October 2026).** The experiment was not adopted, so only this report stays. The code is at commit `bb6a1b7`: [`player_impact.py`](https://github.com/hediblk/floodlight/blob/bb6a1b7/src/standing_prediction/player_impact.py) and [`player_prior.py`](https://github.com/hediblk/floodlight/blob/bb6a1b7/src/standing_prediction/player_prior.py). Check out that commit to run the commands below.
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m standing_prediction.player_impact --out-dir out/player-impact

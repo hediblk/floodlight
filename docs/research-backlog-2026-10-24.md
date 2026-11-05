@@ -17,7 +17,7 @@ These are model ideas taken from the football-forecasting literature, written so
 
 ### R1 and R2: free market pool and margin removal (tested, not adopted)
 
-These were tested on 24 October 2026 in the closed [hediblk/football-predictions#70](https://github.com/hediblk/football-predictions/pull/70). That PR's branch `codex/market-blend-experiments` keeps the code (`forecast_calibration.market_blend`) and the full report (`docs/market-blend-and-margins.md`).
+These were tested on 24 October 2026 in the closed [hediblk/floodlight#70](https://github.com/hediblk/floodlight/pull/70). That PR's branch `codex/market-blend-experiments` keeps the code (`forecast_calibration.market_blend`) and the full report (`docs/market-blend-and-margins.md`).
 
 - **R1, free log-linear pool** (Benter's second stage; weights need not sum to one):
   - Odds-blended forecast improves by 0.0006 (SE 0.0004) on the top five, expanding window, and by 0.0019 on the outside leagues.
