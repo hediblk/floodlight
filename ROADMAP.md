@@ -40,6 +40,10 @@ A Backtest tab where a strategy is a universe (leagues, seasons, teams), a rule 
 
 Built from the [3 November design proposal](docs/light-mode-plan-2026-11-03.md): an explicit sun/moon preference, dark-by-default behavior, warm ivory surfaces, deeper amber and checked light chart colours.
 
+### 6. What-if matchups
+
+Pick any two clubs, set the venue (either home, or neutral) and get the model's forecast in the browser, with a two-leg mode giving the chance to go through, optionally after a first-leg score. Probabilities have a closed form and two-leg ties are already computed exactly (`tie_probability`), so it needs only a small parameter export and a JavaScript port. See the [what-if plan (5 November 2026)](docs/what-if-plan-2026-11-05.md); decisions D1–D4 are open.
+
 ## Parked
 
 - **Repository rename:** deferred. GitHub redirects remotes but not the Pages address; preserve existing links or set up a custom domain before renaming.
