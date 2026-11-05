@@ -1,6 +1,6 @@
 # What-if matchups: plan and feasibility (5 November 2026)
 
-**Status: planning only, no code yet.**
+**Status: built (5 November 2026).** Decisions taken: D1 domestic engine for same-league single games at a club's ground; D2 its own **What if** tab; D3 the 111 site clubs; D4 first-leg score included. Two changes to this plan, at the user's request: the tab opens on a team-select screen (two club panels cycled by league and club, then Kick off), and it adds tweak sliders (each club's attack and defence ±20%, home advantage 0–200% and the shootout split), replacing the "no strength sliders" non-goal below. Any slider off the model's value marks the result "Modified · not a Floodlight forecast". A "Play it" button draws one result from the chances.
 
 ## The idea
 

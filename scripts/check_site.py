@@ -3,6 +3,8 @@
 # Usage: python scripts/check_site.py [--site site] [--backtest-data out/backtest]
 # Backtest preset summaries are checked against a synthetic Python fixture and optional local season files.
 #
+# The What if engine must reproduce the reference cases exported with matchups.json to 1e-9.
+#
 # Serves the directory on a local port with the data it ships, stops the browser clock at the newest forecast so
 # "today" is the forecast day, and loads each competition table, two match days, the clubs ranking, two club pages,
 # an upcoming match page, finished ones in After and Before mode (one with a shot report), club Squad views (with a squad file, with season usage and
@@ -236,6 +238,17 @@ def routes(data):
         found.append((f"#clubs/{clubs[0]['slug']}/vs/{clubs[1]['slug']}", [
             "#p-hero h1", "#p-compare optgroup", "#p-compare option:checked", "#p-rating-chart .rating-series.comparison path",
             "#p-strength .rating-compare-tick", "#p-rating-caption"], [], None))
+    # What if: the pick screen cycles a side; results for a single game (Play it draws a score), a two-leg tie after a
+    # first-leg score and a final.
+    if (data / "matchups.json").exists():
+        a, b = clubs[0]["slug"], clubs[1]["slug"]
+        found += [("#whatif", ["#wi-side-home .wi-stats b", "#wi-side-away .wi-crest img", "#wi-kick[href^='#whatif/']"], [], None,
+                   [("#wi-side-home [data-cycle='home:club:1']", "#wi-side-home .wi-club .wi-lbl", None)]),
+                  (f"#whatif/{a}/{b}/single", [".wi-hero .numeral", ".wi-ob i", ".wi-grid i", ".scores li", "#wi-h-att"], [], None,
+                   [("#wi-roll", "#wi-rolled .wi-board", None)]),
+                  (f"#whatif/{a}/{b}/legs/1-0", [".wi-hero .numeral", ".wi-split i", ".wi-agg div", "#wi-played[aria-pressed=true]",
+                                                  "[data-leg='1'][aria-pressed=true]", "#wi-pens"], [], None),
+                  (f"#whatif/{b}/{a}/final", [".wi-hero .numeral", ".wi-split i", ".wi-grid i"], [], None)]
     # Task 8: scorecard route, with calibration and cumulative record on both widths.
     if scorecard and scorecard["all"]["n"]:
         selectors, choices = ["#sc-summary tbody tr", "#sc-charts svg", "#sc-cohorts button"], []
@@ -482,6 +495,34 @@ def check_backtest_ui(context, base, fixture_path):
     return failures
 
 
+def check_matchups(context, base, site):
+    # The browser engine must reproduce every reference case the Python models exported with their parameters.
+    if not (site / "data/matchups.json").exists():
+        return []
+    page = context.new_page()
+    page.goto(base, wait_until="networkidle")
+    failures = page.evaluate("""async () => {
+        const E = await import('./assets/matchup-engine.js');
+        const data = await (await fetch('data/matchups.json')).json();
+        const out = [];
+        for (const [name, engine] of Object.entries(data.engines)) for (const c of engine.reference) {
+            let got, want;
+            if (c.kind === 'single') {
+                const g = E.game(engine, c.home, c.away, { neutral: c.neutral });
+                got = [...g.p, ...g.rates, g.grid[1][1]]; want = [...c.p, ...c.rates, c.score_1_1];
+            } else {
+                got = [E.tie(engine, c.team1, c.team2, { final: c.kind === 'final', secondHome: c.second_home, firstLeg: c.first_leg }).p];
+                want = [c.p];
+            }
+            const error = Math.max(...got.map((x, k) => Math.abs(x - want[k])));
+            if (!(error <= 1e-9)) out.push(`${name} ${c.kind} ${c.home || c.team1}–${c.away || c.team2}: off by ${error}`);
+        }
+        return out;
+    }""")
+    page.close()
+    return [f"matchup engine: {failure}" for failure in failures]
+
+
 def check(site, backtest_data=None):
     site = Path(site).resolve()
     origin, pages = routes(site / "data")
@@ -494,6 +535,7 @@ def check(site, backtest_data=None):
         context = browser.new_context(timezone_id="UTC")
         context.route(lambda url: not url.startswith(base), lambda route: route.fulfill(status=200, body=""))
         failures += check_backtest(context, base, site, backtest_data)
+        failures += check_matchups(context, base, site)
         context.close()
         for width, viewport in VIEWPORTS.items():
             context = browser.new_context(viewport=viewport, timezone_id="UTC", locale="en-GB")

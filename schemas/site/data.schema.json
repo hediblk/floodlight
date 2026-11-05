@@ -2287,6 +2287,272 @@
         "ideal_xi",
         "players"
       ]
+    },
+    "matchupReference": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "single"
+            },
+            "home": {
+              "$ref": "#/$defs/slug"
+            },
+            "away": {
+              "$ref": "#/$defs/slug"
+            },
+            "neutral": {
+              "type": "boolean"
+            },
+            "p": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/probability"
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "rates": {
+              "$ref": "#/$defs/goalPair"
+            },
+            "score_1_1": {
+              "$ref": "#/$defs/probability"
+            }
+          },
+          "required": [
+            "kind",
+            "home",
+            "away",
+            "neutral",
+            "p",
+            "rates",
+            "score_1_1"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "two_legs"
+            },
+            "team1": {
+              "$ref": "#/$defs/slug"
+            },
+            "team2": {
+              "$ref": "#/$defs/slug"
+            },
+            "second_home": {
+              "$ref": "#/$defs/slug"
+            },
+            "first_leg": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              ]
+            },
+            "p": {
+              "$ref": "#/$defs/probability"
+            }
+          },
+          "required": [
+            "kind",
+            "team1",
+            "team2",
+            "second_home",
+            "first_leg",
+            "p"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "final"
+            },
+            "team1": {
+              "$ref": "#/$defs/slug"
+            },
+            "team2": {
+              "$ref": "#/$defs/slug"
+            },
+            "p": {
+              "$ref": "#/$defs/probability"
+            }
+          },
+          "required": [
+            "kind",
+            "team1",
+            "team2",
+            "p"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "matchupEngine": {
+      "type": "object",
+      "properties": {
+        "generated_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "as_of": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "max_goals": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "rate_bounds": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/goalPair"
+            }
+          ]
+        },
+        "intercept": {
+          "type": "number"
+        },
+        "home_advantage": {
+          "type": "number"
+        },
+        "rho": {
+          "type": "number"
+        },
+        "elo": {
+          "type": "object",
+          "properties": {
+            "home_advantage": {
+              "type": "number"
+            },
+            "draw_base": {
+              "type": "number",
+              "minimum": 0
+            },
+            "draw_scale": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "home_advantage",
+            "draw_base",
+            "draw_scale"
+          ],
+          "additionalProperties": false
+        },
+        "weights": {
+          "type": "object",
+          "properties": {
+            "main": {
+              "$ref": "#/$defs/probability"
+            },
+            "elo": {
+              "$ref": "#/$defs/probability"
+            }
+          },
+          "required": [
+            "main",
+            "elo"
+          ],
+          "additionalProperties": false
+        },
+        "clubs": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/slug"
+          },
+          "minProperties": 2,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "attack": {
+                "type": "number"
+              },
+              "defense": {
+                "type": "number"
+              },
+              "elo": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "attack",
+              "defense",
+              "elo"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "reference": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/matchupReference"
+          }
+        }
+      },
+      "required": [
+        "generated_at",
+        "as_of",
+        "max_goals",
+        "rate_bounds",
+        "intercept",
+        "home_advantage",
+        "rho",
+        "elo",
+        "weights",
+        "clubs",
+        "reference"
+      ],
+      "additionalProperties": false
+    },
+    "matchups": {
+      "type": "object",
+      "properties": {
+        "generated_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "engines": {
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "europe",
+              "premier-league",
+              "la-liga",
+              "bundesliga",
+              "serie-a",
+              "ligue-1"
+            ]
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/matchupEngine"
+          },
+          "required": [
+            "europe"
+          ]
+        }
+      },
+      "required": [
+        "generated_at",
+        "engines"
+      ],
+      "additionalProperties": false
     }
   }
 }

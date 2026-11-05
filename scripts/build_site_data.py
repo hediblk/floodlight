@@ -712,6 +712,37 @@ def export_clubs(src, leagues, ucl, previous=None):
     }
 
 
+# What-if parameters keyed by site slug: the joint European model for any pairing, plus each league's own model.
+# An engine without fresh parameters keeps its previous block and timestamp.
+def export_matchups(src, leagues, ucl, previous=None):
+    europe = {canonical_team(team["full"]): team["slug"] for league in leagues for team in league["teams"]}
+    europe.update({team["key"]: team["slug"] for team in ucl["teams"] if team["key"] not in europe})
+    sources = [("europe", "cl", europe)] + [
+        (league["slug"], league["code"].lower(), {team["full"]: team["slug"] for team in league["teams"]}) for league in leagues]
+    kept = (previous or {}).get("engines", {})
+    engines = {}
+    for name, prefix, slugs in sources:
+        path = src / f"{prefix}_matchup_params.json"
+        if not path.exists():
+            if name in kept:
+                engines[name] = kept[name]
+                print(f"Matchup parameters for {name} unavailable; kept the previous block")
+            continue
+        raw = json.loads(path.read_text())
+        fields = ("home", "away", "team1", "team2", "second_home")
+        reference = [{**case, **{f: slugs[case[f]] for f in fields if f in case}} for case in raw["reference"]
+                     if all(case[f] in slugs for f in fields if f in case)]
+        engines[name] = {
+            **{key: raw[key] for key in ("generated_at", "as_of", "max_goals", "rate_bounds", "intercept",
+                                         "home_advantage", "rho", "elo", "weights")},
+            "clubs": {slugs[team]: values for team, values in raw["teams"].items() if team in slugs},
+            "reference": reference,
+        }
+    if "europe" not in engines:
+        raise FileNotFoundError(src / "cl_matchup_params.json")
+    return {"generated_at": max(engine["generated_at"] for engine in engines.values()), "engines": engines}
+
+
 def rated_clubs(src, leagues, ucl):
     """{football-data.org id: (rating, attack, defense)} for every club in the five leagues and the
     Champions League, from `cl_club_ratings.csv`; None without fresh ratings."""
@@ -841,6 +872,12 @@ def main(argv=None):
     previous = json.loads(clubs_path.read_text()) if clubs_path.exists() else None
     clubs = export_clubs(args.src, competitions[:-1], competitions[-1], previous)
     write_json(clubs_path, clubs)
+    matchups_path = args.dest / "matchups.json"
+    try:
+        write_json(matchups_path, export_matchups(args.src, competitions[:-1], competitions[-1], read_json(matchups_path)))
+    except FileNotFoundError:
+        print("Matchup parameters unavailable; the What if tab keeps its previous file" if matchups_path.exists()
+              else "Matchup parameters unavailable; no matchups.json yet")
     if args.history:
         fresh = [data for data in competitions if data["slug"] not in kept]
         ucl_fresh = "champions-league" not in kept

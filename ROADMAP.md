@@ -42,7 +42,7 @@ Built from the [3 November design proposal](docs/light-mode-plan-2026-11-03.md):
 
 ### 6. What-if matchups
 
-Pick any two clubs, set the venue (either home, or neutral) and get the model's forecast in the browser, with a two-leg mode giving the chance to go through, optionally after a first-leg score. Probabilities have a closed form and two-leg ties are already computed exactly (`tie_probability`), so it needs only a small parameter export and a JavaScript port. See the [what-if plan (5 November 2026)](docs/what-if-plan-2026-11-05.md); decisions D1–D4 are open.
+Pick any two clubs, set the venue (either home, or neutral) and get the model's forecast in the browser, with a two-leg mode giving the chance to go through, optionally after a first-leg score. Probabilities have a closed form and two-leg ties are already computed exactly (`tie_probability`), so it needs only a small parameter export and a JavaScript port. See the [what-if plan (5 November 2026)](docs/what-if-plan-2026-11-05.md). Built on 5 November 2026 as a team-select screen followed by the forecast, with attack, defence, home-advantage and shootout sliders that mark a result as modified.
 
 ## Parked
 

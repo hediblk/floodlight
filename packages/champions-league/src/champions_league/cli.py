@@ -87,6 +87,7 @@ def run_forecast(*, season=None, as_of=None, n_sim=10000, seed=7, out_dir="out",
     else:
         (out_dir / "cl_match_forecasts.json").unlink(missing_ok=True)
     save_club_ratings(inputs, model, out_dir, origin=origin)
+    save_matchup_params(model, teams, out_dir, origin=origin, generated_at=result.metadata["generated_at"])
     save_stakes(result, upcoming, teams, out_dir, origin=origin, season=season, n_sim=n_sim)
     inputs.fixtures.to_csv(out_dir / "cl_matches_snapshot.csv", index=False)
     inputs.standings.to_csv(out_dir / "cl_standings_snapshot.csv", index=False)
@@ -153,6 +154,32 @@ def save_club_ratings(inputs, model, out_dir, *, origin):
     ratings["league_rating"] = ratings["team"].map(within)
     ratings.to_csv(Path(out_dir) / "cl_club_ratings.csv", index=False, float_format="%.4f")
     return ratings
+
+
+# `cl_matchup_params.json`: the joint model's parameters for what-if matchups; reference cases come from the
+# tournament's own `MatchupCache`, so the site can check its port against them.
+def save_matchup_params(model, teams, out_dir, *, origin, generated_at):
+    from champions_league.strengths import RATE_BOUNDS
+    from champions_league.tournament import MatchupCache
+    from standing_prediction.matchups import matchup_params, single_reference, write_matchup_params
+
+    params = matchup_params(model.european, model.elo, DEFAULT_WEIGHTS, teams=model.european.teams,
+                            generated_at=generated_at, as_of=origin.isoformat(), rate_bounds=RATE_BOUNDS)
+    t1, t2, t3, t4 = teams[:4]
+    cache = MatchupCache([t1, t2, t3, t4], model)
+    params["reference"] = [
+        single_reference(model, lambda h, a, neutral=neutral: model.elo_probs(h, a, neutral=neutral), DEFAULT_WEIGHTS,
+                         home, away, neutral=neutral)
+        for home, away, neutral in ((t1, t2, False), (t1, t2, True), (t3, t4, False))
+    ] + [
+        {"kind": "two_legs", "team1": t1, "team2": t2, "second_home": t2, "first_leg": None,
+         "p": cache.tie_probability(t1, t2, home_second_leg=t2)},
+        {"kind": "two_legs", "team1": t3, "team2": t4, "second_home": t4, "first_leg": [2, 1],
+         "p": cache.tie_probability(t3, t4, rows=[{"homeTeam": t3, "awayTeam": t4, "status": "FINISHED",
+                                                   "homeGoals": 2, "awayGoals": 1}])},
+        {"kind": "final", "team1": t1, "team2": t3, "p": cache.tie_probability(t1, t3, final=True)},
+    ]
+    write_matchup_params(Path(out_dir) / "cl_matchup_params.json", params)
 
 
 def save_match_forecasts(inputs, model, out_dir, *, origin, season, offset_ridge=DEFAULT_OFFSET_RIDGE, market=None):

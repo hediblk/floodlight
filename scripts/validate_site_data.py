@@ -589,6 +589,23 @@ def validate_squad(data):
         require(player["first_seen"] == min(dates) and player["last_seen"] == max(dates), "observed appearance dates differ")
 
 
+def validate_matchups(data):
+    for name, engine in data["engines"].items():
+        weights = engine["weights"]
+        close(weights["main"] + weights["elo"], 1, 1e-9, f"{name}: model weights do not sum to one")
+        require(name == "europe" or engine["rate_bounds"] is None, f"{name}: only the joint model bounds goal rates")
+        if engine["rate_bounds"] is not None:
+            require(0 < engine["rate_bounds"][0] < engine["rate_bounds"][1], f"{name}: invalid rate bounds")
+        for case in engine["reference"]:
+            clubs = [case[key] for key in ("home", "away", "team1", "team2", "second_home") if key in case]
+            require(all(club in engine["clubs"] for club in clubs), f"{name}: reference names an unknown club")
+            require(len(set(clubs[:2])) == 2, f"{name}: reference pairs a club with itself")
+            if case["kind"] == "single":
+                close(sum(case["p"]), 1, 1e-9, f"{name}: reference chances do not sum to one")
+            if case["kind"] == "two_legs":
+                require(case["second_home"] in clubs[:2], f"{name}: second-leg host is not in the tie")
+
+
 def validate_backtest(data):
     columns = data["columns"]
     lengths = {key: len(values) for key, values in columns.items()}
@@ -685,6 +702,8 @@ def validate_payload(data, family):
         validate_squad(data)
     elif family == "backtest":
         validate_backtest(data)
+    elif family == "matchups":
+        validate_matchups(data)
 
 
 def file_family(path):
@@ -692,7 +711,7 @@ def file_family(path):
     if len(parts) == 2 and parts == ("backtest", "index.json"):
         return "backtest_index"
     if len(parts) == 1:
-        if path.stem in ("index", "clubs", "crests", "scorecard", "profiles"):
+        if path.stem in ("index", "clubs", "crests", "scorecard", "profiles", "matchups"):
             return path.stem
         if path.stem in COMPETITIONS:
             return "ucl" if path.stem == "champions-league" else "league"
@@ -787,6 +806,14 @@ def validate_site_data(data_dir, *, site_dir=None):
     for club in files.get("clubs.json", {}).get("clubs", []):
         if club["league"] is not None and f"{club['league']}.json" not in files:
             errors.append(f"clubs.json: unresolved league {club['league']}")
+    matchups = files.get("matchups.json")
+    if matchups and "clubs.json" in files:
+        engines = matchups["engines"]
+        for club in files["clubs.json"]["clubs"]:
+            if club["slug"] not in engines["europe"]["clubs"]:
+                errors.append(f"matchups.json: {club['slug']} missing from the European model")
+            elif club["league"] in engines and club["slug"] not in engines[club["league"]]["clubs"]:
+                errors.append(f"matchups.json: {club['slug']} missing from the {club['league']} model")
     profiles = files.get("profiles.json")
     if profiles and profiles["season"] == files.get("clubs.json", {}).get("season"):
         leagues = {club["id"]: club["league"] for club in files["clubs.json"]["clubs"]}
