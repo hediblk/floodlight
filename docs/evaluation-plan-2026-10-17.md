@@ -33,10 +33,10 @@ RPS, already on the scorecard, is the ordinal score the brainstorm asked for: ca
 
 | Task | Area | Wave | Depends on | Size | Status |
 | --- | --- | --- | --- | --- | --- |
-| 1. Eleven-season miss report | Offline analysis | 1 | none | M | [PR #64](https://github.com/hediblk/football-predictions/pull/64) |
-| 2. Match, round and race cards | UI | 1 | none (verdict line after 3) | L | [PR #65](https://github.com/hediblk/football-predictions/pull/65) |
-| 3. Miss breakdown in the scorecard export | Data | 2 | 1 | M | [PR #66](https://github.com/hediblk/football-predictions/pull/66) |
-| 4. "How we miss" on the site | UI | 2 | contract below (data from 3) | M | [PR #67](https://github.com/hediblk/football-predictions/pull/67) |
+| 1. Eleven-season miss report | Offline analysis | 1 | none | M | [PR #64](https://github.com/hediblk/floodlight/pull/64) |
+| 2. Match, round and race cards | UI | 1 | none (verdict line after 3) | L | [PR #65](https://github.com/hediblk/floodlight/pull/65) |
+| 3. Miss breakdown in the scorecard export | Data | 2 | 1 | M | [PR #66](https://github.com/hediblk/floodlight/pull/66) |
+| 4. "How we miss" on the site | UI | 2 | contract below (data from 3) | M | [PR #67](https://github.com/hediblk/floodlight/pull/67) |
 
 **Order:** the report runs first, because it may change the margin, the before-first-goal lens or the goal-level picture that the site would show. Cards don't depend on it and run alongside. Tasks 3 and 4 start once the report merges, with the contract below updated to its findings.
 
