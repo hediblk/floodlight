@@ -90,8 +90,13 @@ export function clubCrest(id, size = "row") {
 export function clubName(id, name, size = "row") {
   return `<span class="club-name club-name--${size}">${clubCrest(id, size)}<span class="club-label" title="${esc(name)}">${esc(name)}</span></span>`;
 }
+/* A burst of crest requests can drop a few; retry each once, spread out, before hiding it. */
 document.addEventListener("error", (event) => {
-  if (event.target.classList?.contains("club-crest")) event.target.parentElement.hidden = true;
+  const img = event.target;
+  if (!img.classList?.contains("club-crest")) return;
+  if (img.dataset.retried) { img.parentElement.hidden = true; return; }
+  img.dataset.retried = "1";
+  setTimeout(() => { img.src = img.getAttribute("src"); }, 500 + Math.random() * 1500);
 }, true);
 
 /* ---------- match helpers (probabilities are home, draw, away) ---------- */
