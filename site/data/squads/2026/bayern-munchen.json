@@ -15,20 +15,20 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-04T07:34:02.221324+00:00",
-    "url": "https://api.football-data.org/v4/competitions/CL/teams",
-    "sha256": "e0bc8e70c5e7c79f7f3d8798149a724e3741bbd951b14a7292773fcbf89686d0",
-    "snapshot": "data/players/rosters/2026-11-04/CL.json"
+    "observed_at": "2026-11-06T08:00:00.979162+00:00",
+    "url": "https://api.football-data.org/v4/competitions/BL1/teams",
+    "sha256": "aa1ef9c0960eb740270ec9671839f03592542a77ce2cd859850c3342990d50bf",
+    "snapshot": "data/players/rosters/2026-11-06/BL1.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 23,
-    "matched": 23
+    "players": 25,
+    "matched": 24
   },
   "ideal_xi": {
     "formation": "4-3-3",
-    "status": "complete",
+    "status": "provisional",
     "mean_overall": 85.8,
     "slots": [
       {
@@ -41,11 +41,11 @@
       },
       {
         "role": "CB",
-        "player": 149
+        "player": 9541
       },
       {
         "role": "CB",
-        "player": 9541
+        "player": 149
       },
       {
         "role": "RB",
@@ -480,6 +480,28 @@
       }
     },
     {
+      "id": 279063,
+      "name": "David Daiber",
+      "dob": "2007-01-10",
+      "provider_position": "Midfield",
+      "status": "matched",
+      "method": "name_and_birth_date",
+      "ea": {
+        "id": 79317,
+        "overall": 59,
+        "positions": [
+          "CDM",
+          "CM"
+        ],
+        "pace": 57,
+        "shooting": 49,
+        "passing": 58,
+        "dribbling": 59,
+        "defending": 58,
+        "physical": 47
+      }
+    },
+    {
       "id": 290450,
       "name": "Bara Ndiaye",
       "dob": "2007-12-31",
@@ -591,10 +613,20 @@
         "defending": 47,
         "physical": 69
       }
+    },
+    {
+      "id": 302254,
+      "name": "David Podar-Stiube",
+      "dob": "2010-05-31",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "bf63236e734f6c06",
-  "generated_at": "2026-11-04T07:34:09.521874+00:00",
+  "baseline_id": "e29374de883e5f12",
+  "generated_at": "2026-11-06T08:00:25.850120+00:00",
   "usage": {
     "bundesliga": {
       "source": "understat",
@@ -832,6 +864,17 @@
           "xg": 0.7067,
           "xa": 0.3319
         },
+        "279063": {
+          "starts": null,
+          "sub": null,
+          "minutes": null,
+          "share": null,
+          "known_games": 0,
+          "unknown_games": 8,
+          "provider_ids": [],
+          "xg": null,
+          "xa": null
+        },
         "290450": {
           "starts": null,
           "sub": null,
@@ -894,6 +937,17 @@
           ],
           "xg": 4.2856,
           "xa": 3.9588
+        },
+        "302254": {
+          "starts": null,
+          "sub": null,
+          "minutes": null,
+          "share": null,
+          "known_games": 0,
+          "unknown_games": 8,
+          "provider_ids": [],
+          "xg": null,
+          "xa": null
         }
       },
       "most_used_xi": {
@@ -2517,6 +2571,17 @@
           "avg_x": 0.6643,
           "avg_y": 0.6103
         },
+        "279063": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 1,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
         "290450": {
           "starts": 0,
           "sub": 1,
@@ -2581,6 +2646,17 @@
           ],
           "avg_x": 0.646,
           "avg_y": 0.7119
+        },
+        "302254": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 1,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
         }
       },
       "most_used_xi": {
@@ -3278,5 +3354,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-04T07:34:19.115392+00:00"
+  "usage_generated_at": "2026-11-06T08:00:35.190287+00:00"
 }

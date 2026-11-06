@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-10-30T07:09:30.819520+00:00",
+    "observed_at": "2026-11-06T08:00:00.979162+00:00",
     "url": "https://api.football-data.org/v4/competitions/BL1/teams",
-    "sha256": "2bcc64e9faa26cf7184284b514aa7d6a9cda4a6c5676aab9c45397c842f7864e",
-    "snapshot": "data/players/rosters/2026-10-30/BL1.json"
+    "sha256": "aa1ef9c0960eb740270ec9671839f03592542a77ce2cd859850c3342990d50bf",
+    "snapshot": "data/players/rosters/2026-11-06/BL1.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 25,
+    "players": 26,
     "matched": 23
   },
   "ideal_xi": {
@@ -612,6 +612,16 @@
       }
     },
     {
+      "id": 302824,
+      "name": "Niko Iličević",
+      "dob": "2010-10-30",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": "observed:understat:14971",
       "name": "Jeremiaha Maluze",
       "dob": null,
@@ -647,8 +657,8 @@
       "last_seen": "2026-09-12"
     }
   ],
-  "baseline_id": "6f894cb5d2de06db",
-  "generated_at": "2026-10-30T07:09:55.236957+00:00",
+  "baseline_id": "2afa16f8ab0d110c",
+  "generated_at": "2026-11-06T08:00:26.685201+00:00",
   "usage": {
     "bundesliga": {
       "source": "understat",
@@ -970,6 +980,17 @@
           ],
           "xg": 0.0,
           "xa": 0.0
+        },
+        "302824": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 5,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         },
         "observed:understat:14971": {
           "starts": 2,
@@ -2214,5 +2235,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-02T07:50:10.585065+00:00"
+  "usage_generated_at": "2026-11-06T08:00:44.666656+00:00"
 }

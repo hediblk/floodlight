@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-10-30T07:09:30.819520+00:00",
+    "observed_at": "2026-11-06T08:00:00.979162+00:00",
     "url": "https://api.football-data.org/v4/competitions/BL1/teams",
-    "sha256": "2bcc64e9faa26cf7184284b514aa7d6a9cda4a6c5676aab9c45397c842f7864e",
-    "snapshot": "data/players/rosters/2026-10-30/BL1.json"
+    "sha256": "aa1ef9c0960eb740270ec9671839f03592542a77ce2cd859850c3342990d50bf",
+    "snapshot": "data/players/rosters/2026-11-06/BL1.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 28,
+    "players": 29,
     "matched": 25
   },
   "ideal_xi": {
@@ -665,10 +665,20 @@
       "method": null,
       "ea": null,
       "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 302787,
+      "name": "Dustin Buck",
+      "dob": "2008-04-23",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "20c8cd44125c9d2e",
-  "generated_at": "2026-10-30T07:09:54.730368+00:00",
+  "baseline_id": "05bbd4ce702f0dfb",
+  "generated_at": "2026-11-06T08:00:26.085505+00:00",
   "usage": {
     "bundesliga": {
       "source": "understat",
@@ -1012,6 +1022,17 @@
           "xa": null
         },
         "296856": {
+          "starts": null,
+          "sub": null,
+          "minutes": null,
+          "share": null,
+          "known_games": 0,
+          "unknown_games": 8,
+          "provider_ids": [],
+          "xg": null,
+          "xa": null
+        },
+        "302787": {
           "starts": null,
           "sub": null,
           "minutes": null,
@@ -2418,5 +2439,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-01T07:36:23.250891+00:00"
+  "usage_generated_at": "2026-11-06T08:01:04.421915+00:00"
 }

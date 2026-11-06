@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-10-30T07:09:22.351703+00:00",
+    "observed_at": "2026-11-06T07:59:52.546111+00:00",
     "url": "https://api.football-data.org/v4/competitions/PL/teams",
-    "sha256": "34ea3aaa91afd5e8090330c8cfdf92d4f96e8478c94f575a8b7b8fa5e5c6a26d",
-    "snapshot": "data/players/rosters/2026-10-30/PL.json"
+    "sha256": "80094a90c6b908cab41e7e445a249d72e2cdfb4519714273a6b7fb8f3e1fb3be",
+    "snapshot": "data/players/rosters/2026-11-06/PL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 28,
+    "players": 29,
     "matched": 25
   },
   "ideal_xi": {
@@ -473,6 +473,16 @@
       "reason": "no_name_and_birth_date_match"
     },
     {
+      "id": 303053,
+      "name": "Nathanael Kalembo",
+      "dob": "2010-10-28",
+      "provider_position": "Midfield",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": 641,
       "name": "Jean-Philippe Mateta",
       "dob": "1997-06-28",
@@ -662,8 +672,8 @@
       }
     }
   ],
-  "baseline_id": "150c7620e2a51dd0",
-  "generated_at": "2026-10-30T07:09:54.799478+00:00",
+  "baseline_id": "34ef3064df2e7fff",
+  "generated_at": "2026-11-06T08:00:26.167904+00:00",
   "usage": {
     "premier-league": {
       "source": "understat",
@@ -913,6 +923,17 @@
           ],
           "xg": 0.1195,
           "xa": 1.5318
+        },
+        "303053": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 8,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         },
         "641": {
           "starts": 3,
@@ -2600,5 +2621,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-01T07:36:02.829438+00:00"
+  "usage_generated_at": "2026-11-06T08:00:43.162525+00:00"
 }
