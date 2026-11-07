@@ -54,7 +54,8 @@ def run_forecast(*, season=None, as_of=None, n_sim=10000, seed=7, out_dir="out",
                                  track=upcoming.index.tolist())
     result.metadata.update({
         "competition": "CL", "season": season, "as_of": origin.isoformat(),
-        # The latest result in the fit, across every league and cup it uses.
+        # The earliest and latest results in the fit, across every league and cup it uses.
+        "data_start": pd.to_datetime(inputs.history["utcDate"], utc=True).min().isoformat() if not inputs.history.empty else None,
         "data_cutoff": pd.to_datetime(inputs.history["utcDate"], utc=True).max().isoformat() if not inputs.history.empty else None,
         "generated_at": pd.Timestamp.now(tz="UTC").isoformat(), "n_sim": n_sim, "seed": seed,
         "weight_calibration_version": CALIBRATION_VERSION, "weights": DEFAULT_WEIGHTS,

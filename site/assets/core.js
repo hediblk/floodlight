@@ -13,7 +13,7 @@ export const LEAGUES = COMPS.filter((c) => c.slug !== "champions-league");
 export const compBySlug = Object.fromEntries(COMPS.map((c) => [c.slug, c]));
 
 // Mirrors the cron in .github/workflows/site.yml (daily, 05:30 UTC).
-const REFRESH_UTC = { hour: 5, minute: 30 };
+export const REFRESH_UTC = { hour: 5, minute: 30 };
 const STALE_HOURS = 30;
 
 export const $ = (id) => document.getElementById(id);

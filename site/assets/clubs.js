@@ -1,6 +1,6 @@
 // Clubs view: a strength ranking for the five leagues and the Champions League, and a profile for every club.
 import {
-  LEAGUES, compBySlug, $, esc, getJSON, setStatus, ordinal, pct, pct1, dec, verdict, sideProbs, sidePair,
+  LEAGUES, compBySlug, $, esc, getJSON, setStatus, REFRESH_UTC, ordinal, pct, pct1, dec, verdict, sideProbs, sidePair,
   outcome, expandable, bulb, shortDate, clock, callScore, clubName, loadForm, formDots, streak, xgBy,
 } from "./core.js";
 import { matchPanel, record, BIG_STAKE, stakeNow } from "./matches.js";
@@ -50,6 +50,7 @@ export const rankTag = (rank, tag = "small", cls = "") => `<${tag} class="crk${r
 /* ---------- weekly ranks ---------- */
 const KEYS = ["rating", "attack", "defense"];
 const weekDay = (iso) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+const fullDay = (iso) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 /* one frozen Monday's values for the given clubs, with ranks (descending; ties share the better rank) */
 function weekRanks(week, ids) {
   const out = {};
@@ -143,9 +144,22 @@ function renderRanking() {
   $("c-more").hidden = limit >= shown.length;
   $("c-more").textContent = `Show all ${shown.length} clubs`;
   $("c-rank-legend").textContent = "Power ranking";
-  $("c-rank-note").textContent = since ? `Arrows: places moved since Monday ${since}.` : "";
-  $("c-rank-note").hidden = !since;
+  renderRankKey(since);
   renderMoves(shown);
+}
+
+/* what the table stands on: the results behind the ratings, the Monday the arrows count from, and the Monday refresh
+   after which they count from a newer one */
+function renderRankKey(since) {
+  const w = clubs.window;
+  const reset = new Date(`${mondayOf(clubs.generated_at)}T00:00:00Z`);
+  reset.setUTCDate(reset.getUTCDate() + 7);
+  reset.setUTCHours(REFRESH_UTC.hour, REFRESH_UTC.minute);
+  $("c-rank-key").innerHTML = [
+    w && `Results <b>${fullDay(w.from)} – ${fullDay(w.to)}</b>`,
+    since && `Moves since <b>Mon ${since}</b>`,
+    `Next weekly reset <b>Mon ${weekDay(reset.toISOString())}, ${reset.toISOString().slice(11, 16)} UTC</b>`,
+  ].filter(Boolean).join(" · ");
 }
 
 /* the three biggest risers and fallers by rank change, per measure, among the clubs on show */

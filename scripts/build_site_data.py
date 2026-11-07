@@ -701,12 +701,16 @@ def export_clubs(src, leagues, ucl, previous=None):
     clubs.sort(key=lambda club: club["rating_rank"])
     if missing:
         print(f"No European-scale rating for {', '.join(missing)}; kept previous entries where available")
+    meta = read_json(src / "cl_metadata.json") or {}
+    start = meta.get("data_start")
+    # The dates of the results behind the ratings.
+    window = {"window": {"from": start[:10], "to": ucl["data_cutoff"][:10]}} if start else {}
     averages = {league["slug"]: num(sum(c["rating"] for c in clubs if c["league"] == league["slug"])
                                     / max(1, sum(c["league"] == league["slug"] for c in clubs)), 1) for league in leagues}
     return {
         "generated_at": ucl["generated_at"], "season": ucl["season"],
         "scale": {"reference": "average European top-flight club", "clubs": len(ratings), "leagues": int(ratings["league"].nunique())},
-        "league_averages": averages,
+        "league_averages": averages, **window,
         "featured": [club_id for club_id in FEATURED_CLUBS if any(club["id"] == club_id for club in clubs)],
         "clubs": clubs,
     }
