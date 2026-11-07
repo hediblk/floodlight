@@ -61,7 +61,7 @@ function cardRaces() {
     since: base ? `Monday ${fmt(base.monday, { day: "numeric", month: "short" })}` : null, races });
 }
 
-/* The Clubs ranking arrows' baseline: the Monday frozen before this run's week, and the history point on the last
+/* The Clubs ranking arrows' baseline: the last Monday frozen before this run's day, and the history point on the last
    date before it. None without such a Monday or point. */
 function baseline(data, hist, weeks) {
   const monday = baseWeek(weeks, data.generated_at)?.date;

@@ -78,11 +78,12 @@ const mondayOf = (iso) => {
   d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
   return d.toISOString().slice(0, 10);
 };
-/* the last Monday frozen before the week holding `iso`: the baseline for weekly movement here and in the race movers */
-export const baseWeek = (history, iso) => (history?.weeks || []).filter((w) => w.date < mondayOf(iso)).at(-1);
+/* the last Monday frozen before the UTC day of `iso`: the baseline for weekly movement here and in the race movers.
+   A Monday run is its own week's snapshot, so on Mondays the baseline is still the Monday before. */
+export const baseWeek = (history, iso) => (history?.weeks || []).filter((w) => w.date < iso.slice(0, 10)).at(-1);
 /* The ranking shows the live clubs.json values and ranks, the same numbers as the hero, the profiles and the scatter.
-   Arrows compare each live rank with the last Monday frozen before this week, so a Monday refresh still shows the
-   week's movement. With no earlier Monday there are no arrows; a club missing from it is "new". */
+   Arrows compare each live rank with the last Monday frozen before today's run, so a Monday refresh still shows the
+   full week's movement. With no earlier Monday there are no arrows; a club missing from it is "new". */
 function weeklyView(history) {
   const base = baseWeek(history, clubs.generated_at);
   const prev = weekRanks(base, clubs.clubs.map((c) => c.id));
@@ -148,17 +149,18 @@ function renderRanking() {
   renderMoves(shown);
 }
 
-/* what the table stands on: the results behind the ratings, the Monday the arrows count from, and the Monday refresh
-   after which they count from a newer one */
+/* what the table stands on: the results behind the ratings, the Monday the arrows count from, and the refresh that
+   moves them to a newer Monday (the Tuesday after it, see baseWeek) */
 function renderRankKey(since) {
   const w = clubs.window;
-  const reset = new Date(`${mondayOf(clubs.generated_at)}T00:00:00Z`);
-  reset.setUTCDate(reset.getUTCDate() + 7);
+  const monday = mondayOf(clubs.generated_at);
+  const reset = new Date(`${monday}T00:00:00Z`);
+  reset.setUTCDate(reset.getUTCDate() + (clubs.generated_at.startsWith(monday) ? 1 : 8));
   reset.setUTCHours(REFRESH_UTC.hour, REFRESH_UTC.minute);
   $("c-rank-key").innerHTML = [
     w && `Results <b>${fullDay(w.from)} – ${fullDay(w.to)}</b>`,
     since && `Moves since <b>Mon ${since}</b>`,
-    `Next weekly reset <b>Mon ${weekDay(reset.toISOString())}, ${reset.toISOString().slice(11, 16)} UTC</b>`,
+    `Next weekly reset <b>Tue ${weekDay(reset.toISOString())}, ${reset.toISOString().slice(11, 16)} UTC</b>`,
   ].filter(Boolean).join(" · ");
 }
 
