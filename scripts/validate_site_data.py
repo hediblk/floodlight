@@ -279,6 +279,7 @@ def validate_clubs(data):
         require(values == sorted(values, reverse=True), f"{league} ranks contradict ratings")
     require(len(data["featured"]) == len(set(data["featured"])) and
             set(data["featured"]) <= {club["id"] for club in clubs}, "invalid featured club reference")
+    require("window" not in data or data["window"]["from"] <= data["window"]["to"], "ratings window ends before it starts")
 
 
 def validate_profiles(data):

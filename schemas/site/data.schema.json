@@ -1088,6 +1088,7 @@
           "required": ["premier-league","la-liga","bundesliga","serie-a","ligue-1"]
         },
         "featured": {"type":"array","items":{"type":"integer","minimum":1},"minItems":0},
+        "window": {"type":"object","properties":{"from":{"$ref":"#/$defs/date"},"to":{"$ref":"#/$defs/date"}},"required":["from","to"],"additionalProperties":false},
         "clubs": {"type":"array","items":{"$ref":"#/$defs/club"},"minItems":1}
       },
       "required": ["generated_at","season","scale","league_averages","featured","clubs"]
