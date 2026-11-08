@@ -794,7 +794,7 @@
   "usage": {
     "bundesliga": {
       "source": "understat",
-      "games": 8,
+      "games": 9,
       "covered": 8,
       "fully_mapped": 7,
       "players": {
@@ -804,7 +804,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -815,7 +815,7 @@
           "minutes": 720,
           "share": 1.0,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             9546
           ],
@@ -828,7 +828,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -839,7 +839,7 @@
           "minutes": 64,
           "share": 0.088889,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             5305
           ],
@@ -852,7 +852,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -863,7 +863,7 @@
           "minutes": 716,
           "share": 0.994444,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             14956
           ],
@@ -876,7 +876,7 @@
           "minutes": 668,
           "share": 0.927778,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             14955
           ],
@@ -889,7 +889,7 @@
           "minutes": 680,
           "share": 0.944444,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             14954
           ],
@@ -902,7 +902,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -913,7 +913,7 @@
           "minutes": 54,
           "share": 0.075,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             14961
           ],
@@ -926,7 +926,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -937,7 +937,7 @@
           "minutes": 15,
           "share": 0.020833,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             15103
           ],
@@ -950,7 +950,7 @@
           "minutes": 166,
           "share": 0.230556,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             14960
           ],
@@ -963,7 +963,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -974,7 +974,7 @@
           "minutes": 693,
           "share": 0.9625,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             5229
           ],
@@ -987,7 +987,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -998,7 +998,7 @@
           "minutes": 700,
           "share": 0.972222,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             14957
           ],
@@ -1011,7 +1011,7 @@
           "minutes": 561,
           "share": 0.779167,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             11228
           ],
@@ -1024,7 +1024,7 @@
           "minutes": 720,
           "share": 1.0,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             14958
           ],
@@ -1037,7 +1037,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -1048,7 +1048,7 @@
           "minutes": 21,
           "share": 0.029167,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             14962
           ],
@@ -1061,7 +1061,7 @@
           "minutes": 1,
           "share": 0.001389,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             14963
           ],
@@ -1074,7 +1074,7 @@
           "minutes": 324,
           "share": 0.45,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             9227
           ],
@@ -1087,7 +1087,7 @@
           "minutes": 8,
           "share": 0.011111,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             7799
           ],
@@ -1100,7 +1100,7 @@
           "minutes": 44,
           "share": 0.061111,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             8207
           ],
@@ -1113,7 +1113,7 @@
           "minutes": 474,
           "share": 0.658333,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             11856
           ],
@@ -1126,7 +1126,7 @@
           "minutes": 132,
           "share": 0.183333,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             7749
           ],
@@ -1139,7 +1139,7 @@
           "minutes": 627,
           "share": 0.870833,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             10558
           ],
@@ -1152,7 +1152,7 @@
           "minutes": 524,
           "share": 0.727778,
           "known_games": 8,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             14959
           ],
@@ -1165,7 +1165,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -1176,7 +1176,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -1187,7 +1187,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -2622,9 +2622,21 @@
             125686
           ],
           "ideal_started": 6
+        },
+        {
+          "fixture_id": 565853,
+          "kickoff": "2026-11-07T14:30:00+00:00",
+          "opponent_id": 19,
+          "status": "missing",
+          "reason": "missing_match_sheet",
+          "sheet_sha256": "135a70753982958226369adb2e06e6f2e35f5ad75f5396cfda6531669979b559",
+          "appearances": [],
+          "starters": [],
+          "subs": [],
+          "ideal_started": null
         }
       ]
     }
   },
-  "usage_generated_at": "2026-11-06T08:01:17.051156+00:00"
+  "usage_generated_at": "2026-11-08T07:23:15.315402+00:00"
 }
