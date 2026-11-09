@@ -648,7 +648,7 @@
   "usage": {
     "la-liga": {
       "source": "understat",
-      "games": 11,
+      "games": 12,
       "covered": 11,
       "fully_mapped": 7,
       "players": {
@@ -658,7 +658,7 @@
           "minutes": 990,
           "share": 1.0,
           "known_games": 11,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             11740
           ],
@@ -671,7 +671,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 4,
+          "unknown_games": 5,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -682,7 +682,7 @@
           "minutes": 376,
           "share": 0.379798,
           "known_games": 9,
-          "unknown_games": 2,
+          "unknown_games": 3,
           "provider_ids": [
             2163
           ],
@@ -695,7 +695,7 @@
           "minutes": 758,
           "share": 0.765657,
           "known_games": 11,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             492
           ],
@@ -708,7 +708,7 @@
           "minutes": 153,
           "share": 0.154545,
           "known_games": 8,
-          "unknown_games": 3,
+          "unknown_games": 4,
           "provider_ids": [
             6485
           ],
@@ -721,7 +721,7 @@
           "minutes": 445,
           "share": 0.449495,
           "known_games": 9,
-          "unknown_games": 2,
+          "unknown_games": 3,
           "provider_ids": [
             2453
           ],
@@ -734,7 +734,7 @@
           "minutes": 747,
           "share": 0.754545,
           "known_games": 11,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             9810
           ],
@@ -747,7 +747,7 @@
           "minutes": 810,
           "share": 0.818182,
           "known_games": 10,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             11890
           ],
@@ -760,7 +760,7 @@
           "minutes": 439,
           "share": 0.443434,
           "known_games": 8,
-          "unknown_games": 3,
+          "unknown_games": 4,
           "provider_ids": [
             13845
           ],
@@ -773,7 +773,7 @@
           "minutes": 232,
           "share": 0.234343,
           "known_games": 8,
-          "unknown_games": 3,
+          "unknown_games": 4,
           "provider_ids": [
             13374
           ],
@@ -786,7 +786,7 @@
           "minutes": 544,
           "share": 0.549495,
           "known_games": 11,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             2255
           ],
@@ -799,7 +799,7 @@
           "minutes": 228,
           "share": 0.230303,
           "known_games": 8,
-          "unknown_games": 3,
+          "unknown_games": 4,
           "provider_ids": [
             2446
           ],
@@ -812,7 +812,7 @@
           "minutes": 95,
           "share": 0.09596,
           "known_games": 7,
-          "unknown_games": 4,
+          "unknown_games": 5,
           "provider_ids": [
             5681
           ],
@@ -825,7 +825,7 @@
           "minutes": 697,
           "share": 0.70404,
           "known_games": 10,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             5086
           ],
@@ -838,7 +838,7 @@
           "minutes": 738,
           "share": 0.745455,
           "known_games": 11,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             2335
           ],
@@ -851,7 +851,7 @@
           "minutes": 53,
           "share": 0.053535,
           "known_games": 7,
-          "unknown_games": 4,
+          "unknown_games": 5,
           "provider_ids": [
             14440
           ],
@@ -864,7 +864,7 @@
           "minutes": 0,
           "share": 0.0,
           "known_games": 7,
-          "unknown_games": 4,
+          "unknown_games": 5,
           "provider_ids": [],
           "xg": 0,
           "xa": 0
@@ -875,7 +875,7 @@
           "minutes": 414,
           "share": 0.418182,
           "known_games": 11,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             14001
           ],
@@ -888,7 +888,7 @@
           "minutes": 480,
           "share": 0.484848,
           "known_games": 10,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             14741
           ],
@@ -901,7 +901,7 @@
           "minutes": 606,
           "share": 0.612121,
           "known_games": 11,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             6954
           ],
@@ -914,7 +914,7 @@
           "minutes": 13,
           "share": 0.013131,
           "known_games": 7,
-          "unknown_games": 4,
+          "unknown_games": 5,
           "provider_ids": [
             6427
           ],
@@ -927,7 +927,7 @@
           "minutes": 631,
           "share": 0.637374,
           "known_games": 11,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             11094
           ],
@@ -940,7 +940,7 @@
           "minutes": 469,
           "share": 0.473737,
           "known_games": 11,
-          "unknown_games": 0,
+          "unknown_games": 1,
           "provider_ids": [
             8002
           ],
@@ -953,7 +953,7 @@
           "minutes": 300,
           "share": 0.30303,
           "known_games": 10,
-          "unknown_games": 1,
+          "unknown_games": 2,
           "provider_ids": [
             8145
           ],
@@ -966,7 +966,7 @@
           "minutes": 605,
           "share": 0.611111,
           "known_games": 9,
-          "unknown_games": 2,
+          "unknown_games": 3,
           "provider_ids": [
             10095
           ],
@@ -2925,6 +2925,18 @@
             33045
           ],
           "ideal_started": 6
+        },
+        {
+          "fixture_id": 564738,
+          "kickoff": "2026-11-08T13:00:00+00:00",
+          "opponent_id": 285,
+          "status": "missing",
+          "reason": "missing_match_sheet",
+          "sheet_sha256": "27175d34a8045ba7e1be116c2a9175c80bed625b6be3a6716fd46169871c8e21",
+          "appearances": [],
+          "starters": [],
+          "subs": [],
+          "ideal_started": null
         }
       ]
     },
@@ -3969,5 +3981,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-06T08:01:22.738279+00:00"
+  "usage_generated_at": "2026-11-09T08:02:26.568999+00:00"
 }
