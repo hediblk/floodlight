@@ -197,6 +197,8 @@ table.board { width: 100%; border-collapse: collapse; }
 .board .club { font: 700 17px/1 var(--sign); letter-spacing: .06em; text-transform: uppercase; color: var(--ink); min-width: 150px; }
 .board td.club { position: sticky; left: 0; background: var(--bg); z-index: 1; }
 .board th.club { position: sticky; left: 0; background: var(--bg); z-index: 2; }
+/* on phones the club column sticks at the scroller's edge, not inside its 16px gutter, so scrolled cells never show beside it */
+@media (max-width: 999px) { .scroll .board td.club, .scroll .board th.club, .scroll tr.cut span { left: -16px; } }
 .board .b { color: var(--ink); font-weight: 700; }
 .board .lit { color: var(--amber); font-weight: 700; }
 .board .warn { color: var(--red); font-weight: 700; }
@@ -226,7 +228,7 @@ table.board { width: 100%; border-collapse: collapse; }
 /* cut lines */
 tr.cut td { height: 22px; padding: 0; border: 0; position: relative; text-align: left; }
 tr.cut td::before { content: ""; position: absolute; left: 0; right: 0; top: 11px; border-top: 1px dashed var(--rule); }
-tr.cut span { position: relative; display: inline-block; background: var(--bg); padding: 0 10px; margin-left: 34px; font: 800 11px/22px var(--sign); letter-spacing: .2em; text-transform: uppercase; color: var(--amber-t); }
+tr.cut span { position: sticky; left: 0; display: inline-block; background: var(--bg); padding: 0 10px; margin-left: 34px; font: 800 11px/22px var(--sign); letter-spacing: .2em; text-transform: uppercase; color: var(--amber-t); }
 tr.cut.bad span { color: var(--red); }
 
 /* expanded club */
