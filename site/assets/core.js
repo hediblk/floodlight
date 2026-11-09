@@ -12,8 +12,8 @@ export const COMPS = [
 export const LEAGUES = COMPS.filter((c) => c.slug !== "champions-league");
 export const compBySlug = Object.fromEntries(COMPS.map((c) => [c.slug, c]));
 
-// Mirrors the cron in .github/workflows/site.yml (daily, 05:30 UTC).
-export const REFRESH_UTC = { hour: 5, minute: 30 };
+// Mirrors the cron in .github/workflows/site.yml (daily, 01:17 UTC).
+export const REFRESH_UTC = { hour: 1, minute: 17 };
 const STALE_HOURS = 30;
 
 export const $ = (id) => document.getElementById(id);
@@ -176,8 +176,8 @@ function lastScheduledRun(now) {
 function nextRunText(generatedAt) {
   const now = new Date();
   const last = lastScheduledRun(now);
-  // The run takes ~10 minutes; until its data lands, say so rather than promising tomorrow.
-  if (new Date(generatedAt) < last && now - last < 3.6e6) return "updating now";
+  // GitHub often starts the scheduled run hours late; until its data lands, say so rather than promising tomorrow.
+  if (new Date(generatedAt) < last) return "updating now";
   const mins = Math.ceil((last.getTime() + 864e5 - now) / 60000);
   return mins < 60 ? `next in ${mins} min` : `next in ${Math.round(mins / 60)} h`;
 }
@@ -196,7 +196,7 @@ export function setStatus(pageRun, cutoff) {
   $("lamp").classList.toggle("stale", hours > STALE_HOURS);
   $("status-text").textContent = `Updated ${ago(generatedAt)} · ${nextRunText(generatedAt)}`;
   const through = cutoff ? ` · results through ${when(cutoff)}` : "";
-  $("status-text").title = `Model run ${when(generatedAt)}${through} · refreshes daily at 05:30 UTC`;
+  $("status-text").title = `Model run ${when(generatedAt)}${through} · refreshes daily at 01:17 UTC`;
   $("foot-updated").textContent = `Model run ${when(generatedAt)}${through}`;
 }
 // Keep the "updated / next" wording current on a page left open.
