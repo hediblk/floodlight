@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-04T07:34:02.221324+00:00",
+    "observed_at": "2026-11-11T07:47:54.086138+00:00",
     "url": "https://api.football-data.org/v4/competitions/CL/teams",
-    "sha256": "e0bc8e70c5e7c79f7f3d8798149a724e3741bbd951b14a7292773fcbf89686d0",
-    "snapshot": "data/players/rosters/2026-11-04/CL.json"
+    "sha256": "1480b7cffb831e273079bd20bb3f8e0dcdee5ed6704c638000e1d2090550d25c",
+    "snapshot": "data/players/rosters/2026-11-11/CL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 27,
+    "players": 35,
     "matched": 19
   },
   "ideal_xi": {
@@ -119,6 +119,16 @@
         "defending": 48,
         "physical": 74
       }
+    },
+    {
+      "id": 300596,
+      "name": "Martin Lund Andersen",
+      "dob": "2008-09-20",
+      "provider_position": "Goalkeeper",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
     },
     {
       "id": 37913,
@@ -282,6 +292,26 @@
       "reason": "no_name_and_birth_date_match"
     },
     {
+      "id": 300574,
+      "name": "Matias Bobo Høgsæt Jaiteh",
+      "dob": "2008-01-10",
+      "provider_position": "Defence",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 300587,
+      "name": "Tobias Solbakken",
+      "dob": "2009-05-15",
+      "provider_position": "Defence",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": 37924,
       "name": "Patrick Berg",
       "dob": "1997-11-24",
@@ -419,6 +449,46 @@
       "id": 250722,
       "name": "Teo Ingilæ",
       "dob": "2007-05-30",
+      "provider_position": "Midfield",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 300573,
+      "name": "Erling Eliassen",
+      "dob": "2009-01-13",
+      "provider_position": "Midfield",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 300586,
+      "name": "Levi Monsen Yeboah",
+      "dob": "2010-03-25",
+      "provider_position": "Midfield",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 300593,
+      "name": "Milton Käld",
+      "dob": "2010-04-06",
+      "provider_position": "Midfield",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 300598,
+      "name": "Jesper Rabben Nygård",
+      "dob": "2009-07-06",
       "provider_position": "Midfield",
       "status": "unmatched",
       "method": null,
@@ -570,6 +640,16 @@
       "reason": "no_name_and_birth_date_match"
     },
     {
+      "id": 300592,
+      "name": "Jakob Strand",
+      "dob": "2009-10-11",
+      "provider_position": "Offence",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": 274833,
       "name": "Mikkel Hansen",
       "dob": "2009-01-15",
@@ -580,8 +660,8 @@
       "reason": "provider_id_in_multiple_clubs"
     }
   ],
-  "baseline_id": "47dda1636f8fb520",
-  "generated_at": "2026-11-04T07:34:10.267827+00:00",
+  "baseline_id": "3b083eeb76d506d5",
+  "generated_at": "2026-11-11T07:48:01.627323+00:00",
   "usage": {
     "champions-league": {
       "source": "uefa",
@@ -614,6 +694,17 @@
           ],
           "avg_x": 0.1341,
           "avg_y": 0.4994
+        },
+        "300596": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
         },
         "37913": {
           "starts": 4,
@@ -728,6 +819,28 @@
           "avg_x": null,
           "avg_y": null
         },
+        "300574": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "300587": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
         "37924": {
           "starts": 4,
           "sub": 0,
@@ -805,6 +918,50 @@
           "avg_y": null
         },
         "250722": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "300573": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "300586": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "300593": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "300598": {
           "starts": 0,
           "sub": 0,
           "minutes": 0,
@@ -901,6 +1058,17 @@
           "avg_y": null
         },
         "290972": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "300592": {
           "starts": 0,
           "sub": 0,
           "minutes": 0,
@@ -1588,5 +1756,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-04T07:34:19.503373+00:00"
+  "usage_generated_at": "2026-11-11T07:48:06.833070+00:00"
 }

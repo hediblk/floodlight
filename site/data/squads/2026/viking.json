@@ -15,10 +15,10 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-04T07:34:02.221324+00:00",
+    "observed_at": "2026-11-11T07:47:54.086138+00:00",
     "url": "https://api.football-data.org/v4/competitions/CL/teams",
-    "sha256": "e0bc8e70c5e7c79f7f3d8798149a724e3741bbd951b14a7292773fcbf89686d0",
-    "snapshot": "data/players/rosters/2026-11-04/CL.json"
+    "sha256": "1480b7cffb831e273079bd20bb3f8e0dcdee5ed6704c638000e1d2090550d25c",
+    "snapshot": "data/players/rosters/2026-11-11/CL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
@@ -341,6 +341,16 @@
       "id": 273132,
       "name": "Essiën Bassey",
       "dob": "2006-11-01",
+      "provider_position": "Defence",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 302212,
+      "name": "Rasmus Gjelsvik Steigen",
+      "dob": "2009-02-04",
       "provider_position": "Defence",
       "status": "unmatched",
       "method": null,
@@ -755,16 +765,6 @@
       }
     },
     {
-      "id": 302212,
-      "name": "Rasmus Gjelsvik Steigen",
-      "dob": "2009-02-04",
-      "provider_position": "Offence",
-      "status": "unmatched",
-      "method": null,
-      "ea": null,
-      "reason": "no_name_and_birth_date_match"
-    },
-    {
       "id": 302214,
       "name": "Sondre Tveiten",
       "dob": "2007-10-17",
@@ -795,8 +795,8 @@
       "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "bbed8a6ec10e3b66",
-  "generated_at": "2026-11-04T07:34:10.569034+00:00",
+  "baseline_id": "3164f9315aefadca",
+  "generated_at": "2026-11-11T07:48:01.767579+00:00",
   "usage": {
     "champions-league": {
       "source": "uefa",
@@ -964,6 +964,17 @@
           "provider_ids": [
             250201827
           ],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "302212": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 4,
+          "unknown_games": 0,
+          "provider_ids": [],
           "avg_x": null,
           "avg_y": null
         },
@@ -1228,17 +1239,6 @@
           "provider_ids": [
             250215287
           ],
-          "avg_x": null,
-          "avg_y": null
-        },
-        "302212": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 4,
-          "unknown_games": 0,
-          "provider_ids": [],
           "avg_x": null,
           "avg_y": null
         },
@@ -1990,5 +1990,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-05T08:00:28.166119+00:00"
+  "usage_generated_at": "2026-11-11T07:48:44.819591+00:00"
 }
