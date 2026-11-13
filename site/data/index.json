@@ -5,7 +5,7 @@
   "name": "Premier League",
   "country": "England",
   "season": "2026/27",
-  "generated_at": "2026-11-12T08:19:09.245883+00:00"
+  "generated_at": "2026-11-13T07:55:07.349033+00:00"
  },
  {
   "slug": "la-liga",
@@ -13,7 +13,7 @@
   "name": "La Liga",
   "country": "Spain",
   "season": "2026/27",
-  "generated_at": "2026-11-12T08:19:29.130735+00:00"
+  "generated_at": "2026-11-13T07:55:26.725536+00:00"
  },
  {
   "slug": "bundesliga",
@@ -21,7 +21,7 @@
   "name": "Bundesliga",
   "country": "Germany",
   "season": "2026/27",
-  "generated_at": "2026-11-12T08:19:50.778795+00:00"
+  "generated_at": "2026-11-13T07:55:48.035330+00:00"
  },
  {
   "slug": "serie-a",
@@ -29,7 +29,7 @@
   "name": "Serie A",
   "country": "Italy",
   "season": "2026/27",
-  "generated_at": "2026-11-12T08:20:11.413285+00:00"
+  "generated_at": "2026-11-13T07:56:08.345732+00:00"
  },
  {
   "slug": "ligue-1",
@@ -37,7 +37,7 @@
   "name": "Ligue 1",
   "country": "France",
   "season": "2026/27",
-  "generated_at": "2026-11-12T08:20:31.920343+00:00"
+  "generated_at": "2026-11-13T07:56:28.891093+00:00"
  },
  {
   "slug": "champions-league",
@@ -45,6 +45,6 @@
   "name": "Champions League",
   "country": "Europe",
   "season": "2026/27",
-  "generated_at": "2026-11-12T08:21:51.083677+00:00"
+  "generated_at": "2026-11-13T07:57:46.040159+00:00"
  }
 ]
