@@ -15,10 +15,10 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-06T08:00:00.979162+00:00",
+    "observed_at": "2026-11-14T07:40:45.822348+00:00",
     "url": "https://api.football-data.org/v4/competitions/BL1/teams",
-    "sha256": "aa1ef9c0960eb740270ec9671839f03592542a77ce2cd859850c3342990d50bf",
-    "snapshot": "data/players/rosters/2026-11-06/BL1.json"
+    "sha256": "36dcb1462d99fe5d1d168b8f63258002ddd5e9b3a66e20c161fa3a8ef1f81222",
+    "snapshot": "data/players/rosters/2026-11-14/BL1.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
@@ -685,8 +685,8 @@
       }
     }
   ],
-  "baseline_id": "296003006c5db25a",
-  "generated_at": "2026-11-06T08:00:26.490416+00:00",
+  "baseline_id": "170f92ecba234fb2",
+  "generated_at": "2026-11-14T07:41:10.141441+00:00",
   "usage": {
     "bundesliga": {
       "source": "understat",
@@ -2482,5 +2482,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-09T08:02:00.261465+00:00"
+  "usage_generated_at": "2026-11-14T07:41:38.690322+00:00"
 }

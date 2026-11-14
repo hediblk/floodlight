@@ -15,20 +15,20 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-11T07:47:54.086138+00:00",
-    "url": "https://api.football-data.org/v4/competitions/CL/teams",
-    "sha256": "1480b7cffb831e273079bd20bb3f8e0dcdee5ed6704c638000e1d2090550d25c",
-    "snapshot": "data/players/rosters/2026-11-11/CL.json"
+    "observed_at": "2026-11-14T07:40:37.741365+00:00",
+    "url": "https://api.football-data.org/v4/competitions/PL/teams",
+    "sha256": "fcba31863c3a6c434284d873ee940c30df3a1d16c1bd6cdf03ab42e702118758",
+    "snapshot": "data/players/rosters/2026-11-14/PL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 29,
+    "players": 30,
     "matched": 29
   },
   "ideal_xi": {
     "formation": "4-3-3",
-    "status": "complete",
+    "status": "provisional",
     "mean_overall": 82.7,
     "slots": [
       {
@@ -716,10 +716,20 @@
         "defending": 35,
         "physical": 41
       }
+    },
+    {
+      "id": 302252,
+      "name": "Daniel Armer",
+      "dob": "2007-10-22",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "147b39a68c6b7705",
-  "generated_at": "2026-11-11T07:48:01.326461+00:00",
+  "baseline_id": "d1b9543cf43baeef",
+  "generated_at": "2026-11-14T07:41:09.651335+00:00",
   "usage": {
     "premier-league": {
       "source": "understat",
@@ -1089,6 +1099,17 @@
           ],
           "xg": 0.0438,
           "xa": 0.0
+        },
+        "302252": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 9,
+          "unknown_games": 1,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         }
       },
       "most_used_xi": {
@@ -3011,6 +3032,17 @@
           ],
           "avg_x": null,
           "avg_y": null
+        },
+        "302252": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 4,
+          "unknown_games": 0,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
         }
       },
       "most_used_xi": {
@@ -3727,5 +3759,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-11T07:48:26.362054+00:00"
+  "usage_generated_at": "2026-11-14T07:41:52.140003+00:00"
 }

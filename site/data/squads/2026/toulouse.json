@@ -15,10 +15,10 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-06T08:00:18.506718+00:00",
+    "observed_at": "2026-11-14T07:41:02.218011+00:00",
     "url": "https://api.football-data.org/v4/competitions/FL1/teams",
-    "sha256": "9b171d616864d30e968b78053ee760bf6f08a9cfbe8b10049000a7bec771693e",
-    "snapshot": "data/players/rosters/2026-11-06/FL1.json"
+    "sha256": "fc2eb26541499149765f70097b61e3b518271b4e0e31b301a66f6209d0a4c473",
+    "snapshot": "data/players/rosters/2026-11-14/FL1.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
@@ -642,8 +642,8 @@
       "last_seen": "2026-10-25"
     }
   ],
-  "baseline_id": "4414f30bbb1ee5e7",
-  "generated_at": "2026-11-06T08:00:26.753196+00:00",
+  "baseline_id": "b9928b70572eb59a",
+  "generated_at": "2026-11-14T07:41:10.268550+00:00",
   "usage": {
     "ligue-1": {
       "source": "understat",
@@ -2407,5 +2407,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-07T07:12:19.494896+00:00"
+  "usage_generated_at": "2026-11-14T07:42:20.655064+00:00"
 }

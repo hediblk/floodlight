@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-06T08:00:18.506718+00:00",
+    "observed_at": "2026-11-14T07:41:02.218011+00:00",
     "url": "https://api.football-data.org/v4/competitions/FL1/teams",
-    "sha256": "9b171d616864d30e968b78053ee760bf6f08a9cfbe8b10049000a7bec771693e",
-    "snapshot": "data/players/rosters/2026-11-06/FL1.json"
+    "sha256": "fc2eb26541499149765f70097b61e3b518271b4e0e31b301a66f6209d0a4c473",
+    "snapshot": "data/players/rosters/2026-11-14/FL1.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 29,
+    "players": 30,
     "matched": 26
   },
   "ideal_xi": {
@@ -665,6 +665,16 @@
       }
     },
     {
+      "id": 303614,
+      "name": "Adnane Kharroubi",
+      "dob": "2006-08-03",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": 302639,
       "name": "Lenny Videira",
       "dob": "2006-07-05",
@@ -712,8 +722,8 @@
       "last_seen": "2026-10-25"
     }
   ],
-  "baseline_id": "2df9f80c62b6dff5",
-  "generated_at": "2026-11-06T08:00:27.239934+00:00",
+  "baseline_id": "2ac8a445eec952e8",
+  "generated_at": "2026-11-14T07:41:10.644184+00:00",
   "usage": {
     "ligue-1": {
       "source": "understat",
@@ -1074,6 +1084,17 @@
           ],
           "xg": 0.0991,
           "xa": 0.037
+        },
+        "303614": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 7,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         },
         "302639": {
           "starts": 0,
@@ -2725,5 +2746,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-09T08:02:06.163390+00:00"
+  "usage_generated_at": "2026-11-14T07:41:44.410303+00:00"
 }

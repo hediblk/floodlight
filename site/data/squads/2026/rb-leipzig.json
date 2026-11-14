@@ -15,16 +15,16 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-11T07:47:54.086138+00:00",
-    "url": "https://api.football-data.org/v4/competitions/CL/teams",
-    "sha256": "1480b7cffb831e273079bd20bb3f8e0dcdee5ed6704c638000e1d2090550d25c",
-    "snapshot": "data/players/rosters/2026-11-11/CL.json"
+    "observed_at": "2026-11-14T07:40:45.822348+00:00",
+    "url": "https://api.football-data.org/v4/competitions/BL1/teams",
+    "sha256": "36dcb1462d99fe5d1d168b8f63258002ddd5e9b3a66e20c161fa3a8ef1f81222",
+    "snapshot": "data/players/rosters/2026-11-14/BL1.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 29,
-    "matched": 29
+    "players": 31,
+    "matched": 31
   },
   "ideal_xi": {
     "formation": "4-3-3",
@@ -49,7 +49,7 @@
       },
       {
         "role": "RB",
-        "player": 6634
+        "player": 156
       },
       {
         "role": "CDM",
@@ -57,11 +57,11 @@
       },
       {
         "role": "CM",
-        "player": 150517
+        "player": 56829
       },
       {
         "role": "CM",
-        "player": 56829
+        "player": 150517
       },
       {
         "role": "LW",
@@ -73,7 +73,7 @@
       },
       {
         "role": "RW",
-        "player": 156
+        "player": 6634
       }
     ]
   },
@@ -458,6 +458,28 @@
       }
     },
     {
+      "id": 184146,
+      "name": "Arthur Vermeeren",
+      "dob": "2005-02-07",
+      "provider_position": "Midfield",
+      "status": "matched",
+      "method": "name_and_birth_date",
+      "ea": {
+        "id": 269859,
+        "overall": 76,
+        "positions": [
+          "CM",
+          "CDM"
+        ],
+        "pace": 66,
+        "shooting": 55,
+        "passing": 78,
+        "dribbling": 77,
+        "defending": 66,
+        "physical": 66
+      }
+    },
+    {
       "id": 191102,
       "name": "Brajan Gruda",
       "dob": "2004-05-31",
@@ -729,10 +751,32 @@
         "defending": 29,
         "physical": 60
       }
+    },
+    {
+      "id": 290739,
+      "name": "Suleman Sani",
+      "dob": "2006-09-01",
+      "provider_position": "Offence",
+      "status": "matched",
+      "method": "name_and_birth_date",
+      "ea": {
+        "id": 83137,
+        "overall": 68,
+        "positions": [
+          "LW",
+          "LM"
+        ],
+        "pace": 78,
+        "shooting": 62,
+        "passing": 60,
+        "dribbling": 73,
+        "defending": 29,
+        "physical": 57
+      }
     }
   ],
-  "baseline_id": "625b75bce854e884",
-  "generated_at": "2026-11-11T07:48:01.471961+00:00",
+  "baseline_id": "dfdbef67f40c67ca",
+  "generated_at": "2026-11-14T07:41:09.911041+00:00",
   "usage": {
     "bundesliga": {
       "source": "understat",
@@ -957,6 +1001,19 @@
           "xg": 3.2223,
           "xa": 0.3154
         },
+        "184146": {
+          "starts": 0,
+          "sub": 1,
+          "minutes": 6,
+          "share": 0.008333,
+          "known_games": 3,
+          "unknown_games": 6,
+          "provider_ids": [
+            12392
+          ],
+          "xg": 0.0765,
+          "xa": 0.0
+        },
         "191102": {
           "starts": 5,
           "sub": 1,
@@ -1108,6 +1165,17 @@
           ],
           "xg": 0.0729,
           "xa": 0.0
+        },
+        "290739": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 2,
+          "unknown_games": 7,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         }
       },
       "most_used_xi": {
@@ -1275,7 +1343,7 @@
               "starter": false,
               "xg": 0.07653938233852386,
               "xa": 0.0,
-              "player": null
+              "player": 184146
             },
             {
               "source_id": 435,
@@ -1327,6 +1395,7 @@
             169295
           ],
           "subs": [
+            184146,
             156,
             154110,
             8484
@@ -2776,6 +2845,17 @@
           "avg_x": 0.4803,
           "avg_y": 0.3761
         },
+        "184146": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 4,
+          "unknown_games": 0,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
         "191102": {
           "starts": 3,
           "sub": 1,
@@ -2914,6 +2994,17 @@
           "avg_y": null
         },
         "289697": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 4,
+          "unknown_games": 0,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "290739": {
           "starts": 0,
           "sub": 0,
           "minutes": 0,
@@ -3631,5 +3722,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-11T07:48:33.033675+00:00"
+  "usage_generated_at": "2026-11-14T07:42:03.287735+00:00"
 }
