@@ -15,10 +15,10 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-18T08:35:34.326132+00:00",
+    "observed_at": "2026-11-25T09:55:35.473110+00:00",
     "url": "https://api.football-data.org/v4/competitions/CL/teams",
-    "sha256": "14a4b742d38b1f6e51408536bdb02f3cf7ada0b868963bf855134a1730115bb4",
-    "snapshot": "data/players/rosters/2026-11-18/CL.json"
+    "sha256": "e6668696588b5b88d37d30d2a8d56eeb942591b288c87c8c92ee560ea67069fd",
+    "snapshot": "data/players/rosters/2026-11-25/CL.json"
   },
   "identity_overrides_sha256": "bf5aab80aca6c721e8796ddfe6c39f793398e499643428a577ebfee3c285dbd5",
   "method": "ea-position-assignment-v1",
@@ -640,8 +640,8 @@
       }
     }
   ],
-  "baseline_id": "d88221396060327f",
-  "generated_at": "2026-11-18T08:35:41.760888+00:00",
+  "baseline_id": "ef77f6b5198785d6",
+  "generated_at": "2026-11-25T09:55:42.920070+00:00",
   "usage": {
     "champions-league": {
       "source": "uefa",
@@ -1688,5 +1688,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-18T08:36:24.570629+00:00"
+  "usage_generated_at": "2026-11-25T09:56:26.161715+00:00"
 }

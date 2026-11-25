@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-21T08:20:44.920966+00:00",
-    "url": "https://api.football-data.org/v4/competitions/PD/teams",
-    "sha256": "7a32311dc9937bbd30fcce69b0784aafdef8579b427a82aca172bf1c8950d5b3",
-    "snapshot": "data/players/rosters/2026-11-21/PD.json"
+    "observed_at": "2026-11-25T09:55:35.473110+00:00",
+    "url": "https://api.football-data.org/v4/competitions/CL/teams",
+    "sha256": "e6668696588b5b88d37d30d2a8d56eeb942591b288c87c8c92ee560ea67069fd",
+    "snapshot": "data/players/rosters/2026-11-25/CL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 31,
+    "players": 27,
     "matched": 26
   },
   "ideal_xi": {
@@ -676,50 +676,10 @@
         "defending": 32,
         "physical": 59
       }
-    },
-    {
-      "id": 302801,
-      "name": "Ebrima Tunkara",
-      "dob": "2010-03-10",
-      "provider_position": null,
-      "status": "unmatched",
-      "method": null,
-      "ea": null,
-      "reason": "no_name_and_birth_date_match"
-    },
-    {
-      "id": 302641,
-      "name": "Orian Goren",
-      "dob": "2009-03-15",
-      "provider_position": null,
-      "status": "unmatched",
-      "method": null,
-      "ea": null,
-      "reason": "no_name_and_birth_date_match"
-    },
-    {
-      "id": 302538,
-      "name": "Álex Campos",
-      "dob": "2008-02-02",
-      "provider_position": null,
-      "status": "unmatched",
-      "method": null,
-      "ea": null,
-      "reason": "no_name_and_birth_date_match"
-    },
-    {
-      "id": 301129,
-      "name": "Iker Rodríguez",
-      "dob": "2008-02-22",
-      "provider_position": null,
-      "status": "unmatched",
-      "method": null,
-      "ea": null,
-      "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "b9456d0ba2bae083",
-  "generated_at": "2026-11-21T08:21:24.403226+00:00",
+  "baseline_id": "7386fa95b154cc27",
+  "generated_at": "2026-11-25T09:55:42.664056+00:00",
   "usage": {
     "la-liga": {
       "source": "understat",
@@ -1064,50 +1024,6 @@
           "xa": 0.0
         },
         "298634": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 11,
-          "unknown_games": 2,
-          "provider_ids": [],
-          "xg": 0,
-          "xa": 0
-        },
-        "302801": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 11,
-          "unknown_games": 2,
-          "provider_ids": [],
-          "xg": 0,
-          "xa": 0
-        },
-        "302641": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 11,
-          "unknown_games": 2,
-          "provider_ids": [],
-          "xg": 0,
-          "xa": 0
-        },
-        "302538": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 11,
-          "unknown_games": 2,
-          "provider_ids": [],
-          "xg": 0,
-          "xa": 0
-        },
-        "301129": {
           "starts": 0,
           "sub": 0,
           "minutes": 0,
@@ -3467,50 +3383,6 @@
           "provider_ids": [],
           "avg_x": null,
           "avg_y": null
-        },
-        "302801": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 4,
-          "unknown_games": 0,
-          "provider_ids": [],
-          "avg_x": null,
-          "avg_y": null
-        },
-        "302641": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 4,
-          "unknown_games": 0,
-          "provider_ids": [],
-          "avg_x": null,
-          "avg_y": null
-        },
-        "302538": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 4,
-          "unknown_games": 0,
-          "provider_ids": [],
-          "avg_x": null,
-          "avg_y": null
-        },
-        "301129": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 4,
-          "unknown_games": 0,
-          "provider_ids": [],
-          "avg_x": null,
-          "avg_y": null
         }
       },
       "most_used_xi": {
@@ -4227,5 +4099,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-23T09:04:18.775990+00:00"
+  "usage_generated_at": "2026-11-25T09:55:48.473014+00:00"
 }

@@ -15,20 +15,20 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-21T08:21:17.083668+00:00",
-    "url": "https://api.football-data.org/v4/competitions/FL1/teams",
-    "sha256": "f9d6924ce3f29d962d7fbf840225be224de971465e820571726a7857352ca26f",
-    "snapshot": "data/players/rosters/2026-11-21/FL1.json"
+    "observed_at": "2026-11-25T09:55:35.473110+00:00",
+    "url": "https://api.football-data.org/v4/competitions/CL/teams",
+    "sha256": "e6668696588b5b88d37d30d2a8d56eeb942591b288c87c8c92ee560ea67069fd",
+    "snapshot": "data/players/rosters/2026-11-25/CL.json"
   },
   "identity_overrides_sha256": "1c7a231eef1c864ea3c34f2ccf309628f42afd9774e23d6afc69f6ee4fd7c5e8",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 26,
+    "players": 23,
     "matched": 23
   },
   "ideal_xi": {
     "formation": "4-3-3",
-    "status": "provisional",
+    "status": "complete",
     "mean_overall": 87.7,
     "slots": [
       {
@@ -615,40 +615,10 @@
         "defending": 43,
         "physical": 56
       }
-    },
-    {
-      "id": 303550,
-      "name": "Younes Idder",
-      "dob": "2008-01-18",
-      "provider_position": null,
-      "status": "unmatched",
-      "method": null,
-      "ea": null,
-      "reason": "no_name_and_birth_date_match"
-    },
-    {
-      "id": 303005,
-      "name": "Arthur Bar",
-      "dob": "2010-01-25",
-      "provider_position": null,
-      "status": "unmatched",
-      "method": null,
-      "ea": null,
-      "reason": "no_name_and_birth_date_match"
-    },
-    {
-      "id": 302269,
-      "name": "Adam Mouak",
-      "dob": "2009-06-01",
-      "provider_position": null,
-      "status": "unmatched",
-      "method": null,
-      "ea": null,
-      "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "725b5d37fb3665fa",
-  "generated_at": "2026-11-21T08:21:24.432957+00:00",
+  "baseline_id": "f97d07cf8a6f85f4",
+  "generated_at": "2026-11-25T09:55:42.688178+00:00",
   "usage": {
     "ligue-1": {
       "source": "understat",
@@ -952,39 +922,6 @@
           ],
           "xg": 0.1099,
           "xa": 0.2152
-        },
-        "303550": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 7,
-          "unknown_games": 4,
-          "provider_ids": [],
-          "xg": 0,
-          "xa": 0
-        },
-        "303005": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 7,
-          "unknown_games": 4,
-          "provider_ids": [],
-          "xg": 0,
-          "xa": 0
-        },
-        "302269": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 7,
-          "unknown_games": 4,
-          "provider_ids": [],
-          "xg": 0,
-          "xa": 0
         }
       },
       "most_used_xi": {
@@ -2747,39 +2684,6 @@
           ],
           "avg_x": null,
           "avg_y": null
-        },
-        "303550": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 3,
-          "unknown_games": 1,
-          "provider_ids": [],
-          "avg_x": null,
-          "avg_y": null
-        },
-        "303005": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 3,
-          "unknown_games": 1,
-          "provider_ids": [],
-          "avg_x": null,
-          "avg_y": null
-        },
-        "302269": {
-          "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 3,
-          "unknown_games": 1,
-          "provider_ids": [],
-          "avg_x": null,
-          "avg_y": null
         }
       },
       "most_used_xi": {
@@ -3495,5 +3399,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-22T08:03:44.796410+00:00"
+  "usage_generated_at": "2026-11-25T09:56:15.138710+00:00"
 }
