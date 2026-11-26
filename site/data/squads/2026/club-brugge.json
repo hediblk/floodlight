@@ -611,29 +611,29 @@
   "usage": {
     "champions-league": {
       "source": "uefa",
-      "games": 4,
-      "covered": 4,
-      "fully_mapped": 1,
+      "games": 5,
+      "covered": 5,
+      "fully_mapped": 2,
       "players": {
         "3470": {
-          "starts": 4,
+          "starts": 5,
           "sub": 0,
-          "minutes": 388.4,
+          "minutes": 485.5,
           "share": 1.078889,
-          "known_games": 4,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             97746
           ],
-          "avg_x": 0.1249,
-          "avg_y": 0.5042
+          "avg_x": 0.1304,
+          "avg_y": 0.5057
         },
         "8959": {
           "starts": 0,
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
@@ -644,7 +644,7 @@
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
@@ -655,31 +655,31 @@
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
           "avg_y": null
         },
         "8873": {
-          "starts": 4,
+          "starts": 5,
           "sub": 0,
-          "minutes": 388.4,
+          "minutes": 485.5,
           "share": 1.078889,
-          "known_games": 4,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250053044
           ],
-          "avg_x": 0.3634,
-          "avg_y": 0.4266
+          "avg_x": 0.3666,
+          "avg_y": 0.433
         },
         "154080": {
           "starts": 0,
-          "sub": 4,
-          "minutes": 92.0,
-          "share": 0.255556,
-          "known_games": 4,
+          "sub": 5,
+          "minutes": 102.5,
+          "share": 0.227778,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250128898
@@ -688,26 +688,28 @@
           "avg_y": null
         },
         "161056": {
-          "starts": 3,
+          "starts": 4,
           "sub": 0,
-          "minutes": 255.4,
-          "share": 0.709444,
-          "known_games": 3,
+          "minutes": 352.5,
+          "share": 0.783333,
+          "known_games": 4,
           "unknown_games": 1,
           "provider_ids": [
             250153677
           ],
-          "avg_x": 0.3288,
-          "avg_y": 0.592
+          "avg_x": 0.3416,
+          "avg_y": 0.5933
         },
         "176254": {
           "starts": 0,
-          "sub": 0,
-          "minutes": 0,
-          "share": 0.0,
-          "known_games": 1,
+          "sub": 1,
+          "minutes": 4.8,
+          "share": 0.010667,
+          "known_games": 2,
           "unknown_games": 3,
-          "provider_ids": [],
+          "provider_ids": [
+            250169764
+          ],
           "avg_x": null,
           "avg_y": null
         },
@@ -716,44 +718,44 @@
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
           "avg_y": null
         },
         "188877": {
-          "starts": 4,
+          "starts": 5,
           "sub": 0,
-          "minutes": 303.1,
-          "share": 0.841944,
-          "known_games": 4,
+          "minutes": 389.8,
+          "share": 0.866222,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250138985
           ],
-          "avg_x": 0.3986,
-          "avg_y": 0.7329
+          "avg_x": 0.4028,
+          "avg_y": 0.7345
         },
         "213534": {
-          "starts": 4,
+          "starts": 5,
           "sub": 0,
-          "minutes": 388.4,
-          "share": 1.078889,
-          "known_games": 4,
+          "minutes": 480.7,
+          "share": 1.068222,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250163786
           ],
-          "avg_x": 0.4117,
-          "avg_y": 0.2832
+          "avg_x": 0.415,
+          "avg_y": 0.2892
         },
         "217715": {
           "starts": 0,
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
@@ -764,81 +766,81 @@
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
           "avg_y": null
         },
         "8888": {
-          "starts": 4,
+          "starts": 5,
           "sub": 0,
-          "minutes": 371.0,
-          "share": 1.030556,
-          "known_games": 4,
+          "minutes": 468.1,
+          "share": 1.040222,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250064188
           ],
-          "avg_x": 0.4834,
-          "avg_y": 0.4557
+          "avg_x": 0.4889,
+          "avg_y": 0.4565
         },
         "38417": {
-          "starts": 3,
+          "starts": 4,
           "sub": 1,
-          "minutes": 251.7,
-          "share": 0.699167,
-          "known_games": 4,
+          "minutes": 329.8,
+          "share": 0.732889,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250115134
           ],
-          "avg_x": 0.4869,
-          "avg_y": 0.5886
+          "avg_x": 0.4998,
+          "avg_y": 0.5943
         },
         "147763": {
           "starts": 0,
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
           "avg_y": null
         },
         "171406": {
-          "starts": 1,
+          "starts": 2,
           "sub": 3,
-          "minutes": 186.7,
-          "share": 0.518611,
-          "known_games": 4,
+          "minutes": 264.8,
+          "share": 0.588444,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250160006
           ],
-          "avg_x": 0.4997,
-          "avg_y": 0.62
+          "avg_x": 0.5095,
+          "avg_y": 0.4553
         },
         "176597": {
-          "starts": 4,
+          "starts": 5,
           "sub": 0,
-          "minutes": 379.4,
-          "share": 1.053889,
-          "known_games": 4,
+          "minutes": 466.2,
+          "share": 1.036,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250165376
           ],
-          "avg_x": 0.4216,
-          "avg_y": 0.4931
+          "avg_x": 0.4306,
+          "avg_y": 0.4999
         },
         "247249": {
           "starts": 0,
-          "sub": 1,
-          "minutes": 17.3,
-          "share": 0.048056,
-          "known_games": 2,
+          "sub": 2,
+          "minutes": 27.7,
+          "share": 0.061556,
+          "known_games": 3,
           "unknown_games": 2,
           "provider_ids": [
             250172155
@@ -851,7 +853,7 @@
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
@@ -859,10 +861,10 @@
         },
         "147776": {
           "starts": 0,
-          "sub": 4,
-          "minutes": 47.4,
-          "share": 0.131667,
-          "known_games": 4,
+          "sub": 5,
+          "minutes": 66.4,
+          "share": 0.147556,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250138982
@@ -871,24 +873,24 @@
           "avg_y": null
         },
         "177321": {
-          "starts": 4,
+          "starts": 5,
           "sub": 0,
-          "minutes": 350.0,
-          "share": 0.972222,
-          "known_games": 4,
+          "minutes": 447.1,
+          "share": 0.993556,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250181849
           ],
-          "avg_x": 0.5784,
-          "avg_y": 0.4967
+          "avg_x": 0.5843,
+          "avg_y": 0.5017
         },
         "206779": {
           "starts": 0,
-          "sub": 4,
-          "minutes": 55.8,
-          "share": 0.155,
-          "known_games": 4,
+          "sub": 5,
+          "minutes": 74.9,
+          "share": 0.166444,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250192955
@@ -897,24 +899,24 @@
           "avg_y": null
         },
         "214423": {
-          "starts": 4,
+          "starts": 5,
           "sub": 0,
-          "minutes": 371.2,
-          "share": 1.031111,
-          "known_games": 4,
+          "minutes": 468.3,
+          "share": 1.040667,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250138957
           ],
-          "avg_x": 0.5621,
-          "avg_y": 0.7798
+          "avg_x": 0.5626,
+          "avg_y": 0.7861
         },
         "272459": {
           "starts": 0,
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
@@ -925,7 +927,7 @@
           "sub": 0,
           "minutes": 0,
           "share": 0.0,
-          "known_games": 1,
+          "known_games": 2,
           "unknown_games": 3,
           "provider_ids": [],
           "avg_x": null,
@@ -935,8 +937,8 @@
           "starts": 4,
           "sub": 0,
           "minutes": 282.7,
-          "share": 0.785278,
-          "known_games": 4,
+          "share": 0.628222,
+          "known_games": 5,
           "unknown_games": 0,
           "provider_ids": [
             250200748
@@ -959,11 +961,11 @@
           },
           {
             "role": "CB",
-            "player": 161056
+            "player": 8873
           },
           {
             "role": "CB",
-            "player": 8873
+            "player": 161056
           },
           {
             "role": "RB",
@@ -1644,9 +1646,174 @@
             206779
           ],
           "ideal_started": 8
+        },
+        {
+          "fixture_id": 575409,
+          "kickoff": "2026-11-25T20:00:00+00:00",
+          "opponent_id": 64,
+          "status": "complete",
+          "reason": null,
+          "sheet_sha256": "384c27ed2f21a0257f824cc3ebcfff641ec88d04ea87ee70f285f165b881616b",
+          "appearances": [
+            {
+              "source_id": 250053044,
+              "name": "Brandon Mechele",
+              "minutes": 97.1,
+              "starter": true,
+              "avg_x": 0.3792,
+              "avg_y": 0.4582,
+              "player": 8873
+            },
+            {
+              "source_id": 250064188,
+              "name": "Hans Vanaken",
+              "minutes": 97.1,
+              "starter": true,
+              "avg_x": 0.5112,
+              "avg_y": 0.4596,
+              "player": 8888
+            },
+            {
+              "source_id": 250115134,
+              "name": "Hugo Vetlesen",
+              "minutes": 78.1,
+              "starter": true,
+              "avg_x": 0.5383,
+              "avg_y": 0.6115,
+              "player": 38417
+            },
+            {
+              "source_id": 250128898,
+              "name": "Hugo Siquet",
+              "minutes": 10.5,
+              "starter": false,
+              "player": 154080
+            },
+            {
+              "source_id": 250138957,
+              "name": "Carlos Forbs",
+              "minutes": 97.1,
+              "starter": true,
+              "avg_x": 0.5648,
+              "avg_y": 0.8115,
+              "player": 214423
+            },
+            {
+              "source_id": 250138982,
+              "name": "Romeo Vermant",
+              "minutes": 19.0,
+              "starter": false,
+              "player": 147776
+            },
+            {
+              "source_id": 250138985,
+              "name": "Kyriani Sabbe",
+              "minutes": 86.7,
+              "starter": true,
+              "avg_x": 0.4196,
+              "avg_y": 0.7408,
+              "player": 188877
+            },
+            {
+              "source_id": 250153677,
+              "name": "Jorne Spileers",
+              "minutes": 97.1,
+              "starter": true,
+              "avg_x": 0.3797,
+              "avg_y": 0.5971,
+              "player": 161056
+            },
+            {
+              "source_id": 250160006,
+              "name": "Félix Lemaréchal",
+              "minutes": 78.1,
+              "starter": true,
+              "avg_x": 0.5193,
+              "avg_y": 0.2906,
+              "player": 171406
+            },
+            {
+              "source_id": 250163786,
+              "name": "Joaquin Seys",
+              "minutes": 92.3,
+              "starter": true,
+              "avg_x": 0.428,
+              "avg_y": 0.3133,
+              "player": 213534
+            },
+            {
+              "source_id": 250165376,
+              "name": "Freddie Potts",
+              "minutes": 86.8,
+              "starter": true,
+              "avg_x": 0.4663,
+              "avg_y": 0.5274,
+              "player": 176597
+            },
+            {
+              "source_id": 250169764,
+              "name": "Matteo Dams",
+              "minutes": 4.8,
+              "starter": false,
+              "player": 176254
+            },
+            {
+              "source_id": 250172155,
+              "name": "Cheveyo Tsawa",
+              "minutes": 10.4,
+              "starter": false,
+              "player": 247249
+            },
+            {
+              "source_id": 250181849,
+              "name": "Nicolò Tresoldi",
+              "minutes": 97.1,
+              "starter": true,
+              "avg_x": 0.6079,
+              "avg_y": 0.5221,
+              "player": 177321
+            },
+            {
+              "source_id": 250192955,
+              "name": "Mamadou Diakhon",
+              "minutes": 19.1,
+              "starter": false,
+              "player": 206779
+            },
+            {
+              "source_id": 97746,
+              "name": "Yann Sommer",
+              "minutes": 97.1,
+              "starter": true,
+              "avg_x": 0.1524,
+              "avg_y": 0.5119,
+              "player": 3470
+            }
+          ],
+          "starters": [
+            8873,
+            8888,
+            38417,
+            214423,
+            188877,
+            161056,
+            171406,
+            213534,
+            176597,
+            177321,
+            3470
+          ],
+          "subs": [
+            154080,
+            147776,
+            176254,
+            247249,
+            206779
+          ],
+          "ideal_started": 8
         }
       ]
     }
   },
-  "usage_generated_at": "2026-11-25T09:55:52.887803+00:00"
+  "usage_generated_at": "2026-11-26T09:34:44.384610+00:00"
 }
