@@ -202,6 +202,12 @@ When enabled by the deployment flag, Backtest sits after Clubs. Its tab starts h
 
 The result hero gives ROI in amber (red for losses), bet count, staked units and a 95% interval. A ruled metrics board follows season-separated bankroll paths: solid amber strategy and solid `--series-2` market-favourite flat-stake reference, keyed above each season, with the reset stated for each season and daily values in an expandable table. Paths are never joined across resets. Breakdowns wrap within their frame on phones; only the paginated bet ledger scrolls horizontally. Won/Lost bulbs retain text labels. Source dates, unknown evidence, calibration overlap and price exclusions appear in Coverage & provenance. The public unavailable state shows no fabricated results.
 
+## Backtest · Task 7
+
+Below the result hero, a ruled period table reports replayed 2015/16–2025/26 calibration seasons, 2026/27 replays and 2026/27 published receipts as separate sources. Each row keeps bet count and staked units beside ROI and its interval; missing or unselected current-season results explain why they are unavailable. An “Edge found in-sample” note appears when the calibration-season result is positive and the available 2026/27 result is not. Copy says that 2026/27 was unseen by calibration but is visible to strategy exploration, so it is not framed as an untouched strategy holdout.
+
+The Strategy frame has a browser-local save/load/delete area and two saved-strategy selectors. Comparison uses the same season-reset bankroll treatment and shows two labeled step paths, held flat on days without bets and ending on a shared last date, plus a daily-value table with the same values. Its summary keeps each strategy's ROI interval, coverage counts and fixture population, and a note below gives the fixture and bet overlap. It runs without the editor, whose invalid state keeps its own message. The comparison curves use solid amber and dashed ink; labels remain visible in text. The session counter increments only after a completed engine result and counts each normalized strategy once.
+
 ## What if
 
 What if sits between Backtest and Model (`#whatif`). It borrows a game's team-select screen in the scoreboard's own materials: no gradients, glows or club colours, only the existing tokens and type.

@@ -1372,6 +1372,19 @@ table.mp-stand { min-width: 460px; }
   .bt-season-chart svg text { font-size: 24px; }
 }
 
+/* ---------- Backtest: saved strategies and comparison ---------- */
+.bt-saved-tools { border-top: 1px solid var(--rule-2); margin-top: 18px; padding-top: 6px; }
+.bt-saved-controls { grid-template-columns: minmax(0, 2fr) auto minmax(0, 2fr) auto auto; align-items: end; }
+.bt-compare-controls { grid-template-columns: repeat(2, minmax(0, 1fr)) auto; align-items: end; }
+.bt-saved-controls > .chip, .bt-compare-controls > .chip { min-height: 42px; }
+.bt-line.bt-comparison-a { stroke: var(--amber); }
+.bt-line.bt-comparison-b { stroke: var(--ink-2); stroke-dasharray: 6 4; stroke-width: 1.5; }
+@media (max-width: 699px) {
+  .bt-saved-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bt-compare-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bt-compare-controls > .chip { justify-self: start; }
+}
+
 /* ---------- What if: pick two sides, then the model's forecast for that game or tie ---------- */
 .wi-pick { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); margin-top: 8px; }
 .wi-side { border: 1px solid var(--rule); padding: 18px 16px 16px; display: grid; justify-items: center; gap: 12px; min-width: 0; position: relative; }
