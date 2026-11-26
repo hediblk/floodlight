@@ -386,4 +386,4 @@
     }
     return Object.values(groups).map((group) => ({ dimension: group.dimension, value: group.value, ...summarize(group.bets, options) }));
   }
-  export { decodeSeason, normalizeStrategy, runBacktest, encodeStrategy, decodeStrategy };
+  export { decodeSeason, normalizeStrategy, runBacktest, encodeStrategy, decodeStrategy, universeMatch };

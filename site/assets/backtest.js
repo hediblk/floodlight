@@ -122,6 +122,8 @@ function readSavedStorage() {
           const name = typeof entry?.name === "string" ? entry.name.trim() : "";
           if (!name || name.length > 60 || names.has(name.toLocaleLowerCase())) throw new Error("Invalid saved strategy name");
           const strategy = normalizeStrategy(entry.strategy);
+          // Saves are written normalized; anything normalization would change or fill in is malformed.
+          if (!sameValue(strategy, entry.strategy)) throw new Error("Saved strategy settings are malformed");
           names.add(name.toLocaleLowerCase());
           return [{ name, strategy }];
         } catch {
@@ -136,6 +138,13 @@ function readSavedStorage() {
     savedStorageIssue = "Saved strategies could not be read. URL sharing and backtests still work.";
   }
   refreshSavedControls();
+}
+
+function sameValue(a, b) {
+  if (a === b) return true;
+  if (!a || !b || typeof a !== "object" || typeof b !== "object" || Array.isArray(a) !== Array.isArray(b)) return false;
+  const keys = Object.keys(a);
+  return keys.length === Object.keys(b).length && keys.every((key) => Object.hasOwn(b, key) && sameValue(a[key], b[key]));
 }
 
 function refreshSavedControls(selectedName = null) {
@@ -318,26 +327,38 @@ function schedule(explicit = false, comparisons = []) {
   timer = setTimeout(() => run(explicit, comparisons), explicit ? 0 : 300);
 }
 function run(explicit, comparisons = []) {
-  let strategy;
-  try { strategy = read(); } catch (error) { status("invalid", error.message); return; }
-  current = strategy;
-  const hash = encodeStrategy(strategy); history.replaceState(null, "", hash); $("bt-share").href = hash;
-  $("bt-strategy-summary").textContent = `${picks[strategy.rule.pick]} · ${methods[strategy.stake.method]} · ${books[strategy.execution.book]} · ${strategy.execution.timing === "pre" ? "pre-closing" : "closing"}`;
-  if (!files.length) { status("unavailable", "No backtest seasons are available in this deployment. Your strategy link can still be shared."); return; }
-  if (strategy.universe.seasons.some((year) => !files.some((file) => file.season === year))) { status("unavailable", "A season in this strategy is unavailable. Choose only loaded seasons; no partial result is substituted."); return; }
+  let strategy = null, issue = null;
+  try { strategy = read(); } catch (error) { issue = ["invalid", error.message]; }
+  if (strategy) {
+    current = strategy;
+    const hash = encodeStrategy(strategy); history.replaceState(null, "", hash); $("bt-share").href = hash;
+    $("bt-strategy-summary").textContent = `${picks[strategy.rule.pick]} · ${methods[strategy.stake.method]} · ${books[strategy.execution.book]} · ${strategy.execution.timing === "pre" ? "pre-closing" : "closing"}`;
+    if (!files.length) issue = ["unavailable", "No backtest seasons are available in this deployment. Your strategy link can still be shared."];
+    else if (strategy.universe.seasons.some((year) => !files.some((file) => file.season === year))) issue = ["unavailable", "A season in this strategy is unavailable. Choose only loaded seasons; no partial result is substituted."];
+  }
+  // An unusable editor strategy blocks only its own result, never a comparison of valid saved strategies.
+  if (issue && (!comparisons.length || !files.length)) { status(...issue); return; }
+  if (issue) strategy = null;
   const ticket = generation;
-  status("loading", "Calculating strategy and 2,000 match-date bootstrap samples…");
+  status("loading", strategy ? "Calculating strategy and 2,000 match-date bootstrap samples…" : "Calculating the saved-strategy comparison…");
   const url = new URL("./backtest-worker.js", import.meta.url); url.search = new URL(import.meta.url).search;
   worker = new Worker(url, { type: "module" });
   worker.onmessage = ({ data }) => {
     if (ticket !== generation) return;
     if (data.progress) { status("loading", data.progress); return; }
     worker.terminate();
-    if (data.error) { status("invalid", data.error); return; }
-    output = data; page = 0; renderResults();
-    [strategy, ...comparisons.map((entry) => entry.strategy)].forEach((item) => evaluatedStrategies.add(JSON.stringify(normalizeStrategy(item))));
+    const compared = data.comparisons || [];
+    [...(data.result ? [strategy] : []), ...compared.map((entry) => entry.strategy)].forEach((item) => evaluatedStrategies.add(JSON.stringify(normalizeStrategy(item))));
     $("bt-session-count").textContent = `Distinct strategies evaluated this session: ${evaluatedStrategies.size}.`;
-    const comparisonText = comparisons.length ? ` Compared ${comparisons.map((entry) => entry.name).join(" and ")}.` : "";
+    renderComparison(data);
+    if (data.comparisonError) $("bt-saved-status").textContent = `Comparison could not finish. ${data.comparisonError}`;
+    const comparisonText = compared.length ? ` Compared ${compared.map((entry) => entry.name).join(" and ")}.` : data.comparisonError ? ` Comparison could not finish: ${data.comparisonError}` : "";
+    if (!data.result) {
+      const [state, message] = issue || ["invalid", data.error || "The calculation could not finish."];
+      status(state, `${message}${compared.length ? " The editor strategy has no result; the saved-strategy comparison below ran on its own." : ""}${comparisonText}`);
+      return;
+    }
+    output = data; page = 0; renderResults();
     status(data.result.summary.bets ? "results" : "empty", data.result.summary.bets ? `Complete · ${data.result.summary.bets.toLocaleString()} bets.${comparisonText} Strategy link reflects the editor settings.` : `No bets match this strategy. Review the universe, conditions and price coverage below.${comparisonText}`);
     if (explicit && matchMedia("(max-width: 699px)").matches) { $("bt-editor").open = false; $("bt-strategy-summary").focus(); }
   };
@@ -413,7 +434,7 @@ function renderResults() {
     <fieldset class="frame"><legend>Bet log</legend><p class="note">90-minute results. Links appear only for known fixtures available on this site. Balance is the season’s settled day-end balance, not an intra-day sizing balance.</p><div id="bt-bets" class="bt-log-scroll" tabindex="0" role="region" aria-label="Scrollable bet log"></div><div class="bt-actions"><button id="bt-prev" class="chip" type="button">Previous 100</button><span id="bt-page"></span><button id="bt-next" class="chip" type="button">Next 100</button></div></fieldset>
     <fieldset class="frame"><legend>Coverage & provenance</legend><div id="bt-coverage"></div></fieldset>`;
   $("bt-results").hidden = false;
-  renderPeriodSummary(chosenFiles); renderChart(); renderBreakdown(); renderBets(); renderCoverage(chosenFiles); renderComparison();
+  renderPeriodSummary(chosenFiles); renderChart(); renderBreakdown(); renderBets(); renderCoverage(chosenFiles);
   $("bt-breakdown").onchange = renderBreakdown;
   $("bt-prev").onclick = () => { page--; renderBets(); };
   $("bt-next").onclick = () => { page++; renderBets(); };
@@ -455,24 +476,44 @@ function renderPeriodSummary(chosenFiles) {
   }
   $("bt-overfit").textContent = warning;
 }
-function renderComparison() {
-  const comparisons = output.comparisons || [];
+function seasonRuns(years) {
+  return years.reduce((runs, year) => { const last = runs.at(-1); if (last && year === last[1] + 1) last[1] = year; else runs.push([year, year]); return runs; }, [])
+    .map(([a, b]) => a === b ? seasonName(a) : `${seasonName(a)}–${seasonName(b)}`).join(", ");
+}
+function universeFilters(u) {
+  const parts = [];
+  if (u.include.length) parts.push(`${u.include.length} included ${u.include.length === 1 ? "team" : "teams"}${u.venue !== "any" ? ` at ${u.venue}` : ""}${u.team_side ? ", bets on them only" : ""}`);
+  if (u.exclude.length) parts.push(`${u.exclude.length} excluded ${u.exclude.length === 1 ? "team" : "teams"}`);
+  if (u.matchdays.length) parts.push(`rounds ${u.matchdays.join("–")}`);
+  if (u.months.length) parts.push(`months ${u.months.join(", ")}`);
+  if (u.weekdays.length) parts.push(`UTC weekdays ${u.weekdays.join(", ")}`);
+  return parts.length ? parts.join("; ") : "no team or calendar filters";
+}
+function renderComparison(data) {
+  const comparisons = data.comparisons || [];
   if (comparisons.length !== 2) { $("bt-comparison").hidden = true; return; }
   $("bt-comparison").hidden = false;
   const labels = comparisons.map(({ name, strategy }) =>
     name + " · " + strategy.universe.forecast + ", " + picks[strategy.rule.pick] + ", " + methods[strategy.stake.method] + ", " + books[strategy.execution.book] + " " + (strategy.execution.timing === "pre" ? "pre-closing" : "closing"));
   $("bt-comparison").innerHTML = '<fieldset class="frame"><legend>Strategy comparison</legend>' +
     '<p class="note">Amber solid: ' + esc(labels[0]) + '. Ink dashed: ' + esc(labels[1]) + '. Each path resets to its own starting bankroll for every season.</p>' +
-    '<div id="bt-compare-summary"></div><div id="bt-compare-chart"></div>' +
+    '<div id="bt-compare-summary"></div><p id="bt-compare-overlap" class="note"></p><div id="bt-compare-chart"></div>' +
     '<details class="bt-details"><summary>Daily bankroll values · text equivalent</summary><div id="bt-compare-table"></div></details>' +
-    '<p class="note">Intervals use the same fixed 2,000 match-date bootstrap samples (seed 7). Coverage remains strategy-specific; the chart does not combine seasons.</p></fieldset>';
-  $("bt-compare-summary").innerHTML = table(["Saved strategy · coverage", "Bets / staked · ROI · 95% interval"], comparisons.map((entry, i) => {
-    const r = entry.result, s = r.summary, c = r.coverage;
+    '<p class="note">Intervals use the same fixed 2,000 match-date bootstrap samples (seed 7). Coverage remains strategy-specific; the chart does not combine seasons. Each line holds its balance on days without its own bets, steps on the UTC match date it settles, and both end on the season’s last date in either strategy, as in the table.</p></fieldset>';
+  $("bt-compare-summary").innerHTML = table(["Saved strategy · fixture population · coverage", "Bets / staked · ROI · 95% interval"], comparisons.map((entry) => {
+    const r = entry.result, s = r.summary, c = r.coverage, p = entry.population, u = entry.strategy.universe;
+    const population = p.fixtures
+      ? `${p.comps.map((code) => leagues[code]).join(", ")} · ${seasonRuns(p.seasons)} · ${u.forecast} forecasts · kickoffs ${p.first} to ${p.last} · ${universeFilters(u)} · ${fmt(p.fixtures, 0)} fixtures, ${fmt(p.bet_fixtures, 0)} with a bet.`
+      : `No fixtures match this universe (${universeFilters(u)}).`;
     const coverage = fmt(c.input_rows, 0) + " input rows; " + fmt(c.universe_matches, 0) + " in universe; " + fmt(c.fully_priced_matches, 0) + " priced; " + fmt(c.missing_price_voids, 0) + " missing-price voids; " + fmt(c.selection_exclusions, 0) + " selection exclusions; " + fmt(c.condition_exclusions, 0) + " condition exclusions; " + fmt(c.zero_stakes, 0) + " zero stakes.";
-    const details = picks[entry.strategy.rule.pick] + " · " + methods[entry.strategy.stake.method] + " · " + entry.strategy.execution.book + " " + entry.strategy.execution.timing + " · " + entry.strategy.universe.forecast;
-    return cells([esc(entry.name) + "<small>" + esc(details) + "</small><small>" + esc(coverage) + "</small>",
+    const details = picks[entry.strategy.rule.pick] + " · " + methods[entry.strategy.stake.method] + " · " + entry.strategy.execution.book + " " + entry.strategy.execution.timing + " · " + u.forecast;
+    return cells([esc(entry.name) + "<small>" + esc(details) + "</small><small>" + esc(population) + "</small><small>" + esc(coverage) + "</small>",
       fmt(s.bets, 0) + " bets; " + units(s.staked) + " staked<small>ROI " + pct(s.roi) + " · 95% interval: " + interval(s) + "</small>"]);
   }).join(""));
+  const [a, b] = comparisons.map((entry) => entry.name), f = data.overlap.fixtures, bets = data.overlap.bets;
+  $("bt-compare-overlap").textContent = `Fixture overlap, matched by league, kickoff and teams: ${fmt(f.both, 0)} in both universes, ${fmt(f.only_a, 0)} only in ${a}, ${fmt(f.only_b, 0)} only in ${b}. ` +
+    `Fixtures with a bet: ${fmt(bets.both, 0)} by both, ${fmt(bets.only_a, 0)} only by ${a}, ${fmt(bets.only_b, 0)} only by ${b}. ` +
+    (f.only_a || f.only_b ? "The two ROIs therefore cover different fixture populations." : "Both strategies draw on the same fixture population.");
   renderComparisonChart(comparisons);
 }
 function renderComparisonChart(comparisons) {
@@ -481,23 +522,26 @@ function renderComparisonChart(comparisons) {
   for (const season of seasons) {
     const paths = comparisons.map(({ result }) => result.bankroll.filter((point) => point.season === season));
     const dates = [...new Set(paths.flat().map((point) => point.day).filter(Boolean))].sort();
-    const starts = comparisons.map(({ strategy }) => strategy.bankroll);
-    const values = [0, ...starts, ...paths.flat().map((point) => point.bankroll)];
+    // One carried-forward series feeds both the chart and the table, so they cannot disagree.
+    const maps = paths.map((path) => new Map(path.map((point) => [point.day, point.bankroll])));
+    let balances = comparisons.map(({ strategy }) => strategy.bankroll);
+    const steps = [null, ...dates].map((day) => {
+      balances = balances.map((value, i) => maps[i].get(day) ?? value);
+      return { day, balances };
+    });
+    const values = [0, ...steps.flatMap((step) => step.balances)];
     const low = Math.min(...values), high = Math.max(...values), span = high - low || 1;
     const start = Date.parse(dates[0]) - 86400000, end = Date.parse(dates.at(-1));
     const x = (day) => 52 + ((day ? Date.parse(day) : start) - start) / (end - start || 1) * 622;
     const y = (value) => 160 - (value - low) / span * 135;
+    const line = (i) => steps.map((step, j) => j ? `H${x(step.day).toFixed(2)}V${y(step.balances[i]).toFixed(2)}` : `M${x(null).toFixed(2)},${y(step.balances[i]).toFixed(2)}`).join("");
     html += '<div class="bt-season-chart"><h2>' + seasonName(season) + ' <span>Each strategy resets to its own bankroll</span></h2>' +
-      '<svg viewBox="0 0 700 195" role="img" aria-label="' + seasonName(season) + ' bankroll comparison: ' + esc(comparisons[0].name) + ' in solid amber and ' + esc(comparisons[1].name) + ' in dashed ink. Daily values follow in the table.">' +
+      '<svg viewBox="0 0 700 195" role="img" aria-label="' + seasonName(season) + ' bankroll comparison: ' + esc(comparisons[0].name) + ' in solid amber and ' + esc(comparisons[1].name) + ' in dashed ink, held flat on days without bets. Daily values follow in the table.">' +
       [low, (low + high) / 2, high].map((value) => '<line x1="52" x2="674" y1="' + y(value) + '" y2="' + y(value) + '" class="bt-grid"/><text x="46" y="' + (y(value) + 4) + '" text-anchor="end">' + fmt(value, 0) + '</text>').join("") +
-      paths.map((path, i) => path.length ? '<path d="' + path.map((point, j) => (j ? "L" : "M") + x(point.day).toFixed(2) + "," + y(point.bankroll).toFixed(2)).join(" ") + '" class="bt-line ' + (i ? "bt-comparison-b" : "bt-comparison-a") + '"/>' : "").join("") +
+      paths.map((path, i) => path.length ? '<path d="' + line(i) + '" class="bt-line ' + (i ? "bt-comparison-b" : "bt-comparison-a") + '"/>' : "").join("") +
       '<text x="52" y="185">Start</text><text x="674" y="185" text-anchor="end">' + esc(dates.at(-1) || "") + '</text></svg></div>';
-    const maps = paths.map((path) => new Map(path.map((point) => [point.day, point.bankroll])));
-    let balances = starts.slice();
-    text += '<h2>' + seasonName(season) + '</h2>' + table(["UTC date", esc(comparisons[0].name) + " (u)", esc(comparisons[1].name) + " (u)"], [null, ...dates].map((day) => {
-      balances = balances.map((value, i) => maps[i].get(day) ?? value);
-      return cells([day || "Season reset", ...balances.map((value, i) => paths[i].length ? fmt(value) : "No bets")]);
-    }).join(""));
+    text += '<h2>' + seasonName(season) + '</h2>' + table(["UTC date", esc(comparisons[0].name) + " (u)", esc(comparisons[1].name) + " (u)"], steps.map((step) =>
+      cells([step.day || "Season reset", ...step.balances.map((value, i) => paths[i].length ? fmt(value) : "No bets")])).join(""));
   }
   $("bt-compare-chart").innerHTML = html || '<p class="note">Neither saved strategy has settled bets to plot.</p>';
   $("bt-compare-table").innerHTML = text || '<p class="note">No daily values.</p>';
