@@ -499,7 +499,7 @@ function renderComparison(data) {
     '<p class="note">Amber solid: ' + esc(labels[0]) + '. Ink dashed: ' + esc(labels[1]) + '. Each path resets to its own starting bankroll for every season.</p>' +
     '<div id="bt-compare-summary"></div><p id="bt-compare-overlap" class="note"></p><div id="bt-compare-chart"></div>' +
     '<details class="bt-details"><summary>Daily bankroll values · text equivalent</summary><div id="bt-compare-table"></div></details>' +
-    '<p class="note">Intervals use the same fixed 2,000 match-date bootstrap samples (seed 7). Coverage remains strategy-specific; the chart does not combine seasons. Each line holds its balance on days without its own bets, steps on the UTC match date it settles, and both end on the season’s last date in either strategy, as in the table.</p></fieldset>';
+    '<p class="note">Each 95% interval is separate: 2,000 draws resampling that strategy’s own settled UTC match dates, with shared seed 7. They are not a paired interval and give no interval for the ROI difference. Coverage remains strategy-specific; the chart does not combine seasons. Each line holds its balance on days without its own bets, steps on the UTC match date it settles, and both end on the season’s last date in either strategy, as in the table.</p></fieldset>';
   $("bt-compare-summary").innerHTML = table(["Saved strategy · fixture population · coverage", "Bets / staked · ROI · 95% interval"], comparisons.map((entry) => {
     const r = entry.result, s = r.summary, c = r.coverage, p = entry.population, u = entry.strategy.universe;
     const population = p.fixtures
@@ -511,9 +511,8 @@ function renderComparison(data) {
       fmt(s.bets, 0) + " bets; " + units(s.staked) + " staked<small>ROI " + pct(s.roi) + " · 95% interval: " + interval(s) + "</small>"]);
   }).join(""));
   const [a, b] = comparisons.map((entry) => entry.name), f = data.overlap.fixtures, bets = data.overlap.bets;
-  $("bt-compare-overlap").textContent = `Fixture overlap, matched by league, kickoff and teams: ${fmt(f.both, 0)} in both universes, ${fmt(f.only_a, 0)} only in ${a}, ${fmt(f.only_b, 0)} only in ${b}. ` +
-    `Fixtures with a bet: ${fmt(bets.both, 0)} by both, ${fmt(bets.only_a, 0)} only by ${a}, ${fmt(bets.only_b, 0)} only by ${b}. ` +
-    (f.only_a || f.only_b ? "The two ROIs therefore cover different fixture populations." : "Both strategies draw on the same fixture population.");
+  $("bt-compare-overlap").textContent = `Fixtures matched by league, kickoff and teams. Eligible (in universe): ${fmt(f.both, 0)} in both, ${fmt(f.only_a, 0)} only in ${a}, ${fmt(f.only_b, 0)} only in ${b}. ` +
+    `Wagered: ${fmt(bets.both, 0)} bet by both, ${fmt(bets.only_a, 0)} only by ${a}, ${fmt(bets.only_b, 0)} only by ${b}. Each strategy’s ROI is based on its own bets.`;
   renderComparisonChart(comparisons);
 }
 function renderComparisonChart(comparisons) {
