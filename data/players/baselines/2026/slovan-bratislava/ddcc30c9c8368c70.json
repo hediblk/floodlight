@@ -1,0 +1,94 @@
+{
+  "slug": "slovan-bratislava",
+  "club_id": 7509,
+  "name": "ŠK Slovan Bratislava",
+  "season": "2026",
+  "ratings": {
+    "source": "EA SPORTS FC",
+    "file": "fc27-2026-09-12.csv",
+    "sha256": "18ed434e5bb90f9afa72363d14438005c785eb4b8872a64c89c75bb38e14e911",
+    "rows": 17849,
+    "url": "https://raw.githubusercontent.com/LakshmiKanth11/EA_FC_ANALYSIS/c0b2542d9fcae72d2c538a472a30ee57c4e7c75e/EA_FC_PLAYERS_DATASET_AND_%20DASHBOARD/data/players.csv",
+    "edition": "fc27",
+    "snapshot_date": "2026-09-12"
+  },
+  "roster": {
+    "source": "football-data.org",
+    "status": "available",
+    "observed_at": "2026-11-25T09:55:35.473110+00:00",
+    "url": "https://api.football-data.org/v4/competitions/CL/teams",
+    "sha256": "e6668696588b5b88d37d30d2a8d56eeb942591b288c87c8c92ee560ea67069fd",
+    "snapshot": "data/players/rosters/2026-11-25/CL.json"
+  },
+  "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "method": "ea-position-assignment-v1",
+  "coverage": {
+    "players": 1,
+    "matched": 0
+  },
+  "ideal_xi": {
+    "formation": "4-3-3",
+    "status": "insufficient_coverage",
+    "mean_overall": null,
+    "slots": [
+      {
+        "role": "GK",
+        "player": null
+      },
+      {
+        "role": "LB",
+        "player": null
+      },
+      {
+        "role": "CB",
+        "player": null
+      },
+      {
+        "role": "CB",
+        "player": null
+      },
+      {
+        "role": "RB",
+        "player": null
+      },
+      {
+        "role": "CDM",
+        "player": null
+      },
+      {
+        "role": "CM",
+        "player": null
+      },
+      {
+        "role": "CM",
+        "player": null
+      },
+      {
+        "role": "LW",
+        "player": null
+      },
+      {
+        "role": "ST",
+        "player": null
+      },
+      {
+        "role": "RW",
+        "player": null
+      }
+    ]
+  },
+  "players": [
+    {
+      "id": 304315,
+      "name": "Daniel Gramblička",
+      "dob": "2008-12-22",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    }
+  ],
+  "baseline_id": "ddcc30c9c8368c70",
+  "generated_at": "2026-11-25T09:55:43.533358+00:00"
+}

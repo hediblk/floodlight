@@ -1,4 +1,4 @@
-// Router: #<competition> (tables), #matches[/YYYY-MM-DD], #match/<competition>/<fixture id>, #clubs[/<club>[/squad | /vs/<club>]], #model[/<section>], #backtest[/<encoded strategy>].
+// Router: #<competition> (tables), #matches[/YYYY-MM-DD], #match/<competition>/<fixture id>, #clubs[/<club>[/squad | /vs/<club>]], #model[/<section>], #backtest[/<encoded strategy>], #whatif[/<home>/<away>/<mode>[/<first leg>]].
 import { COMPS, $, loadCrests, loadRun } from "./core.js";
 import { BACKTEST_ENABLED } from "./features.js";
 import { showTables } from "./tables.js";
@@ -6,11 +6,37 @@ import { showMatches } from "./matches.js";
 import { showClubs } from "./clubs.js";
 import { showModel } from "./model.js";
 import { showMatch } from "./match.js";
+import { showWhatIf } from "./whatif.js";
 
-const VIEWS = ["tables", "matches", "clubs", "model", "match", "backtest"];
+const VIEWS = ["tables", "matches", "clubs", "model", "match", "backtest", "whatif"];
+const THEME_KEY = "floodlight-theme";
 let lastComp = COMPS[0].slug;
 let lastView = null;
 let lastArg = null;
+
+function setTheme(theme, save = false) {
+  const resolved = theme === "light" ? "light" : "dark";
+  const root = document.documentElement;
+  root.dataset.theme = resolved;
+  root.style.colorScheme = resolved;
+  document.querySelector('meta[name="theme-color"]').content = resolved === "light" ? "#F4F1EB" : "#131312";
+  const action = resolved === "light" ? "Switch to dark mode" : "Switch to light mode";
+  const button = $("theme-toggle");
+  button.setAttribute("aria-label", action);
+  button.title = action;
+  if (save) {
+    try { localStorage.setItem(THEME_KEY, resolved); } catch { /* Keep this page usable when storage is blocked. */ }
+  }
+  window.dispatchEvent(new CustomEvent("floodlight-theme-change", { detail: { theme: resolved } }));
+}
+
+$("theme-toggle").addEventListener("click", () => {
+  setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light", true);
+});
+window.addEventListener("storage", (event) => {
+  if (event.key === THEME_KEY) setTheme(event.newValue, false);
+});
+setTheme(document.documentElement.dataset.theme);
 
 $("tabs").querySelector('[data-view="backtest"]').hidden = !BACKTEST_ENABLED;
 
@@ -39,6 +65,7 @@ function route() {
   else if (view === "matches") showMatches(arg);
   else if (view === "match") showMatch(arg, sub);
   else if (view === "clubs") showClubs(arg, sub === "vs" ? extra : "", sub === "squad");
+  else if (view === "whatif") showWhatIf(location.hash.slice(1).split("/").slice(1));
   else if (view === "backtest") import("./backtest.js").then(({ showBacktest }) => {
     if (location.hash.split("/")[0] === "#backtest") showBacktest();
   });

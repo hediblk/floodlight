@@ -1,12 +1,13 @@
 # Floodlight: football forecasts
 
-**[Open Floodlight →](https://hediblk.github.io/football-predictions/)**
+**[Open Floodlight →](https://hediblk.github.io/floodlight/)**
 
 Floodlight is a website with forecasts for the Premier League, La Liga, Bundesliga, Serie A, Ligue 1 and the Champions League, refreshed every night at 01:17 UTC.
 
 - **Tables:** each club's chance of finishing in every place, with title, top-four and relegation odds and a chart of how they have moved this season. The Champions League page covers the league phase and the knockout bracket.
 - **Matches:** each day's fixtures with home, draw and away probabilities and likeliest scores, what's at stake in each game (title, top four and relegation; in the Champions League, the top eight, the top 24 and the trophy), and whether the model called past results.
 - **Clubs:** a strength ranking of every club in the five leagues and the Champions League on one European scale, with weekly movement and a profile per club.
+- **What if:** pick any two clubs, as in a game's team-select screen, and get the model's forecast for a single game at either ground or on neutral ground, a two-leg tie (optionally after a first-leg score) or a final, with likeliest scores, a score grid and who goes through. Sliders nudge each club's attack and defence, home advantage and the shootout; any change marks the result as modified.
 - **Backtest:** optionally configure and compare named historical 1X2 strategies, with calibration and current-season reporting, bankroll paths, uncertainty and coverage; enabled by the deployment switch below.
 - **Model:** how the forecasts and ratings are made.
 
@@ -31,7 +32,7 @@ flowchart LR
     subgraph Inputs
         FD[football-data.org<br/>standings, results, fixtures]
         HIST[football-data.co.uk<br/>2 prior seasons]
-        US[Understat<br/>match xG]
+        US[Understat archive + ESPN<br/>match xG]
         ODDS[The Odds API<br/>optional 1X2 odds]
     end
 
@@ -134,7 +135,7 @@ classDiagram
 | Component | File | Role |
 | --- | --- | --- |
 | Dixon–Coles | `dixon_coles.py` | Expected goals and scoreline probabilities per fixture |
-| xG strengths | `xg.py` | Attack/defence fitted to Understat xG |
+| xG strengths | `xg.py` | Attack/defence fitted to match xG: Understat (live or [archived](data/xg/README.md)), ESPN where Understat has none |
 | Elo | `elo.py` | Result-based ratings, regressed toward average each season |
 | Odds | `odds.py` | De-margined bookmaker probabilities, only if quoted before the forecast time |
 | Blend | `ensemble.py` | Weighted geometric mean of the available models |
@@ -241,7 +242,7 @@ football-ucl --season 2026 --n-sim 10000
 
 Backtest is disabled by default. Set the GitHub Actions repository variable `ENABLE_BACKTEST` to `1` and redeploy to enable its tab, saved strategy links and daily current-season export. Unset it or use `0` and redeploy to disable the feature. Deployment writes `site/assets/features.js` before versioning assets; local previews can set that module's `BACKTEST_ENABLED` to `true`. Historical-price publication is authorized; there is no separate publication flag. Build initial season files with `python scripts/build_backtest_data.py --offline --dest site/data/backtest`; the exporter also updates the availability manifest. See [ADR 0004](docs/adr/0004-backtest-deployment-switch.md).
 
-`site/` is [Floodlight](https://hediblk.github.io/football-predictions/), a static page with the five tabs described at the top. The [site workflow](.github/workflows/site.yml) reruns all six forecasts daily at 01:17 UTC, commits `site/data` and redeploys GitHub Pages. It also archives daily bookmaker odds, including the Europa and Conference League, to [data/odds](data/odds/README.md); the Champions League model reads the archived Champions League prices, and the rest are kept for model-versus-market comparisons and later tests. Finished Europa and Conference League results from ESPN are appended to [data/results](data/results/README.md), starting in 2025/26; `football-ucl --european-history both` adds them to the joint history. See the [replay and integration decision](docs/el-ecl-history-evaluation.md).
+`site/` is [Floodlight](https://hediblk.github.io/floodlight/), a static page with the tabs described at the top. The [site workflow](.github/workflows/site.yml) reruns all six forecasts daily at 01:17 UTC, commits `site/data` and redeploys GitHub Pages. It also archives daily bookmaker odds, including the Europa and Conference League, to [data/odds](data/odds/README.md); the Champions League model reads the archived Champions League prices, and the rest are kept for model-versus-market comparisons and later tests. Finished Europa and Conference League results from ESPN are appended to [data/results](data/results/README.md), starting in 2025/26; `football-ucl --european-history both` adds them to the joint history. See the [replay and integration decision](docs/el-ecl-history-evaluation.md).
 
 Each refresh also keeps dated snapshots in `site/data/history/<season>/`, for charts and the weekly club ranking. `<competition>.json` holds every club's title, top-four and relegation chances (Champions League: stage chances), with one point per day that brings new results; a refresh without new results updates the latest point. `clubs.json` freezes every rated club's overall, attack and defence ratings once a week, at the Monday refresh (or Tuesday's if Monday's failed), after the weekend round and the previous week's Champions League games. The Clubs tab ranks clubs on the live ratings and uses the previous Monday's freeze only for the movement arrows. `scripts/backfill_history.py` fills earlier days by rerunning the forecasts with `--as-of` at 05:30 UTC on each past day; it resumes where it stopped and keeps points the refresh added later.
 
@@ -262,6 +263,7 @@ python3 -m http.server -d site 8000
 
 ## Data quirks
 
+- **Unavailable xG:** Understat has been offline since 2 November 2026, so its xG comes only from the committed [archive](data/xg/README.md) (through 12 October 2026) and nothing calls Understat for it; ESPN team xG fills finished league games from 2026/27 that still lack xG, marked `xg_source: "espn"`. `refresh_site.sh` warns when finished games more than two days before the latest result still have no xG. Site exports also retain previously published xG for unchanged finished fixtures when fresh xG is missing; new games stay without xG until the source recovers.
 - **Cancelled** fixtures are simulated as if they will be replayed; `--strict-fixtures` makes them an error.
 - **Awarded** results count as played. Official decisions without a score go in `fixture_overrides.csv`.
 - **Lagging** results, where the table already counts a match still listed as unplayed, take their score from Understat.

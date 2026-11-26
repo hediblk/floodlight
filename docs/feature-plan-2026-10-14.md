@@ -66,19 +66,19 @@ No free source with acceptable terms provides running data or heatmaps for the f
 
 | Task | Source | Wave | Depends on | Size | Status |
 | --- | --- | --- | --- | --- | --- |
-| 1. Published forecast receipts | Foundation | A | none | M | [PR #31](https://github.com/hediblk/football-predictions/pull/31) |
-| 2. Match page: route and pre-game mode | Phase 1 | A | none | L | [PR #30](https://github.com/hediblk/football-predictions/pull/30) |
-| 3. Weekly race movers | Addition 2 | A | none | S | [PR #37](https://github.com/hediblk/football-predictions/pull/37) |
-| 4. Rating history and club comparison | Addition 5 | A | none | M | [PR #44](https://github.com/hediblk/football-predictions/pull/44) |
-| 5. Games that matter | Addition 6 | A | none | S | [PR #36](https://github.com/hediblk/football-predictions/pull/36) |
-| 6. Match page: post-game mode | Phase 1 | B | 2 (uses 1 when merged) | M | [PR #32](https://github.com/hediblk/football-predictions/pull/32) |
-| 7. Who's beating the model | Addition 4 | B | none (uses 1 when merged) | M | [PR #45](https://github.com/hediblk/football-predictions/pull/45) |
-| 8. Scorecard core | Addition 1 | B | 1 | L | [PR #35](https://github.com/hediblk/football-predictions/pull/35) |
-| 9. Match notes: streaks, head-to-head, records | Phase 1 | B | 2 | L | [PR #46](https://github.com/hediblk/football-predictions/pull/46) |
-| 10. Understat shot ingestion | Phase 2 | B | none | M | [PR #33](https://github.com/hediblk/football-predictions/pull/33) |
-| 11. Shot report on the match page | Phase 2 | C | 6, 10 | M | [PR #34](https://github.com/hediblk/football-predictions/pull/34) |
-| 12. ESPN box score and timeline | Phase 3 | C | 6 | L | [PR #38](https://github.com/hediblk/football-predictions/pull/38) |
-| 13. UEFA running data and heatmaps (Champions League) | Phase 3 | C | 6 | L | [PR #41](https://github.com/hediblk/football-predictions/pull/41) |
+| 1. Published forecast receipts | Foundation | A | none | M | [PR #31](https://github.com/hediblk/floodlight/pull/31) |
+| 2. Match page: route and pre-game mode | Phase 1 | A | none | L | [PR #30](https://github.com/hediblk/floodlight/pull/30) |
+| 3. Weekly race movers | Addition 2 | A | none | S | [PR #37](https://github.com/hediblk/floodlight/pull/37) |
+| 4. Rating history and club comparison | Addition 5 | A | none | M | [PR #44](https://github.com/hediblk/floodlight/pull/44) |
+| 5. Games that matter | Addition 6 | A | none | S | [PR #36](https://github.com/hediblk/floodlight/pull/36) |
+| 6. Match page: post-game mode | Phase 1 | B | 2 (uses 1 when merged) | M | [PR #32](https://github.com/hediblk/floodlight/pull/32) |
+| 7. Who's beating the model | Addition 4 | B | none (uses 1 when merged) | M | [PR #45](https://github.com/hediblk/floodlight/pull/45) |
+| 8. Scorecard core | Addition 1 | B | 1 | L | [PR #35](https://github.com/hediblk/floodlight/pull/35) |
+| 9. Match notes: streaks, head-to-head, records | Phase 1 | B | 2 | L | [PR #46](https://github.com/hediblk/floodlight/pull/46) |
+| 10. Understat shot ingestion | Phase 2 | B | none | M | [PR #33](https://github.com/hediblk/floodlight/pull/33) |
+| 11. Shot report on the match page | Phase 2 | C | 6, 10 | M | [PR #34](https://github.com/hediblk/floodlight/pull/34) |
+| 12. ESPN box score and timeline | Phase 3 | C | 6 | L | [PR #38](https://github.com/hediblk/floodlight/pull/38) |
+| 13. UEFA running data and heatmaps (Champions League) | Phase 3 | C | 6 | L | [PR #41](https://github.com/hediblk/floodlight/pull/41) |
 | 14. Scorecard: market comparison | Addition 1 | D | 8, plus enough archived odds | M | To do |
 
 Tasks in the same wave can run in parallel. **Merge Task 1 first.** Every day without it is a day of published forecasts that can't be recovered later.

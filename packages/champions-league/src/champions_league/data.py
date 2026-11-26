@@ -17,7 +17,7 @@ from standing_prediction.xg import load_season_xg
 from champions_league.identities import AREA_LEAGUES, canonical_team
 from champions_league.sources import (
     CSV_LEAGUES, EUROPE_COMMIT, EURO_CUPS_COMMIT, azerbaijan_matches, csv_matches, czech_matches,
-    european_supplement, slovak_matches, ukrainian_matches,
+    european_supplement, openfootball_ucl, slovak_matches, ukrainian_matches,
 )
 
 LOG = logging.getLogger(__name__)
@@ -272,8 +272,11 @@ def load_inputs(*, season=2026, as_of=None, prior_seasons=2, cache=True, client=
             continue
         try:
             baseline_frames[year] = fetch_ucl_fixtures(client, season=year, cache=cache)
-        except (KeyError, ValueError, RuntimeError, OSError) as exc:
-            LOG.warning("Frequency baseline season %s unavailable (%s).", year, type(exc).__name__)
+        except (KeyError, ValueError, RuntimeError, OSError):
+            try:
+                baseline_frames[year] = openfootball_ucl(year, cache=cache)
+            except (KeyError, ValueError, RuntimeError, OSError) as exc:
+                LOG.warning("Frequency baseline season %s unavailable (%s).", year, type(exc).__name__)
     frequency = frequency_baseline(baseline_frames, season)
     source_audits, domestic_frames = [], []
     leagues = sorted(set(DOMESTIC_LEAGUES) | ({"SC0"} if "SC0" in team_leagues.values() else set()))

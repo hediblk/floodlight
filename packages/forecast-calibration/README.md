@@ -40,7 +40,7 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREAD
   --cache-dir /Users/hedibelkahia/codes/football/.cache --out-dir out/miss-report
 ```
 
-This is offline: missing caches fail. The frequency baseline requires result caches for 2010/11 onward; model replay needs the original 2014/15+ results and Understat league listings, and the pre-goal diagnostic uses raw `understat/matches/` responses. It checks the exact dataset hash, replays goal expectations at the saved origins, verifies saved probabilities and writes coverage, per-match diagnostics, full contract tables, clustered SEs and input/output hashes under `out/`. `--workers` defaults to four and `--replay-only` prepares resumable replays. No calibration artifact or site data is written.
+This is offline: missing caches fail. The frequency baseline requires result caches for 2010/11 onward; model replay needs the original 2014/15+ results and Understat league listings (complete seasons come from the [xG archive](../../data/xg/README.md)), and the pre-goal diagnostic uses raw `understat/matches/` responses. It checks the exact dataset hash, replays goal expectations at the saved origins, verifies saved probabilities and writes coverage, per-match diagnostics, full contract tables, clustered SEs and input/output hashes under `out/`. `--workers` defaults to four and `--replay-only` prepares resumable replays. No calibration artifact or site data is written.
 
 ## Betting backtest feasibility
 

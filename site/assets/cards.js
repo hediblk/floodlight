@@ -3,7 +3,7 @@
 import { crestPath, pct, pct1, dec, xgBy } from "./core.js";
 
 const SIZES = { portrait: [1080, 1350], landscape: [1200, 675] };
-const SITE = "hediblk.github.io/football-predictions";
+const SITE = "hediblk.github.io/floodlight";
 const TOKENS = ["bg", "bulb-off", "rule", "rule-2", "ink", "ink-2", "dim", "amber", "amber-t", "red", "green", "green-t", "draw", "sign", "mono"];
 const builders = {}; // card kind -> () => card, set by the page that shows its chips
 
@@ -73,7 +73,7 @@ export function matchCard(m, o) {
       detail: [heading("The forecast"), bulbs(m.p, labels), rows([["Expected goals", pair(m.exp, 1)], ["Most likely score", `${h}–${a} · ${pct1(p)}`]]),
         o.stake ? tag("Stakes", o.stake) : null,
         note(`Forecast from the model run of ${new Date(m.at).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}, ${kickoffTime(m.at)}.`)],
-      sources: "Fixtures: football-data.org · xG: Understat · Forecast: Floodlight model",
+      sources: "Fixtures: football-data.org · xG: Understat, ESPN · Forecast: Floodlight model",
     };
   }
   const actual = m.score[0] > m.score[1] ? 0 : m.score[0] === m.score[1] ? 1 : 2;
@@ -143,7 +143,7 @@ export function raceCard({ name, slug, date, runs, since, races }) {
       heading(first.label), race(first, since)],
     detail: [...races.slice(1).flatMap((r) => [heading(r.label), race(r, since)]),
       note(since ? `Arrows give the change since ${since}; under 3 points shows as –. Green is good news for that club, red bad.` : "No frozen Monday to compare with yet, so no changes are shown.")],
-    sources: "Results: football-data.org · xG: Understat · Chances: Floodlight model",
+    sources: "Results: football-data.org · xG: Understat, ESPN · Chances: Floodlight model",
   };
 }
 
@@ -234,7 +234,7 @@ function line(x1, y1, x2, y2, color, width = 2) {
 }
 function circle(x, y, r, color, glow = 0) {
   ctx.save();
-  if (glow) { ctx.shadowColor = color; ctx.shadowBlur = glow; }
+  if (glow && document.documentElement.dataset.theme !== "light") { ctx.shadowColor = color; ctx.shadowBlur = glow; }
   ctx.fillStyle = color;
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);

@@ -71,7 +71,7 @@ def load_season(league, season, *, cache=True):
     if matches[["utcDate", "homeTeam", "awayTeam"]].duplicated().any():
         raise ValueError(f"Duplicate fixtures in {league}/{season}.")
     if league in XG_COMPETITIONS:
-        xg = fetch_understat_matches(competition=XG_COMPETITIONS[league], season=season, use_cache=cache)
+        xg = fetch_understat_matches(competition=XG_COMPETITIONS[league], season=season)
         matches = attach_xg(matches, xg)
     matches["season"] = season
     matches["league"] = league

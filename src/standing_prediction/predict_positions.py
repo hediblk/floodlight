@@ -29,10 +29,11 @@ from standing_prediction.odds import (
 )
 from standing_prediction.h2h import encounter_residuals, h2h_shifts, pair_effects
 from standing_prediction.match_forecasts import describe_match, forecast_played, match_records, write_match_forecasts
+from standing_prediction.matchups import matchup_params, single_reference, write_matchup_params
 from standing_prediction.scorecard import frequency_baseline
 from standing_prediction.simulate import FixtureSimulationSpec, simulate_season_scores
 from standing_prediction.stakes import fixture_stakes
-from standing_prediction.xg import XG_COLUMNS, blend_xg_strengths, fetch_understat_matches, fit_xg_strengths, load_season_xg
+from standing_prediction.xg import ESPN_XG_COLUMNS, XG_COLUMNS, XG_PROVIDERS, blend_xg_strengths, fetch_understat_matches, fit_xg_strengths, load_season_xg
 from standing_prediction.utils import normalize_team
 
 
@@ -44,7 +45,7 @@ COMPETITION_TO_THE_ODDS_API_SPORT = {
     "SA": "soccer_italy_serie_a", "FL1": "soccer_france_ligue_one",
 }
 MATCH_FORECAST_COLUMNS = ["id", "utcDate", "matchday", "status", "reported_status", "homeTeam", "awayTeam",
-                          "homeTeamId", "awayTeamId", "homeGoals", "awayGoals", "understat_id", *XG_COLUMNS]
+                          "homeTeamId", "awayTeamId", "homeGoals", "awayGoals", "understat_id", "xg_source", *XG_COLUMNS, *ESPN_XG_COLUMNS]
 PLAYED_FORECAST_RULE = "Played matches are forecast from models fitted at 00:00 UTC on match day, using only earlier results."
 
 
@@ -236,8 +237,9 @@ def run_prediction(*, competition="PD", season=None, n_sim=10000, seed=7, max_go
     finished = load_season_xg(finished, competition=competition, season=season, cache=cache)
     xg_coverage = {season: finished.attrs.get("xg_coverage")}
     matches[XG_COLUMNS] = finished[XG_COLUMNS]
-    if "understat_id" in finished:
-        matches["understat_id"] = finished["understat_id"]
+    for column in ["understat_id", "xg_source", *ESPN_XG_COLUMNS]:
+        if column in finished:
+            matches[column] = finished[column]
     h2h_pairs = 0
     cutoff = origin
     teams = standings["team"].tolist()
@@ -306,7 +308,7 @@ def run_prediction(*, competition="PD", season=None, n_sim=10000, seed=7, max_go
                                            or prior_seasons != DEFAULT_FIT["prior_seasons"]),
         "calibration_seasons": years if calibrate else [],
         "calibration_cutoffs": list(calibration_cutoffs) if calibrate else [],
-        "xg_weight": xg_weight, "xg_scale": xg_scale, "xg_provider": "understat", "xg_coverage": xg_coverage,
+        "xg_weight": xg_weight, "xg_scale": xg_scale, "xg_provider": XG_PROVIDERS, "xg_coverage": xg_coverage,
         "h2h_weight": h2h_weight, "h2h": {**DEFAULT_H2H, "seasons": h2h_seasons, "adjusted_fixtures": h2h_pairs} if h2h_weight else None,
         "tiebreak_fallback": "Random ordering only after modeled sporting criteria; fair-play and playoff matches are not modeled.",
         "uncertainty": "Point intervals reflect simulated match results, conditional on fitted team strengths.",
@@ -317,6 +319,16 @@ def run_prediction(*, competition="PD", season=None, n_sim=10000, seed=7, max_go
     ratings_path.unlink(missing_ok=True)
     if current_models is not None:
         club_ratings(current_models[0], teams).to_csv(ratings_path, index=False, float_format="%.4f")
+    params_path = Path(out_dir) / f"{competition.lower()}_matchup_params.json"
+    params_path.unlink(missing_ok=True)
+    if current_models is not None and calibrator is None and not current_models[0].pair_shift:
+        dc, elo = current_models
+        model_weights = weights or DEFAULT_WEIGHTS
+        params = matchup_params(dc, elo, model_weights, teams=teams, generated_at=metadata["generated_at"],
+                                as_of=cutoff.isoformat(), max_goals=max_goals)
+        params["reference"] = [single_reference(dc, elo.predict_probs, model_weights, home, away, max_goals=max_goals)
+                               for home, away in zip(teams[0:4:2], teams[1:4:2])]
+        write_matchup_params(params_path, params)
     stakes_path = Path(out_dir) / f"{competition.lower()}_stakes.json"
     stakes_path.unlink(missing_ok=True)
     if details is not None:
@@ -504,7 +516,7 @@ def _parse_weights(spec):
 
 def _understat_results(competition, season, cache):
     try:
-        return fetch_understat_matches(competition=competition, season=season, use_cache=cache)
+        return fetch_understat_matches(competition=competition, season=season)
     except (ValueError, OSError, RuntimeError, KeyError) as exc:
         LOG.warning("Understat results unavailable (%s); lagging fixtures stay unplayed.", type(exc).__name__)
         return None

@@ -15,7 +15,7 @@ warn() {
 
 clear_outputs() {
   rm -f "$OUT/$1"_{summary,position_probs,standings_snapshot,matches_snapshot,club_ratings}.csv \
-    "$OUT/$1"_{forecast,metadata,match_forecasts,stakes,espn_xg}.json
+    "$OUT/$1"_{forecast,metadata,match_forecasts,stakes,espn_xg,matchup_params}.json
 }
 
 failed=()
@@ -41,6 +41,18 @@ fi
 if ((${#failed[@]})); then
   warn "Forecast failed for ${failed[*]}; the site keeps their previous data."
 fi
+# Finished league games without xG two days before the latest result mean Understat and ESPN both lag.
+stale_xg=$(python - "$OUT" <<'PY'
+import json, sys
+from pathlib import Path
+for path in sorted(Path(sys.argv[1]).glob("*_metadata.json")):
+    meta = json.loads(path.read_text())
+    coverage = (meta.get("xg_coverage") or {}).get(str(meta.get("season"))) or {}
+    if coverage.get("stale"):
+        print(f"{path.name.split('_')[0].upper()}: {coverage['stale']} finished matches have no xG from Understat or ESPN.")
+PY
+)
+if [[ -n "$stale_xg" ]]; then warn "$stale_xg"; fi
 if ((${#failed[@]} == 6)); then exit 1; fi
 
 # Validate fresh and retained data together before replacing the published files.

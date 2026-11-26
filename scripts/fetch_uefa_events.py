@@ -64,7 +64,8 @@ def derive_uefa(match, teams, players, lineups, fixture, fetched_at):
         heat[side] = {"team": [0] * 294, "players": []}
         positions[side] = []
         for row in players:
-            if str(row["teamId"]) != team_id:
+            # UEFA can list a person outside both lineups with no team and only a card; they have no running data.
+            if str(row.get("teamId")) != team_id:
                 continue
             stats = {s["name"]: s for s in row["statistics"]}
             seconds = float(stats.get("played_time", {}).get("attributes", {}).get("TotalSeconds", 0))

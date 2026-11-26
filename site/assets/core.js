@@ -12,8 +12,8 @@ export const COMPS = [
 export const LEAGUES = COMPS.filter((c) => c.slug !== "champions-league");
 export const compBySlug = Object.fromEntries(COMPS.map((c) => [c.slug, c]));
 
-// Mirrors the cron in .github/workflows/site.yml (daily, 05:30 UTC).
-const REFRESH_UTC = { hour: 5, minute: 30 };
+// Mirrors the cron in .github/workflows/site.yml (daily, 01:17 UTC).
+export const REFRESH_UTC = { hour: 1, minute: 17 };
 const STALE_HOURS = 30;
 
 export const $ = (id) => document.getElementById(id);
@@ -90,14 +90,19 @@ export function clubCrest(id, size = "row") {
 export function clubName(id, name, size = "row") {
   return `<span class="club-name club-name--${size}">${clubCrest(id, size)}<span class="club-label" title="${esc(name)}">${esc(name)}</span></span>`;
 }
+/* A burst of crest requests can drop a few; retry each once, spread out, before hiding it. */
 document.addEventListener("error", (event) => {
-  if (event.target.classList?.contains("club-crest")) event.target.parentElement.hidden = true;
+  const img = event.target;
+  if (!img.classList?.contains("club-crest")) return;
+  if (img.dataset.retried) { img.parentElement.hidden = true; return; }
+  img.dataset.retried = "1";
+  setTimeout(() => { img.src = img.getAttribute("src"); }, 500 + Math.random() * 1500);
 }, true);
 
 /* ---------- match helpers (probabilities are home, draw, away) ---------- */
 export const outcome = (score) => (score[0] > score[1] ? 0 : score[0] === score[1] ? 1 : 2);
 export const pick = (p) => p.indexOf(Math.max(...p));
-/* who measured a match's observed xG: Understat for the leagues, ESPN for the Champions League */
+/* who measured a match's observed xG: Understat for the leagues, ESPN for the Champions League and where Understat has none */
 export const xgBy = (m) => (m.xg_source === "espn" ? "ESPN" : "Understat");
 /* the predicted score: the likeliest scoreline within the picked outcome, so it never contradicts the pick
    (older data has no `call`; its top four always hold one) */
@@ -171,8 +176,8 @@ function lastScheduledRun(now) {
 function nextRunText(generatedAt) {
   const now = new Date();
   const last = lastScheduledRun(now);
-  // The run takes ~10 minutes; until its data lands, say so rather than promising tomorrow.
-  if (new Date(generatedAt) < last && now - last < 3.6e6) return "updating now";
+  // GitHub often starts the scheduled run hours late; until its data lands, say so rather than promising tomorrow.
+  if (new Date(generatedAt) < last) return "updating now";
   const mins = Math.ceil((last.getTime() + 864e5 - now) / 60000);
   return mins < 60 ? `next in ${mins} min` : `next in ${Math.round(mins / 60)} h`;
 }
@@ -191,7 +196,7 @@ export function setStatus(pageRun, cutoff) {
   $("lamp").classList.toggle("stale", hours > STALE_HOURS);
   $("status-text").textContent = `Updated ${ago(generatedAt)} · ${nextRunText(generatedAt)}`;
   const through = cutoff ? ` · results through ${when(cutoff)}` : "";
-  $("status-text").title = `Model run ${when(generatedAt)}${through} · refreshes daily at 05:30 UTC`;
+  $("status-text").title = `Model run ${when(generatedAt)}${through} · refreshes daily at 01:17 UTC`;
   $("foot-updated").textContent = `Model run ${when(generatedAt)}${through}`;
 }
 // Keep the "updated / next" wording current on a page left open.
@@ -226,6 +231,20 @@ document.addEventListener("focusin", (e) => {
   showTip(el, r.left + r.width / 2, r.top);
 });
 window.addEventListener("scroll", () => { tip.hidden = true; }, { passive: true });
+
+/* Charts with several lines: inside a [data-series] chart, pointing at (or focusing) anything marked data-s —
+   a line, its end label or its legend entry — fades every other series, so one line can be followed. */
+let seriesRoot = null;
+const fadeSeries = (root, s) => root.querySelectorAll("[data-s]").forEach((el) => el.classList.toggle("faded", s != null && el.dataset.s !== s));
+function followSeries(e) {
+  const el = e.target.closest && e.target.closest("[data-s]");
+  const root = el && el.closest("[data-series]");
+  if (seriesRoot && seriesRoot !== root) fadeSeries(seriesRoot, null);
+  seriesRoot = root || null;
+  if (root) fadeSeries(root, el.dataset.s);
+}
+document.addEventListener("pointerover", followSeries);
+document.addEventListener("focusin", followSeries);
 
 /* Rows that expand: click or Enter/Space on [data-toggle] calls `open(row)` / closes the panel after it. */
 export function expandable(container, selector, build) {

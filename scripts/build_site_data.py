@@ -22,7 +22,7 @@ import pandas as pd
 
 from champions_league.identities import AREA_LEAGUES, COUNTRY_LEAGUES, canonical_team
 from standing_prediction import site_history
-from standing_prediction.scorecard import combine_entries, fixture_diagnostics, scorecard_entry, scoring_rows
+from standing_prediction.scorecard import combine_entries, fixture_diagnostics, scorecard_entry, scoring_rows, valid_pair
 
 
 LEAGUES = [
@@ -200,14 +200,15 @@ def match_stakes(src, prefix, name=short_name):
     return stakes
 
 
-def export_matches(src, slug, prefix, receipts=None):
+def export_matches(src, slug, prefix, receipts=None, previous=None):
     data = json.loads((src / f"{prefix}_match_forecasts.json").read_text())
     display = data.get("display_names", {})
     name = lambda team: short_name(display.get(team, team))
     stakes = match_stakes(src, prefix, name)
-    # Understat has no Champions League; fetch_ucl_xg.py adds ESPN's team xG for display, marked by source.
+    # Domestic xG is Understat's, or ESPN's where marked; fetch_ucl_xg.py adds ESPN's Champions League xG for display.
     espn_xg = read_json(src / f"{prefix}_espn_xg.json") or {"matches": {}}
     matches = []
+    retained_xg = 0
     for match in data["matches"]:
         row = {
             "id": match["id"], "kickoff": match["utcDate"], "status": match["status"],
@@ -225,8 +226,17 @@ def export_matches(src, slug, prefix, receipts=None):
             row["score"] = [int(match["homeGoals"]), int(match["awayGoals"])]
         if match.get("home_xg") is not None and match.get("away_xg") is not None:
             row["xg"] = [num(match["home_xg"]), num(match["away_xg"])]
+            if match.get("xg_source") == "espn":
+                # The model fits ESPN xG scaled to Understat's level; the site shows ESPN's own figures.
+                row.update(xg=[num(match["espn_home_xg"]), num(match["espn_away_xg"])], xg_source="espn")
         elif match["status"] == "FINISHED" and str(match["id"]) in espn_xg["matches"]:
             row.update(xg=espn_xg["matches"][str(match["id"])]["xg"], xg_source="espn")
+        saved = (previous or {}).get(match["id"], {})
+        identity = ("kickoff", "status", "home_id", "away_id", "home", "away", "score")
+        if (row["status"] == "FINISHED" and "xg" not in row and valid_pair(saved.get("xg"))
+                and all(row.get(key) == saved.get(key) for key in identity)):
+            row.update({key: saved[key] for key in ("xg", "xg_source") if key in saved})
+            retained_xg += 1
         if "p_home" in match:
             row.update({
                 "p": [num(match[key], 4) for key in ("p_home", "p_draw", "p_away")],
@@ -256,6 +266,8 @@ def export_matches(src, slug, prefix, receipts=None):
         row.update(fixture_diagnostics(row, match))
         matches.append(row)
     matches.sort(key=lambda row: (row["kickoff"] or "", row["id"]))
+    if retained_xg:
+        print(f"WARNING: {slug}: retained published xG for {retained_xg} fixtures missing fresh xG.")
     rule = "Finished fixtures use published forecasts saved before kickoff where available; otherwise reconstructed forecasts as of 00:00 UTC on match day, from results before then."
     return {"slug": slug, "generated_at": data["generated_at"], "rule": rule, "matches": matches}
 
@@ -689,15 +701,50 @@ def export_clubs(src, leagues, ucl, previous=None):
     clubs.sort(key=lambda club: club["rating_rank"])
     if missing:
         print(f"No European-scale rating for {', '.join(missing)}; kept previous entries where available")
+    meta = read_json(src / "cl_metadata.json") or {}
+    start = meta.get("data_start")
+    # The dates of the results behind the ratings.
+    window = {"window": {"from": start[:10], "to": ucl["data_cutoff"][:10]}} if start else {}
     averages = {league["slug"]: num(sum(c["rating"] for c in clubs if c["league"] == league["slug"])
                                     / max(1, sum(c["league"] == league["slug"] for c in clubs)), 1) for league in leagues}
     return {
         "generated_at": ucl["generated_at"], "season": ucl["season"],
         "scale": {"reference": "average European top-flight club", "clubs": len(ratings), "leagues": int(ratings["league"].nunique())},
-        "league_averages": averages,
+        "league_averages": averages, **window,
         "featured": [club_id for club_id in FEATURED_CLUBS if any(club["id"] == club_id for club in clubs)],
         "clubs": clubs,
     }
+
+
+# What-if parameters keyed by site slug: the joint European model for any pairing, plus each league's own model.
+# An engine without fresh parameters keeps its previous block and timestamp.
+def export_matchups(src, leagues, ucl, previous=None):
+    europe = {canonical_team(team["full"]): team["slug"] for league in leagues for team in league["teams"]}
+    europe.update({team["key"]: team["slug"] for team in ucl["teams"] if team["key"] not in europe})
+    sources = [("europe", "cl", europe)] + [
+        (league["slug"], league["code"].lower(), {team["full"]: team["slug"] for team in league["teams"]}) for league in leagues]
+    kept = (previous or {}).get("engines", {})
+    engines = {}
+    for name, prefix, slugs in sources:
+        path = src / f"{prefix}_matchup_params.json"
+        if not path.exists():
+            if name in kept:
+                engines[name] = kept[name]
+                print(f"Matchup parameters for {name} unavailable; kept the previous block")
+            continue
+        raw = json.loads(path.read_text())
+        fields = ("home", "away", "team1", "team2", "second_home")
+        reference = [{**case, **{f: slugs[case[f]] for f in fields if f in case}} for case in raw["reference"]
+                     if all(case[f] in slugs for f in fields if f in case)]
+        engines[name] = {
+            **{key: raw[key] for key in ("generated_at", "as_of", "max_goals", "rate_bounds", "intercept",
+                                         "home_advantage", "rho", "elo", "weights")},
+            "clubs": {slugs[team]: values for team, values in raw["teams"].items() if team in slugs},
+            "reference": reference,
+        }
+    if "europe" not in engines:
+        raise FileNotFoundError(src / "cl_matchup_params.json")
+    return {"generated_at": max(engine["generated_at"] for engine in engines.values()), "engines": engines}
 
 
 def rated_clubs(src, leagues, ucl):
@@ -726,7 +773,8 @@ def publish_matches(src, dest, competition, prefix):
     path = history_path(dest, competition, f"forecasts/{slug}")
     history = read_json(path) or {"slug": slug, "season": competition["season"], "fixtures": {}}
     receipts = history["fixtures"]
-    data = export_matches(src, slug, prefix, receipts)
+    previous = read_json(dest / "matches" / f"{slug}.json") or {"matches": []}
+    data = export_matches(src, slug, prefix, receipts, {row["id"]: row for row in previous["matches"]})
     now = pd.Timestamp.now(tz="UTC")
     generated = pd.Timestamp(competition["generated_at"])
     changed = False
@@ -828,6 +876,12 @@ def main(argv=None):
     previous = json.loads(clubs_path.read_text()) if clubs_path.exists() else None
     clubs = export_clubs(args.src, competitions[:-1], competitions[-1], previous)
     write_json(clubs_path, clubs)
+    matchups_path = args.dest / "matchups.json"
+    try:
+        write_json(matchups_path, export_matchups(args.src, competitions[:-1], competitions[-1], read_json(matchups_path)))
+    except FileNotFoundError:
+        print("Matchup parameters unavailable; the What if tab keeps its previous file" if matchups_path.exists()
+              else "Matchup parameters unavailable; no matchups.json yet")
     if args.history:
         fresh = [data for data in competitions if data["slug"] not in kept]
         ucl_fresh = "champions-league" not in kept

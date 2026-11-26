@@ -1,6 +1,6 @@
 # Expected-XI: EA-prior follow-up, 17 October 2026
 
-Task 7b merged in [PR #61](https://github.com/hediblk/football-predictions/pull/61). This is the requested follow-up to [Task 8's original flat-prior evaluation](expected-xi-forecast-adjustment.md), updating [PR #60](https://github.com/hediblk/football-predictions/pull/60). Production forecasts, calibration settings and site data remain unchanged.
+Task 7b merged in [PR #61](https://github.com/hediblk/floodlight/pull/61). This is the requested follow-up to [Task 8's original flat-prior evaluation](expected-xi-forecast-adjustment.md), updating [PR #60](https://github.com/hediblk/floodlight/pull/60). Production forecasts, calibration settings and site data remain unchanged.
 
 **Result: the EA prior does not pass the forecast gate.** Earlier seasons again select recent start share, with **w = 1** for EA and **w = 2** for the aligned flat control. On the same 3,500 held-out fixtures, baseline log loss is **0.983295**, flat is **0.984153**, and EA is **0.983740**. EA's gain over baseline is **−0.000446 (clustered SE 0.000703)**. Brier and RPS also worsen. EA is less harmful than the selected flat adjustment by **0.000412 (SE 0.000587)**, but that is not a gain over the unchanged model. Keep zero forecast weight.
 
@@ -175,7 +175,7 @@ EA slightly worsens title/champion loss and barely changes top-four loss. These 
 
 ## Reproduce and verify
 
-**Code removed from `main` (24 October 2026).** The experiment was not adopted, so only this report stays. The code is at commit `bb6a1b7`: [`expected_xi.py`](https://github.com/hediblk/football-predictions/blob/bb6a1b7/packages/forecast-calibration/src/forecast_calibration/expected_xi.py) and [`player_prior.py`](https://github.com/hediblk/football-predictions/blob/bb6a1b7/src/standing_prediction/player_prior.py). Check out that commit to run the commands below.
+**Code removed from `main` (24 October 2026).** The experiment was not adopted, so only this report stays. The code is at commit `bb6a1b7`: [`expected_xi.py`](https://github.com/hediblk/floodlight/blob/bb6a1b7/packages/forecast-calibration/src/forecast_calibration/expected_xi.py) and [`player_prior.py`](https://github.com/hediblk/floodlight/blob/bb6a1b7/src/standing_prediction/player_prior.py). Check out that commit to run the commands below.
 
 Use the locked environment at base `7b6618d` plus this PR. Both runs make no provider requests:
 

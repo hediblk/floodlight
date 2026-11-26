@@ -179,8 +179,8 @@ function xiFrame(u) {
         <g class="pitch" transform="matrix(0 -1 1 0 0 105)">${pitchLines(68)}</g>${dots}</svg></div>
       <ol class="sq-list" aria-label="Most used XI, goalkeeper to attack">${list}</ol>
     </div>
-    <p class="note">Most used XI: the ${esc(xi.formation)} roles filled by the players with the most ${esc(compLabel)} minutes this season, ties going to EA overall, from the ${u.covered} of ${u.games} games with a complete match sheet. Each ring fills with the player's share of available minutes (minutes ÷ 90 per covered game). ${why.join(" ")}
-      ${minutesSource(state.comp)} The number in each dot is EA overall (${esc(edition(r.edition))}), not Floodlight's club strength.</p>
+    <p class="note">Most ${esc(compLabel)} minutes in each ${esc(xi.formation)} role, from ${u.covered} of ${u.games} games with a full match sheet; rings fill with the share of minutes. ${why.join(" ")}
+      ${minutesSource(state.comp)} Dot number: EA overall (${esc(edition(r.edition))}).</p>
   </fieldset>`;
   }
   const status = xi.status === "complete" ? ""
@@ -202,8 +202,8 @@ function xiFrame(u) {
         <g class="pitch" transform="matrix(0 -1 1 0 0 105)">${pitchLines(68)}</g>${dots}</svg></div>
       <ol class="sq-list" aria-label="Ideal XI, goalkeeper to attack">${list}</ol>
     </div>
-    <p class="note">Best EA-rated XI from listed positions, everyone available: each role takes the highest EA overall among players EA lists there (LW/LM and RW/RM share wide roles). ${why.join(" ")}
-      Ratings: ${esc(r.source)}, ${esc(edition(r.edition))}, snapshot ${esc(longDate(r.snapshot_date))}. EA overall is EA's player rating, not Floodlight's club strength, and a rating gap is not goals or a win chance.</p>
+    <p class="note">Best EA-rated XI from listed positions, everyone available. ${why.join(" ")}
+      Ratings: ${esc(r.source)}, ${esc(edition(r.edition))}, ${esc(longDate(r.snapshot_date))}. EA overall rates players, not the club's strength.</p>
   </fieldset>`;
 }
 
@@ -274,12 +274,12 @@ function squadTable(squad, inXi, u) {
   }).join("");
   const unrated = squad.coverage.players - squad.coverage.matched;
   const seen = squad.players.filter((p) => p.status === "observed").length;
-  const playing = u ? `<p class="note">ST, SUB and MIN count starts, substitute appearances and minutes in the ${u.covered} of ${u.games} ${esc(compBySlug[state.comp].label)} games with a complete match sheet; MIN% is minutes ÷ (90 × ${u.covered}). A dash means participation is unknown, not zero. ${minutesSource(state.comp)}
-      ${extra.length > 4 ? `xG90 and xA90 are Understat shot xG and expected assists per 90 minutes, from ${PER90_MIN} minutes up; ` : "UEFA match sheets carry no xG, so xG and xA per 90 are shown for league games only; "}league and Champions League minutes are never added together.</p>` : "";
+  const playing = u ? `<p class="note">From ${u.covered} of ${u.games} ${esc(compBySlug[state.comp].label)} games with a full match sheet; MIN% = minutes ÷ (90 × ${u.covered}); a dash is unknown, not zero. ${minutesSource(state.comp)}
+      ${extra.length > 4 ? `xG90 and xA90 from Understat, ${PER90_MIN}+ minutes. ` : "No xG per 90 for UEFA games. "}Competitions are never added together.</p>` : "";
   return `<fieldset class="frame sq-squad"><legend>Squad · EA ratings${u ? ` and ${esc(compBySlug[state.comp].label)} minutes` : ""}</legend>
     <div class="scroll sq-scroll">${tables}</div>
-    <p class="note">${squad.coverage.players} players as listed by ${esc(squad.roster.source)} on ${esc(shortDate(observed))}, grouped by EA's first listed position and sorted by EA overall; ages on that date.
-      ${unrated ? `${unrated} not rated: no confident EA match by name and birth date. ` : ""}${seen ? `${seen} additional ${seen === 1 ? "player was" : "players were"} seen in at least two games in one competition's match sheets this season. Their EA matches use name and club, or a unique name alone; current membership is unknown. They count toward playing time and the most-used XI when rated, but not the ideal XI or listed squad coverage. ` : ""}OVR and the six face stats are ${esc(squad.ratings.source)} ratings (${esc(edition(squad.ratings.edition))}); goalkeepers' six are EA's keeper stats. 80 and above are bold, below 60 dim.</p>${playing}
+    <p class="note">${squad.coverage.players} players listed by ${esc(squad.roster.source)} on ${esc(shortDate(observed))}, by EA position and overall.
+      ${unrated ? `${unrated} not rated (no confident EA match). ` : ""}${seen ? `${seen} more seen in two or more match sheets; membership unknown, and they count toward playing time, not the ideal XI. ` : ""}${esc(squad.ratings.source)} ${esc(edition(squad.ratings.edition))} ratings; 80+ bold, under 60 dim.</p>${playing}
   </fieldset>`;
 }
 
@@ -322,6 +322,6 @@ function history(u, inXi) {
     <div class="scroll"><table class="board sq-htable"><thead><tr><th scope="col" class="l">Date</th><th scope="col" class="l">Opponent</th><th scope="col" class="l">Starters</th>
       <th scope="col"><abbr title="Ideal-XI players starting">Ideal</abbr></th><th scope="col">Rotation</th><th scope="col"><span class="vh">Match page</span></th></tr></thead>
       <tbody>${rows || `<tr><td class="l sq-nr" colspan="6">No ${esc(compLabel)} games played yet.</td></tr>`}</tbody></table></div>
-    <p class="note">${esc(compLabel)} games this season, newest first. Bulbs are the starters, goalkeeper to attack; lit ones are in the ideal XI, and dashed ones are starters not identified. Ideal counts ideal-XI players starting; rotation counts starters changed since the previous game whose eleven starters are all identified.${state.comp === "champions-league" ? " Heatmap links open the match page's activity map." : ""}</p>
+    <p class="note">Newest first. Bulbs: starters from goalkeeper to attack; lit = ideal XI, dashed = not identified. Rotation = starters changed since the last fully identified XI.${state.comp === "champions-league" ? " Heatmap links open the activity map." : ""}</p>
   </fieldset>`;
 }
