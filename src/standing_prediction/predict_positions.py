@@ -33,7 +33,7 @@ from standing_prediction.matchups import matchup_params, single_reference, write
 from standing_prediction.scorecard import frequency_baseline
 from standing_prediction.simulate import FixtureSimulationSpec, simulate_season_scores
 from standing_prediction.stakes import fixture_stakes
-from standing_prediction.xg import ESPN_XG_COLUMNS, XG_COLUMNS, XG_PROVIDERS, blend_xg_strengths, fetch_understat_matches, fit_xg_strengths, load_season_xg
+from standing_prediction.xg import ESPN_XG_COLUMNS, XG_COLUMNS, XG_PROVIDERS, _same_club, blend_xg_strengths, fetch_espn_xg, fit_xg_strengths, load_season_xg
 from standing_prediction.utils import normalize_team
 
 
@@ -223,7 +223,7 @@ def run_prediction(*, competition="PD", season=None, n_sim=10000, seed=7, max_go
     matches = fetch_matches(client, competition=competition, season=season, status=None)
     overrides = load_fixture_overrides(fixture_overrides, competition, season)
     matches, fixture_adjustments = resolve_fixture_statuses(matches, overrides, strict=strict_fixtures)
-    matches, filled = fill_lagging_results(matches, standings, lambda: _understat_results(competition, season, cache))
+    matches, filled = fill_lagging_results(matches, standings, lambda: _espn_results(competition, matches, cache))
     fixture_adjustments += filled
     remaining = validate_schedule(matches, standings)
     point_adjustments = {}
@@ -514,12 +514,23 @@ def _parse_weights(spec):
     return {key: weights.get(key, 0.0) for key in DEFAULT_WEIGHTS}
 
 
-def _understat_results(competition, season, cache):
+def _espn_results(competition, matches, cache):
+    """ESPN's completed results on the days of past fixtures still listed as unplayed, under football-data.org names."""
+    kickoffs = pd.to_datetime(matches["utcDate"], utc=True, errors="coerce")
+    pending = matches.assign(kickoff=kickoffs)[~matches["status"].eq("FINISHED") & kickoffs.lt(pd.Timestamp.now(tz="UTC"))]
     try:
-        return fetch_understat_matches(competition=competition, season=season)
-    except (ValueError, OSError, RuntimeError, KeyError) as exc:
-        LOG.warning("Understat results unavailable (%s); lagging fixtures stay unplayed.", type(exc).__name__)
+        espn = fetch_espn_xg(competition=competition, dates=pending["kickoff"], use_cache=cache)
+    except (ValueError, OSError, RuntimeError, KeyError, TypeError) as exc:
+        LOG.warning("ESPN results unavailable (%s); lagging fixtures stay unplayed.", type(exc).__name__)
         return None
+    # Provider names differ (Hamburg SV), so a fixture at the same kickoff with one agreeing club supplies them.
+    for i, row in espn.iterrows():
+        near = pending[(pending["kickoff"] - row["utcDate"]).abs().le(pd.Timedelta(hours=3))
+                       & np.array([_same_club(home, row["homeTeam"]) or _same_club(away, row["awayTeam"])
+                                   for home, away in zip(pending["homeTeam"], pending["awayTeam"])], bool)]
+        if len(near) == 1:
+            espn.loc[i, ["homeTeam", "awayTeam"]] = near[["homeTeam", "awayTeam"]].iloc[0].to_numpy()
+    return espn
 
 
 def _load_odds(*, competition, season, provider, days):

@@ -92,7 +92,7 @@ def understat(home="Alpha", away="Bravo", score=(2, 1), day="2026-08-15"):
 
 def test_lagging_fixture_is_filled_when_the_table_already_counts_it():
     matches = schedule({("Alpha", "Bravo"): "TIMED"})
-    with pytest.warns(UserWarning, match="Understat"):
+    with pytest.warns(UserWarning, match="ESPN"):
         filled, adjustments = fill_lagging_results(matches, table_after_alpha_bravo(), understat(), as_of="2026-08-20")
     row = filled[filled.homeTeam.eq("Alpha") & filled.awayTeam.eq("Bravo")].iloc[0]
     assert (row.status, row.reported_status, row.homeGoals, row.awayGoals) == ("FINISHED", "TIMED", 2, 1)

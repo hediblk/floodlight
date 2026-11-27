@@ -576,13 +576,15 @@ def fixture_note_data(fixture, results, season, coverage_seasons, competition_na
             gap = season - since_year
             years_after = range(since_year + 1, season)
             complete = all(year in covered for year in years_after)
-            if gap >= 3 and complete:
+            # A drought needs a meeting at this ground since the last win; clubs that never met there have none.
+            drought = any(row["home_key"] == home_key and row["away_key"] == away_key and not row.get("neutral", False)
+                          and (not venue_wins or row["kickoff"] > venue_wins[0]["kickoff"]) for row in before)
+            if gap >= 3 and complete and drought:
                 since = _season_label(since_year)
                 winner = fixture[winner_side]
-                text = (f"First home win for {winner} over {fixture['away']} since {since}." if winner_side == "home"
-                        else f"First {winner} win at {fixture['home']} since {since}.")
-                if last_win_year is None:
-                    text = f"First {winner} win at {fixture['home']} in our records since {since}."
+                records = " in our records" if last_win_year is None else ""
+                text = (f"First home win for {winner} over {fixture['away']}{records} since {since}." if winner_side == "home"
+                        else f"First {winner} win at {fixture['home']}{records} since {since}.")
                 add(post, winner_side, "head_to_head", gap, text)
 
         prior_season = [row for row in before if row["season"] == season]

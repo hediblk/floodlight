@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Mapping, Tuple
 
 import numpy as np
@@ -217,7 +217,7 @@ def fit_dixon_coles(
         defense=model_defense,
         rho=rho,
         xi=xi,
-        fitted_at=datetime.utcnow(),
+        fitted_at=datetime.now(timezone.utc),
     )
 
 

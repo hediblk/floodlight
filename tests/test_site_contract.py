@@ -285,3 +285,25 @@ def test_unknown_files_nonfinite_json_and_required_absence_fail(dataset):
 
 def test_published_data_satisfies_contract():
     assert CONTRACT.validate_site_data(ROOT / "site/data") >= 8
+
+
+def test_first_win_note_needs_an_earlier_meeting_at_that_ground():
+    def result(day, season, hg, ag):
+        kickoff = pd.Timestamp(day, tz="UTC")
+        return {"kickoff": kickoff, "available_at": kickoff + pd.Timedelta(hours=3), "season": season, "home": "Alpha",
+                "away": "Bravo", "home_key": "alpha", "away_key": "bravo", "hg": hg, "ag": ag, "p": None,
+                "forecast_at": None, "published": False, "neutral": False}
+
+    fixture = {"id": 1, "kickoff": "2026-11-21T15:00:00Z", "home": "Alpha", "away": "Bravo", "score": [2, 0],
+               "status": "FINISHED"}
+    seasons = list(range(2021, 2027))
+
+    def first_win(results):
+        notes = BUILD.fixture_note_data(fixture, results, 2026, seasons, "Bundesliga", {"1": ("alpha", "bravo")})["post"]
+        return [note["text"] for note in notes if note["text"].startswith("First")]
+
+    assert first_win([]) == []  # never met there: no drought to end
+    assert first_win([result("2021-10-02", 2021, 2, 1)]) == []  # last meeting was a win
+    assert first_win([result("2021-10-02", 2021, 0, 1)]) == ["First home win for Alpha over Bravo in our records since 2021/22."]
+    assert first_win([result("2021-10-02", 2021, 2, 1), result("2022-10-02", 2022, 1, 1)]) == [
+        "First home win for Alpha over Bravo since 2021/22."]

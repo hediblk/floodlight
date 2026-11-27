@@ -205,7 +205,7 @@ def fill_lagging_results(matches, standings, results, *, as_of=None, max_kickoff
             "home": home, "away": away, "kickoff": kickoffs[index].isoformat(),
             "reported_status": out.at[index, "reported_status"], "used_status": "FINISHED",
             "score": f"{int(goals[0])}-{int(goals[1])}",
-            "reason": "score from Understat while football-data.org catches up",
+            "reason": "score from ESPN while football-data.org catches up",
         })
     if adjustments:
         warnings.warn("; ".join(f"{a['home']} v {a['away']}: {a['reason']}" for a in adjustments), stacklevel=2)

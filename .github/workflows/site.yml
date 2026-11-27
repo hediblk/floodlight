@@ -60,7 +60,9 @@ jobs:
         env:
           FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
         run: scripts/refresh_site.sh
+      # Commit even after a failed forecast run: archived odds and results cannot be fetched again later.
       - name: Commit refreshed data
+        if: ${{ !cancelled() }}
         run: |
           git add site/data data/odds data/results data/players/rosters data/players/baselines
           if ! git diff --cached --quiet; then
