@@ -305,5 +305,6 @@ def test_first_win_note_needs_an_earlier_meeting_at_that_ground():
     assert first_win([]) == []  # never met there: no drought to end
     assert first_win([result("2021-10-02", 2021, 2, 1)]) == []  # last meeting was a win
     assert first_win([result("2021-10-02", 2021, 0, 1)]) == ["First home win for Alpha over Bravo in our records since 2021/22."]
+    assert first_win([result("2024-10-02", 2024, 0, 1)]) == []  # one meeting two seasons ago is no long drought
     assert first_win([result("2021-10-02", 2021, 2, 1), result("2022-10-02", 2022, 1, 1)]) == [
         "First home win for Alpha over Bravo since 2021/22."]
