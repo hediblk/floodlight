@@ -92,7 +92,7 @@ def understat(home="Alpha", away="Bravo", score=(2, 1), day="2026-08-15"):
 
 def test_lagging_fixture_is_filled_when_the_table_already_counts_it():
     matches = schedule({("Alpha", "Bravo"): "TIMED"})
-    with pytest.warns(UserWarning, match="Understat"):
+    with pytest.warns(UserWarning, match="ESPN"):
         filled, adjustments = fill_lagging_results(matches, table_after_alpha_bravo(), understat(), as_of="2026-08-20")
     row = filled[filled.homeTeam.eq("Alpha") & filled.awayTeam.eq("Bravo")].iloc[0]
     assert (row.status, row.reported_status, row.homeGoals, row.awayGoals) == ("FINISHED", "TIMED", 2, 1)
@@ -121,3 +121,33 @@ def test_filled_score_that_contradicts_the_table_is_still_rejected():
         filled, _ = fill_lagging_results(matches, table_after_alpha_bravo(), understat(score=(0, 0)), as_of="2026-08-20")
     with pytest.raises(ValueError, match="goals_for"):
         validate_schedule(filled, table_after_alpha_bravo())
+
+
+def test_espn_results_take_our_names_only_when_one_fixture_fits(monkeypatch):
+    from standing_prediction import predict_positions
+
+    def fixture(day, home, away, status="TIMED"):
+        return {"utcDate": day, "status": status, "homeTeam": home, "awayTeam": away}
+
+    matches = pd.DataFrame([
+        fixture("2026-08-15T13:30:00Z", "Hamburger SV", "Borussia Mönchengladbach"),
+        fixture("2026-08-16T19:00:00Z", "Paris FC", "FC Nantes"),
+        fixture("2026-08-16T19:00:00Z", "Paris Saint-Germain FC", "Olympique Lyonnais"),
+        fixture("2026-08-17T15:00:00Z", "Alpha", "Bravo", "FINISHED"),
+    ])
+    espn = pd.DataFrame({"utcDate": pd.to_datetime(["2026-08-15T13:30:00Z", "2026-08-16T19:00:00Z"], utc=True),
+                         "homeTeam": ["Hamburg SV", "Paris Saint-Germain"], "awayTeam": ["Gladbach", "Lyon"],
+                         "homeGoals": [1, 2], "awayGoals": [1, 0]})
+    asked = []
+
+    def fake_fetch(*, competition, dates, use_cache):
+        asked.extend(dates.dt.strftime("%Y-%m-%d"))
+        return espn.copy()
+
+    monkeypatch.setattr(predict_positions, "fetch_espn_xg", fake_fetch)
+    results = predict_positions._espn_results("BL1", matches, cache=False)
+    assert sorted(set(asked)) == ["2026-08-15", "2026-08-16"]  # only days of past unplayed fixtures
+    assert results[["homeTeam", "awayTeam"]].values.tolist() == [
+        ["Hamburger SV", "Borussia Mönchengladbach"],  # one agreeing club at that kickoff: our names
+        ["Paris Saint-Germain", "Lyon"],  # Paris FC and PSG both fit: ESPN's names stay, so nothing is filled
+    ]
