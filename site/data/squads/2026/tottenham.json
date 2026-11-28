@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-21T08:20:52.965140+00:00",
+    "observed_at": "2026-11-28T08:58:44.016348+00:00",
     "url": "https://api.football-data.org/v4/competitions/PL/teams",
-    "sha256": "a91a07cb10abcd44395b126615b364b0bcdffc5bb6a483c88487b65d68389730",
-    "snapshot": "data/players/rosters/2026-11-21/PL.json"
+    "sha256": "b62ca6c954710eff7ee851fffc6f8797be15e3e1c20a1e4d69b9baaeabcc1832",
+    "snapshot": "data/players/rosters/2026-11-28/PL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 28,
+    "players": 29,
     "matched": 26
   },
   "ideal_xi": {
@@ -509,6 +509,16 @@
       }
     },
     {
+      "id": 272687,
+      "name": "Luca Williams-Barnett",
+      "dob": "2008-10-01",
+      "provider_position": "Midfield",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": 7878,
       "name": "Dominic Solanke",
       "dob": "1997-09-14",
@@ -718,8 +728,8 @@
       "last_seen": "2026-08-29"
     }
   ],
-  "baseline_id": "8774045986dcba72",
-  "generated_at": "2026-11-21T08:21:24.685017+00:00",
+  "baseline_id": "df77af19f2bd58f5",
+  "generated_at": "2026-11-28T08:59:15.206597+00:00",
   "usage": {
     "premier-league": {
       "source": "understat",
@@ -978,6 +988,19 @@
           ],
           "xg": 0.0751,
           "xa": 0.0
+        },
+        "272687": {
+          "starts": 0,
+          "sub": 1,
+          "minutes": 1,
+          "share": 0.001235,
+          "known_games": 2,
+          "unknown_games": 9,
+          "provider_ids": [
+            13249
+          ],
+          "xg": 0.0,
+          "xa": 0.4739
         },
         "7878": {
           "starts": 5,
@@ -2679,7 +2702,7 @@
               "starter": false,
               "xg": 0.0,
               "xa": 0.4739131033420563,
-              "player": null
+              "player": 272687
             }
           ],
           "starters": [
@@ -2698,7 +2721,8 @@
             81037,
             119265,
             1859,
-            170378
+            170378,
+            272687
           ],
           "ideal_started": null
         },
@@ -2729,5 +2753,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-22T08:03:57.444334+00:00"
+  "usage_generated_at": "2026-11-28T09:00:29.465484+00:00"
 }

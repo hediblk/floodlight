@@ -15,10 +15,10 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-21T08:20:52.965140+00:00",
+    "observed_at": "2026-11-28T08:58:44.016348+00:00",
     "url": "https://api.football-data.org/v4/competitions/PL/teams",
-    "sha256": "a91a07cb10abcd44395b126615b364b0bcdffc5bb6a483c88487b65d68389730",
-    "snapshot": "data/players/rosters/2026-11-21/PL.json"
+    "sha256": "b62ca6c954710eff7ee851fffc6f8797be15e3e1c20a1e4d69b9baaeabcc1832",
+    "snapshot": "data/players/rosters/2026-11-28/PL.json"
   },
   "identity_overrides_sha256": "583f1bf699388a7f0bcaa8d01337753a4f4b8c899564eb8351d877b5e5e23343",
   "method": "ea-position-assignment-v1",
@@ -616,8 +616,8 @@
       "last_seen": "2026-08-29"
     }
   ],
-  "baseline_id": "73fae1d9dcf7901c",
-  "generated_at": "2026-11-21T08:21:24.712951+00:00",
+  "baseline_id": "18880766b0c6c6d6",
+  "generated_at": "2026-11-28T08:59:15.341362+00:00",
   "usage": {
     "premier-league": {
       "source": "understat",
@@ -2321,5 +2321,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-24T10:58:55.382027+00:00"
+  "usage_generated_at": "2026-11-28T08:59:38.868122+00:00"
 }

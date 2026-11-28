@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-21T08:20:52.965140+00:00",
+    "observed_at": "2026-11-28T08:58:44.016348+00:00",
     "url": "https://api.football-data.org/v4/competitions/PL/teams",
-    "sha256": "a91a07cb10abcd44395b126615b364b0bcdffc5bb6a483c88487b65d68389730",
-    "snapshot": "data/players/rosters/2026-11-21/PL.json"
+    "sha256": "b62ca6c954710eff7ee851fffc6f8797be15e3e1c20a1e4d69b9baaeabcc1832",
+    "snapshot": "data/players/rosters/2026-11-28/PL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 28,
+    "players": 29,
     "matched": 26
   },
   "ideal_xi": {
@@ -675,6 +675,16 @@
       }
     },
     {
+      "id": 304337,
+      "name": "Joe Cowan",
+      "dob": "2008-09-12",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": "observed:understat:14277",
       "name": "Tymur Tutierov",
       "dob": null,
@@ -698,8 +708,8 @@
       "reason": "no_name_match"
     }
   ],
-  "baseline_id": "0e6e5ddd587c28e2",
-  "generated_at": "2026-11-21T08:21:24.802291+00:00",
+  "baseline_id": "165254d3eca61b2c",
+  "generated_at": "2026-11-28T08:59:15.408337+00:00",
   "usage": {
     "premier-league": {
       "source": "understat",
@@ -1058,6 +1068,17 @@
           ],
           "xg": 0.0,
           "xa": 0.0
+        },
+        "304337": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 3,
+          "unknown_games": 8,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         },
         "observed:understat:14277": {
           "starts": 1,
@@ -2590,5 +2611,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-22T08:03:56.251387+00:00"
+  "usage_generated_at": "2026-11-28T09:00:27.834696+00:00"
 }

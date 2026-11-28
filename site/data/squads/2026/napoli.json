@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-25T09:55:35.473110+00:00",
-    "url": "https://api.football-data.org/v4/competitions/CL/teams",
-    "sha256": "e6668696588b5b88d37d30d2a8d56eeb942591b288c87c8c92ee560ea67069fd",
-    "snapshot": "data/players/rosters/2026-11-25/CL.json"
+    "observed_at": "2026-11-28T08:58:59.615038+00:00",
+    "url": "https://api.football-data.org/v4/competitions/SA/teams",
+    "sha256": "86ca3ad9589b2d0d08c3e67d0c79ac73c070f3f27910634779c0664aec3a5098",
+    "snapshot": "data/players/rosters/2026-11-28/SA.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 27,
+    "players": 31,
     "matched": 24
   },
   "ideal_xi": {
@@ -628,10 +628,50 @@
         "defending": 39,
         "physical": 52
       }
+    },
+    {
+      "id": 262653,
+      "name": "Dinis Rodrigues",
+      "dob": "2005-01-12",
+      "provider_position": "Offence",
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 302855,
+      "name": "Claudio Lieto",
+      "dob": "2008-01-22",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 302854,
+      "name": "Nikita Melnyk",
+      "dob": "2008-01-08",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 302853,
+      "name": "Andrea Chiummariello",
+      "dob": "2008-01-04",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "0ed7672db91a62c4",
-  "generated_at": "2026-11-25T09:55:42.936370+00:00",
+  "baseline_id": "549c23758af47f05",
+  "generated_at": "2026-11-28T08:59:15.422450+00:00",
   "usage": {
     "serie-a": {
       "source": "understat",
@@ -983,6 +1023,50 @@
           ],
           "xg": 0.434,
           "xa": 0.2598
+        },
+        "262653": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 9,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
+        },
+        "302855": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 9,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
+        },
+        "302854": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 9,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
+        },
+        "302853": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 9,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         }
       },
       "most_used_xi": {
@@ -2975,6 +3059,50 @@
           ],
           "avg_x": 0.4263,
           "avg_y": 0.2388
+        },
+        "262653": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 2,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "302855": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 2,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "302854": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 2,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
+        "302853": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 2,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
         }
       },
       "most_used_xi": {
@@ -3805,5 +3933,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-25T09:56:12.634994+00:00"
+  "usage_generated_at": "2026-11-28T09:00:04.243152+00:00"
 }

@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-21T08:20:52.965140+00:00",
+    "observed_at": "2026-11-28T08:58:44.016348+00:00",
     "url": "https://api.football-data.org/v4/competitions/PL/teams",
-    "sha256": "a91a07cb10abcd44395b126615b364b0bcdffc5bb6a483c88487b65d68389730",
-    "snapshot": "data/players/rosters/2026-11-21/PL.json"
+    "sha256": "b62ca6c954710eff7ee851fffc6f8797be15e3e1c20a1e4d69b9baaeabcc1832",
+    "snapshot": "data/players/rosters/2026-11-28/PL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 26,
+    "players": 27,
     "matched": 24
   },
   "ideal_xi": {
@@ -624,10 +624,20 @@
         "defending": 46,
         "physical": 73
       }
+    },
+    {
+      "id": 304210,
+      "name": "Dino Kaiser",
+      "dob": "2007-02-09",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "217f29279acf985c",
-  "generated_at": "2026-11-21T08:21:24.764362+00:00",
+  "baseline_id": "4e9e314c408dd832",
+  "generated_at": "2026-11-28T08:59:15.315749+00:00",
   "usage": {
     "premier-league": {
       "source": "understat",
@@ -964,6 +974,17 @@
           ],
           "xg": 4.6293,
           "xa": 1.0761
+        },
+        "304210": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 9,
+          "unknown_games": 2,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         }
       },
       "most_used_xi": {
@@ -2579,5 +2600,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-22T08:03:28.138036+00:00"
+  "usage_generated_at": "2026-11-28T08:59:41.037393+00:00"
 }

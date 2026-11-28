@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-21T08:20:44.920966+00:00",
+    "observed_at": "2026-11-28T08:58:36.015226+00:00",
     "url": "https://api.football-data.org/v4/competitions/PD/teams",
-    "sha256": "7a32311dc9937bbd30fcce69b0784aafdef8579b427a82aca172bf1c8950d5b3",
-    "snapshot": "data/players/rosters/2026-11-21/PD.json"
+    "sha256": "2d6c638f2d7910ef3af408bf5ccd6f10544dd81570e4a388b760ee8eb4901f94",
+    "snapshot": "data/players/rosters/2026-11-28/PD.json"
   },
   "identity_overrides_sha256": "de81a2ba7a3ebce65df28c0fc55ee669a90583b5c9df47e45d83ac6fd35f58b6",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 27,
+    "players": 29,
     "matched": 25
   },
   "ideal_xi": {
@@ -666,6 +666,26 @@
       }
     },
     {
+      "id": 304245,
+      "name": "Marc Scuri",
+      "dob": "2005-08-21",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 304244,
+      "name": "Tamiou Kpebane",
+      "dob": "2006-05-03",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": 302465,
       "name": "Jesús Morales",
       "dob": "2007-06-24",
@@ -712,8 +732,8 @@
       "last_seen": "2026-08-22"
     }
   ],
-  "baseline_id": "c12d4beae556d012",
-  "generated_at": "2026-11-21T08:21:25.364817+00:00",
+  "baseline_id": "b908c09835b14c4a",
+  "generated_at": "2026-11-28T08:59:15.828399+00:00",
   "usage": {
     "la-liga": {
       "source": "understat",
@@ -1052,6 +1072,28 @@
           ],
           "xg": 0.6025,
           "xa": 0.2845
+        },
+        "304245": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 10,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
+        },
+        "304244": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 10,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         },
         "302465": {
           "starts": 0,
@@ -2878,5 +2920,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-22T08:03:50.317767+00:00"
+  "usage_generated_at": "2026-11-28T09:00:17.394061+00:00"
 }

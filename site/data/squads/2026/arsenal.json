@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-25T09:55:35.473110+00:00",
-    "url": "https://api.football-data.org/v4/competitions/CL/teams",
-    "sha256": "e6668696588b5b88d37d30d2a8d56eeb942591b288c87c8c92ee560ea67069fd",
-    "snapshot": "data/players/rosters/2026-11-25/CL.json"
+    "observed_at": "2026-11-28T08:58:44.016348+00:00",
+    "url": "https://api.football-data.org/v4/competitions/PL/teams",
+    "sha256": "b62ca6c954710eff7ee851fffc6f8797be15e3e1c20a1e4d69b9baaeabcc1832",
+    "snapshot": "data/players/rosters/2026-11-28/PL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 24,
+    "players": 25,
     "matched": 22
   },
   "ideal_xi": {
@@ -582,10 +582,20 @@
       "method": null,
       "ea": null,
       "reason": "no_name_and_birth_date_match"
+    },
+    {
+      "id": 302255,
+      "name": "Maalik Hashi",
+      "dob": "2008-09-03",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
     }
   ],
-  "baseline_id": "b38ed6f05dbce7f8",
-  "generated_at": "2026-11-25T09:55:42.695247+00:00",
+  "baseline_id": "f642f8fe197da799",
+  "generated_at": "2026-11-28T08:59:15.005527+00:00",
   "usage": {
     "premier-league": {
       "source": "understat",
@@ -898,6 +908,17 @@
           ],
           "xg": 0.0,
           "xa": 0.0485
+        },
+        "302255": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 8,
+          "unknown_games": 3,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         }
       },
       "most_used_xi": {
@@ -2692,6 +2713,17 @@
           ],
           "avg_x": null,
           "avg_y": null
+        },
+        "302255": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 5,
+          "unknown_games": 0,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
         }
       },
       "most_used_xi": {
@@ -3557,5 +3589,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-25T09:55:45.947563+00:00"
+  "usage_generated_at": "2026-11-28T08:59:20.299303+00:00"
 }

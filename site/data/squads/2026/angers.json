@@ -15,15 +15,15 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-21T08:21:17.083668+00:00",
+    "observed_at": "2026-11-28T08:59:07.631599+00:00",
     "url": "https://api.football-data.org/v4/competitions/FL1/teams",
-    "sha256": "f9d6924ce3f29d962d7fbf840225be224de971465e820571726a7857352ca26f",
-    "snapshot": "data/players/rosters/2026-11-21/FL1.json"
+    "sha256": "31c5a95ed1a1b910d14cdf730de91897612f23b9d31508a40efb82604d1086a2",
+    "snapshot": "data/players/rosters/2026-11-28/FL1.json"
   },
   "identity_overrides_sha256": "2eb1d85d82c293065f63f66031c830c7b2b3b3f869502a6f060d8741d0f0fff0",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 22,
+    "players": 23,
     "matched": 20
   },
   "ideal_xi": {
@@ -561,6 +561,16 @@
       }
     },
     {
+      "id": 304267,
+      "name": "Ianis Sacko",
+      "dob": "2009-07-30",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": "observed:understat:14556",
       "name": "Maël Gernigon",
       "dob": null,
@@ -584,8 +594,8 @@
       "reason": "no_name_match"
     }
   ],
-  "baseline_id": "5d1e4501754c943f",
-  "generated_at": "2026-11-21T08:21:25.899372+00:00",
+  "baseline_id": "f143fcb8257b06a5",
+  "generated_at": "2026-11-28T08:59:16.443676+00:00",
   "usage": {
     "ligue-1": {
       "source": "understat",
@@ -874,6 +884,17 @@
           ],
           "xg": 0.6185,
           "xa": 0.2707
+        },
+        "304267": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 7,
+          "unknown_games": 4,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         },
         "observed:understat:14556": {
           "starts": 1,
@@ -2368,5 +2389,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-23T09:04:14.852372+00:00"
+  "usage_generated_at": "2026-11-28T08:59:20.130702+00:00"
 }

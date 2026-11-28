@@ -15,20 +15,20 @@
   "roster": {
     "source": "football-data.org",
     "status": "available",
-    "observed_at": "2026-11-25T09:55:35.473110+00:00",
-    "url": "https://api.football-data.org/v4/competitions/CL/teams",
-    "sha256": "e6668696588b5b88d37d30d2a8d56eeb942591b288c87c8c92ee560ea67069fd",
-    "snapshot": "data/players/rosters/2026-11-25/CL.json"
+    "observed_at": "2026-11-28T08:58:44.016348+00:00",
+    "url": "https://api.football-data.org/v4/competitions/PL/teams",
+    "sha256": "b62ca6c954710eff7ee851fffc6f8797be15e3e1c20a1e4d69b9baaeabcc1832",
+    "snapshot": "data/players/rosters/2026-11-28/PL.json"
   },
   "identity_overrides_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "method": "ea-position-assignment-v1",
   "coverage": {
-    "players": 29,
+    "players": 30,
     "matched": 29
   },
   "ideal_xi": {
     "formation": "4-3-3",
-    "status": "complete",
+    "status": "provisional",
     "mean_overall": 84.5,
     "slots": [
       {
@@ -723,6 +723,16 @@
       }
     },
     {
+      "id": 302268,
+      "name": "Joshua Sonni-Lambie",
+      "dob": "2007-11-16",
+      "provider_position": null,
+      "status": "unmatched",
+      "method": null,
+      "ea": null,
+      "reason": "no_name_and_birth_date_match"
+    },
+    {
       "id": "observed:uefa:250154417",
       "name": "Luke Chambers",
       "dob": null,
@@ -759,8 +769,8 @@
       "last_seen": "2026-11-25"
     }
   ],
-  "baseline_id": "65bde56b3a89fa50",
-  "generated_at": "2026-11-25T09:55:42.709341+00:00",
+  "baseline_id": "8248c0d8dd2a0703",
+  "generated_at": "2026-11-28T08:59:15.029828+00:00",
   "usage": {
     "premier-league": {
       "source": "understat",
@@ -1120,6 +1130,17 @@
           ],
           "xg": 0.4113,
           "xa": 0.0424
+        },
+        "302268": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 1,
+          "unknown_games": 10,
+          "provider_ids": [],
+          "xg": 0,
+          "xa": 0
         },
         "observed:uefa:250154417": {
           "starts": 0,
@@ -2936,6 +2957,17 @@
           "avg_x": 0.6262,
           "avg_y": 0.4914
         },
+        "302268": {
+          "starts": 0,
+          "sub": 0,
+          "minutes": 0,
+          "share": 0.0,
+          "known_games": 5,
+          "unknown_games": 0,
+          "provider_ids": [],
+          "avg_x": null,
+          "avg_y": null
+        },
         "observed:uefa:250154417": {
           "starts": 0,
           "sub": 2,
@@ -3829,5 +3861,5 @@
       ]
     }
   },
-  "usage_generated_at": "2026-11-26T09:34:59.207622+00:00"
+  "usage_generated_at": "2026-11-28T08:59:56.226292+00:00"
 }
